@@ -1,19 +1,10 @@
 // controllers/adminController.js
 const User = require('../models/user');
 const Product = require('../models/product');
-// const multer = require('multer');
 
 
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, 'public/uploads/'); // Set the destination folder for uploaded images
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + '-' + file.originalname);
-//   },
-// });
 
-// const upload = multer({ storage: storage });
+
 
 exports.showAdminLogin = (req, res) => {
   res.render('admin/admin_login');
