@@ -1,0 +1,50 @@
+<!-- views/search_results.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= query %> Results</title>
+    <!-- Include Bootstrap CSS or your preferred styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Add any additional styles specific to your search results page */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 style="color: rgb(11, 184, 126);"> </style>Search Results for "<%= query %>"</h3>
+
+        <% if (products.length > 0) { %>
+            <!-- Display search results as cards or any preferred format -->
+            <div class="row">
+                <% products.forEach(product => { %>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <a href="/product/<%= product._id %>">
+                                <% if (product.images.length > 0) { %>
+                                    <img src="/public/uploads/<%= product.images[0] %>" alt="<%= product.name %>" style="max-width: 100%;">
+                                <% } else { %>
+                                    <img src="/public/default-image.jpg" alt="No Image" style="max-width: 100%;">
+                                <% } %>
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title"><%= product.name %></h5>
+                                <p class="card-text">Price: <%= product.price %> rs</p>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <p>No products found.</p>
+        <% } %>
+    </div>
+
+    <!-- Include Bootstrap JS and Popper.js (required for Bootstrap functionality) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

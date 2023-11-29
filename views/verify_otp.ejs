@@ -1,0 +1,104 @@
+<!-- views/verify_otp.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <!-- Add your CSS styles here if needed -->
+
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Quicksand", sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #0f0;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #f00;
+            margin-bottom: 20px;
+        }
+
+        form {
+            width: 400px;
+            background: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9);
+        }
+
+        label {
+            color: #fff;
+            font-size: 1.2em;
+        }
+
+        input {
+            width: 100%;
+            background: #333;
+            border: none;
+            outline: none;
+            padding: 15px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 1em;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #0f0;
+            color: #000;
+            font-weight: 600;
+            font-size: 1.2em;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+        }
+
+        button:active {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Verify OTP</h1>
+    <% if (error) { %>
+        <p><%= error %></p>
+    <% } %>
+    <form action="/verify_otp" method="POST">
+        <input type="hidden" name="email" value="<%= email %>">
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        <button type="submit">Verify</button>
+        <span style="color: aquamarine;">Within 5 minuts</span>
+    </form>
+</body>
+
+</html>

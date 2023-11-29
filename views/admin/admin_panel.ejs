@@ -1,0 +1,129 @@
+<!-- views/admin/admin_panel.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to the Admin Panel</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+
+        nav img {
+            height: 50px; /* Set the desired height for your logo */
+        }
+
+        nav button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin-top: 20px; /* Add space between the navigation bar and content */
+        }
+
+        .add-product-button {
+            margin-bottom: 20px; /* Add space below the "Add Product" button */
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px; /* Add space below the table */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <!-- Logo on the left -->
+        <img src="/public/images/logoMedi.jpg" alt="LoGo">
+          <!-- User link with dropdown -->
+          <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle btn btn-info" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Users
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <!-- Insert the link to the users' list page -->
+                <a class="dropdown-item" href="/admin/userList">View Logged-in Users</a>
+            </div>
+        </div>
+
+        <!-- Logout button on the right -->
+        <form action="/admin/logout" method="POST">
+            <button type="submit" class="btn btn-outline-light">Logout</button>
+        </form>
+    </nav>
+
+    <div class="container">
+        <!-- Add Product button -->
+        <a href="/admin/add_product" class="btn btn-success add-product-button ">Add Product</a>
+
+        <h1>Welcome to the Admin Panel!</h1>
+
+        <h2>Product List</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Image</th> 
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                    <tr>
+                        <td><%= product.name %></td>
+                        <td><%= product.description %></td>
+                        <td><%= product.price %> rs</td>
+                        <td><%= product.category %></td>
+                        <td> <% product.images.forEach(image => { %>
+                            <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" style="max-width: 100px;">
+                        <% }); %></td>
+                         <!-- Add Edit button with a link to the edit_product route -->
+            <td><a href="/admin/edit_product/<%= product._id %>" class="btn btn-warning">Edit</a>
+                   
+                  <a href="/admin/delete_product/<%= product._id %>" class="btn btn-danger" onclick=" return confirm('Are you want to delete <%=product.name%> ?')">Delete</a></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Include Bootstrap JS and Popper.js (required for Bootstrap dropdowns) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

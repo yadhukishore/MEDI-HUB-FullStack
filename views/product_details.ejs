@@ -1,0 +1,219 @@
+<!-- product_details.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Add your head content here -->
+  <title><%= product.name %> Details</title>
+  <!-- Link to Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Add your custom styles here -->
+  <style>
+     body {
+      padding-top: 0;
+      margin-top: 56px;
+      font-family: 'Arial', sans-serif;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav img {
+      height: 50px;
+      width: 80px;
+    }
+
+    .user-dropdown button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+
+    #dropdown-content button {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      background-color: #f9f9f9;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .product-container {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin: 20px;
+    }
+
+    .product-details {
+      max-width: 60%;
+    }
+
+    .product-image {
+      max-width: 40%;
+      overflow: hidden;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: auto;
+      transition: transform 0.3s;
+    }
+
+    .product-image img:hover {
+      transform: scale(1.2);
+    }
+
+    .action-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-add-to-cart {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .btn-add-to-wishlist {
+      background-color: #FFD700;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .product-images-container {
+      display: flex;
+    }
+
+    .thumbnail-images {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-right: 20px;
+    }
+
+    .thumbnail-images img {
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      object-fit: contain;
+    }
+
+    .main-image-container {
+      border: 1px solid #f5efef;
+      border-radius: 15px;
+      overflow: hidden;
+      height: 500px;
+      width: 700px;
+    }
+
+    .main-image {
+      width: 80%;
+      height: 50%;
+      object-fit: contain; /* Maintain aspect ratio and contain within the container */
+    }
+  </style>
+</head>
+<body>
+  <!-- Bootstrap Navbar -->
+  <nav class="navbar navbar-dark bg-dark fixed-top">
+    <!-- Logo on the left -->
+    <img src="/public/images/logoMedi.jpg" alt="LoGo">
+
+    <!-- Login button or user name on the right -->
+    <% if (user) { %>
+      <div class="user-dropdown">
+        <button class="btn btn-success" onclick="toggleDropdown()">Welcome, <%= user.username %>!</button>
+        <div id="dropdown-content">
+          <form action="/logout" method="POST">
+            <button>Cart</button>
+            <button type="submit" class="btn btn-danger">Logout</button>
+          </form>
+        </div>
+      </div>
+    <% } else { %>
+      <button class="btn btn-outline-success" onclick="window.location.href='/login'">Login/Register</button>
+    <% } %>
+  </nav>
+
+  <!-- Product Details Container -->
+  <div class="container product-container">
+    <!-- Product Images Container -->
+    <div class="product-images-container">
+      <!-- Thumbnail Images -->
+      <div class="thumbnail-images">
+        <% product.images.forEach((image, index) => { %>
+          <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" data-target="#productCarousel" data-slide-to="<%= index %>" class="thumbnail-image">
+        <% }); %>
+      </div>
+
+      <!-- Main Image Carousel -->
+      <div id="productCarousel" class="carousel slide main-image-container">
+        <div class="carousel-inner">
+          <% product.images.forEach((image, index) => { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+              <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" class="main-image">
+            </div>
+          <% }); %>
+        </div>
+        <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Product Details -->
+    <div class="product-details">
+         <h1><%= product.name %> </h1>
+      <p>Details:<br><%= product.description %></p>
+      <p>Category: <%= product.category %> </p>
+      <p>Price: <%= product.price %> rs</p>
+    </div>
+  </div>
+
+      <!-- Additional details or features -->
+
+      <!-- Action buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-add-to-cart">Add to Cart</button>
+        <button class="btn btn-add-to-wishlist">Add to Wishlist</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional: Add Bootstrap JS and Popper.js for Bootstrap functionality -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!-- admin_login.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Quicksand", sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #0f0;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        form {
+            width: 400px;
+            background: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 15px 35px rgba(46, 210, 231, 0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        label {
+            color: #0f0;
+            font-size: 1.2em;
+            transition: 0.3s;
+        }
+
+        input {
+            width: 100%;
+            background: #333;
+            border: none;
+            outline: none;
+            padding: 15px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 1em;
+            transition: 0.3s;
+        }
+
+        input:focus,
+        input:valid {
+            border-bottom: 2px solid #0f0;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #0f0;
+            color: #000;
+            font-weight: 600;
+            font-size: 1.2em;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:active {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Admin Login</h1>
+    <form action="/admin/login" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Login</button>
+    </form>
+</body>
+
+</html>

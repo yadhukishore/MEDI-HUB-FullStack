@@ -1,0 +1,167 @@
+<!-- home.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+
+        nav img {
+            height: 50px;
+            width: 80px; /* Set the desired height for your logo */
+        }
+
+        .login-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-button-not-logged-in {
+            border: 2px solid #4CAF50;
+            background-color: white;
+            color: #4CAF50;
+        }
+
+        .user-dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        #dropdown-content button {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            background-color: #f9f9f9;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .card {
+            width: 300px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img {
+            object-fit: cover;
+            width: 100%;
+            height: 200px;
+        }
+    </style>
+    <!-- Add JavaScript for dropdown functionality here -->
+    <script>
+        function toggleDropdown() {
+            const dropdownContent = document.getElementById('dropdown-content');
+            dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <!-- Logo on the left -->
+        <img src="/public/images/logoMedi.jpg" alt="LoGo">
+ <!-- Centered Search Form with Icon -->
+ <div class="mx-auto">
+    <form class="form-inline my-2 my-lg-0 ml-auto" action="/search" method="GET" style="width: 600px;">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query" style="width: 80%;">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+                    <i class="material-icons">search</i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+
+        <!-- Login button or user name on the right -->
+        <% if (user) { %>
+            <div class="user-dropdown">
+                <button class="btn btn-success" onclick="toggleDropdown()">Welcome, <%= user.username %>!</button>
+                <div id="dropdown-content">
+                    <form action="/logout" method="POST">
+                        <button>Cart</button>
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </div>
+            </div>
+        <% } else { %>
+            <button class="btn btn-outline-success" onclick="window.location.href='/login'">Login/Register</button>
+        <% } %>
+    </nav>
+    <div class="container">
+        <div class="row">
+          <!-- Loop through products and create Bootstrap cards -->
+          <% products.forEach(product => { %>
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <a href="/product/<%= product._id %>"> <!-- Add a link to each product -->
+                    <% if (product.images.length > 0) { %>
+                        <!-- Display only the first image -->
+                        <img src="/public/uploads/<%= product.images[0] %>" alt="<%= product.name %>" style="max-width: 100%;">
+                    <% } else { %>
+                        <!-- Provide a default image or message if there are no images -->
+                        <img src="/public/default-image.jpg" alt="No Image" style="max-width: 100%;">
+                    <% } %>
+                </a>
+                <div class="card-body">
+                  <h5 class="card-title"><%= product.name %></h5>
+                  <!-- <p class="card-text"><%= product.description %></p>
+                  <p class="card-text">Category: <%= product.category %> </p> -->
+                  <p class="card-text">Price: <%= product.price %> rs</p>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+
+    <!-- Optional: Add Bootstrap JS and Popper.js for Bootstrap functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

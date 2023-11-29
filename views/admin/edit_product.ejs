@@ -1,0 +1,57 @@
+<!-- views/admin/edit_product.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Product</h1>
+        <form action="/admin/edit_product/<%= product._id %>" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Product Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Product Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required><%= product.description %></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Product Price ($)</label>
+                <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="productCategory">Product Category:</label>
+                <select class="form-control" id="productCategory" name="category" required>
+                    <!-- Add your category options dynamically based on your categories -->
+                    <option value="Tablets" <%= product.category === "Tablets" ? "selected" : "" %>>Tablets</option>
+                    <option value="Sprays" <%= product.category === "Sprays" ? "selected" : "" %>>Sprays</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+    
+            <br>
+
+
+            <div class="form-group">
+                <label for="images">Product Images</label>
+                <input type="file" class="form-control-file" id="images" name="images" multiple>
+                <small class="form-text text-muted">Leave empty if you don't want to change the images.</small>
+            </div>
+            <!-- Add more form fields as needed -->
+
+            <button type="submit" class="btn btn-primary">Update Product</button>
+        </form>
+    </div>
+
+    <!-- Include Bootstrap JS and Popper.js (required for Bootstrap dropdowns) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
