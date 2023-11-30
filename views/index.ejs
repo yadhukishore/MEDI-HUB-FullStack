@@ -107,7 +107,7 @@
  <!-- Centered Search Form with Icon -->
  <div class="mx-auto">
     <form class="form-inline my-2 my-lg-0 ml-auto" action="/search" method="GET" style="width: 600px;">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query" style="width: 80%;">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search Products and Categories" aria-label="Search" name="query" style="width: 80%;">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
                     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
                     <i class="material-icons">search</i>
@@ -152,9 +152,11 @@
                 </a>
                 <div class="card-body">
                   <h5 class="card-title"><%= product.name %></h5>
-                  <!-- <p class="card-text"><%= product.description %></p>
-                  <p class="card-text">Category: <%= product.category %> </p> -->
-                  <p class="card-text">Price: <%= product.price %> rs</p>
+                  <!-- <p class="card-text"><%= product.description %></p> -->
+                  <p class="card-text" style="color: rgb(7, 182, 123);">Category: <%= product.category %> </p>
+                  <p class="card-text">Price: <strong><%= product.price %> rs</strong></p>
+
+                 
                 </div>
               </div>
             </div>

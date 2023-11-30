@@ -156,8 +156,7 @@ exports.getAdminEdit = async (req, res) => {
   const productId = req.params.id;
 
   try {
-    // Find the product by ID and update the 'deleted' field to true
-      // Soft delete the product by updating its status to 'deleted'
+    
       await Product.findByIdAndUpdate(productId, { deleted: true });
 
     console.log(`Product ${productId} soft-deleted successfully.`);

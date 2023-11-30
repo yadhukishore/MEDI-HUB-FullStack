@@ -18,3 +18,27 @@ exports.getProduct= async(req,res)=>{
         res.status(500).send('Internal Server Error');
       }
 }
+
+exports.searchProducts = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    // Perform the search logic here, excluding deleted products
+    const products = await Product.find({
+      $and: [
+        {
+          $or: [
+            { name: { $regex: new RegExp(query, 'i') } },
+            { category: { $regex: new RegExp(query, 'i') } },
+          ],
+        },
+        { deleted: false }, // Exclude deleted products
+      ],
+    });
+
+    res.render('search', { query, products });
+  } catch (error) {
+    console.error('Error searching products:', error);
+    res.redirect('/');
+  }
+};

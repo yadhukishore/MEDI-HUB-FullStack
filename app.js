@@ -144,7 +144,7 @@ app.get('/admin/delete_product/:id', adminController.getAdminDelete)
 app.get('/admin/userList',adminController.getUserList);
 app.get('/admin/block_user/:id',adminController.blockUser);
 app.get('/admin/unblock_user/:id',adminController.unblockUser);
-app.get('/search',userAuthController.searchProducts)
+app.get('/search',productController.searchProducts)
 // Fetch Products from the Database
 app.get('/',  async (req, res) => {
   try {

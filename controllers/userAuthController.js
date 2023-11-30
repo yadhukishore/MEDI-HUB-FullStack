@@ -264,23 +264,4 @@ exports.getForgotPassword = (req, res) => {
       });
  }
 
- exports.searchProducts = async (req, res) => {
-  try {
-      const { query } = req.query;
 
-      // Perform the search logic here, you may use MongoDB queries or any other method
-
-      // For demonstration purposes, assume you have a Product model and want to search by name and category
-      const products = await Product.find({
-          $or: [
-              { name: { $regex: new RegExp(query, 'i') } },
-              { category: { $regex: new RegExp(query, 'i') } },
-          ],
-      });
-
-      res.render('search',{ query, products });
-  } catch (error) {
-      console.error('Error searching products:', error);
-      res.redirect('/');
-  }
-};
