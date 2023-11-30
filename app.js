@@ -16,28 +16,7 @@ const  productController  = require('./controllers/productController');
 
 
 
-// var transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: 'arjunreddy8921@gmail.com',
-//     pass: 'jsds kafa dwcu mfce'
-//   }
-// });
 
-// var mailOptions = {
-//   from: 'arjunreddy8921@gmail.com',
-//   to: 'yadhukishore37@gmail.com',
-//   subject: 'Sending Email using Node.js',
-//   text: 'Ntha mwone jadayana'
-// };
-
-// transporter.sendMail(mailOptions, function(error, info){
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log('Email sent: ' + info.response);
-//   }
-// });
 
 // Connect to MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/medibase').then(() => {
@@ -78,10 +57,12 @@ app.use(express.urlencoded({ extended: true }));
 // };
 // app.use(handleBackButton)
 
-
 // Custom middleware to check if the user is logged in
 const checkLoggedIn = (req, res, next) => {
-  if (req.session.user) {
+  // Exclude the login route from the check
+  if (req.path === '/login') {
+    next();
+  } else if (req.session.user) {
     res.locals.user = req.session.user;  // Make user data available in views
     next();
   } else {
@@ -89,8 +70,8 @@ const checkLoggedIn = (req, res, next) => {
     next();
   }
 };
-// Use the checkLoggedIn middleware for all routes
 app.use(checkLoggedIn);
+
 
 // Custom middleware to disable caching
 const disableCache = (req, res, next) => {
@@ -119,7 +100,14 @@ app.use(disableCache);
 // const upload = multer({ storage: storage });
 
 
+app.get('/login', userAuthController.getUserLogin);
 
+app.post('/login', userAuthController.postUserLogin);
+
+// Signup route
+app.get('/signup', userAuthController.getSignup);
+// Signup route with OTP generation and verification
+app.post('/signup', userAuthController.postSignup );
 
 // Route for displaying the forgot password form
 app.get('/forgot_password', userAuthController.getForgotPassword);
@@ -158,7 +146,7 @@ app.get('/admin/block_user/:id',adminController.blockUser);
 app.get('/admin/unblock_user/:id',adminController.unblockUser);
 app.get('/search',userAuthController.searchProducts)
 // Fetch Products from the Database
-app.get('/', async (req, res) => {
+app.get('/',  async (req, res) => {
   try {
     const products = await Product.find({ deleted: false });
     res.render('index', { products, isAdmin: req.session.user ? req.session.user.isAdmin : false });
@@ -169,15 +157,8 @@ app.get('/', async (req, res) => {
 })
 // Add a new route for displaying multiple images and product details
 app.get('/product/:productId',productController.getProduct )
-// Signup route
-app.get('/signup', userAuthController.getSignup);
-// Signup route with OTP generation and verification
-app.post('/signup', userAuthController.postSignup );
 
 
-app.get('/login', userAuthController.getUserLogin);
-
-app.post('/login', userAuthController.postUserLogin);
 
 
 

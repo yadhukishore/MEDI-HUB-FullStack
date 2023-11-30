@@ -212,7 +212,11 @@ exports.getForgotPassword = (req, res) => {
  }
 
  exports.getUserLogin=(req,res)=>{
+  if(req.session.user){
+    res.redirect('/')
+  }else{
     res.render('login', { error: req.query.error });
+  }
  }
  exports.postUserLogin = async (req, res) => {
     const { email, password } = req.body;

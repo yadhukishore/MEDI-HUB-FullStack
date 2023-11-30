@@ -7,7 +7,12 @@ const Product = require('../models/product');
 
 
 exports.showAdminLogin = (req, res) => {
+  if(req.session.user){
+    res.redirect('/admin');
+  }
+  else{
   res.render('admin/admin_login');
+  }
 };
 
 exports.postAdminLogin = async (req, res) => { 
