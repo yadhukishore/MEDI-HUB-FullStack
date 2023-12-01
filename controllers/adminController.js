@@ -1,7 +1,7 @@
 // controllers/adminController.js
 const User = require('../models/user');
 const Product = require('../models/product');
-
+const bcrypt = require('bcrypt');
 
 
 
@@ -19,7 +19,7 @@ exports.postAdminLogin = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Find the user with the provided username
+    
     const adminUser = await User.findOne({ username });
 
     // Check if the user exists and if their password is correct
@@ -27,11 +27,11 @@ exports.postAdminLogin = async (req, res) => {
       req.session.user = { isAdmin: true }; // Set isAdmin to true for the session
       res.redirect('/admin');
     } else {
-      res.redirect('/admin/admin_login'); // Redirect back to admin login if credentials are invalid
+      res.redirect('/admin/admin_login'); 
     }
   } catch (error) {
     console.error('Error during admin login:', error);
-    res.redirect('/admin/admin_login'); // Redirect back to admin login in case of an error
+    res.redirect('/admin/admin_login'); 
   }
 };
 
@@ -47,7 +47,7 @@ exports.getAdminRoute = async (req, res) => {
       res.redirect('/admin/admin_login');
     }
   } else {
-    res.redirect('/admin/admin_login'); // Redirect to admin login if not admin
+    res.redirect('/admin/admin_login'); 
   }
 }
 
@@ -83,12 +83,12 @@ exports.postAdminAddProduct = async (req, res) => {
       images: productImages,
     });
 
-    // Save the new product to the database
+    // Save to db
     await newProduct.save();
 
     console.log('Product saved successfully.');
 
-    // Redirect back to the admin panel after adding the product
+   
     res.redirect('/admin');
   } catch (error) {
     console.error('Error adding product:', error.message);
@@ -223,6 +223,45 @@ exports.unblockUser = async (req, res) => {
     res.redirect('/admin/userList');
   } catch (error) {
     console.error('Error unblocking user:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+exports.getAdminAddUser = (req, res) => {
+  const { error } = req.query; // Check if error is present in the query parameters
+  res.render('admin/add_user', { error }); // Pass the error variable to the view
+};
+
+exports.postAdminAddUser = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Validate form data (you may want to add more validation)
+    if (!username || !email || !password) {
+      return res.redirect('/admin/add_user');
+    }
+ // Check if email already exists
+ const existingUser = await User.findOne({ email: req.body.email });
+ if (existingUser) {
+     // Set 'email_exists' error and render the form again
+     return res.render('admin/add_user', { error: 'email_exists' });
+ }
+    // Hash the password before saving it
+    const hashedPassword = await bcrypt.hash(password, 10); // Adjust the salt rounds as needed
+
+    // Create a new user
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    // Save the new user to the database
+    await newUser.save();
+
+    res.redirect('/admin/userList'); // Redirect to the user list page
+  } catch (error) {
+    console.error('Error adding user:', error);
     res.status(500).send('Internal Server Error');
   }
 };

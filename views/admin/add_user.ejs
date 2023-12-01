@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px; /* Add some padding for better styling */
+        }
+
+        h1 {
+            margin-bottom: 20px; /* Add space below the heading */
+        }
+
+        form {
+            max-width: 400px; /* Limit the form width for better readability */
+            margin: 0 auto; /* Center the form on the page */
+        }
+
+        label {
+            margin-top: 10px; /* Add space between labels and inputs */
+        }
+
+        input {
+            margin-bottom: 10px; /* Add space below each input */
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px; /* Add space above the error message */
+        }
+
+        .btn-success {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-center">Add User</h1>
+
+    <form action="/admin/add_user" method="post">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" class="form-control" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+
+        <!-- Display error message if email already exists -->
+        <% if (error && error === 'email_exists') { %>
+            <p class="error-message">Email already exists. Please choose a different email.</p>
+        <% } %>
+    
+        <button type="submit" class="btn btn-success btn-block">Add User</button>
+    </form>
+
+    <!-- Include Bootstrap JS and Popper.js (required for Bootstrap dropdowns) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
