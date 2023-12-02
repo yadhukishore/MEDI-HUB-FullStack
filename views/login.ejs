@@ -192,6 +192,12 @@ input[type="submit"]:active
     height: calc(20vw - 2px);
   }
 }
+.error-message {
+    color: yellow;
+    font-weight: bold;
+   
+  
+  }
 </style>
  </head> 
 
@@ -208,6 +214,11 @@ input[type="submit"]:active
      <h2>Log In</h2> 
 
      <form class="form" method="post" action="/login"> 
+
+      <% if (typeof error !== 'undefined'&& error !== null){%>
+        <div class="error-message"><%= error  %></div>
+
+        <% } %>
 
       <div class="inputBox"> 
 

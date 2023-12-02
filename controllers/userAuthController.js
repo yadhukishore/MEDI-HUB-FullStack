@@ -3,6 +3,7 @@ const User = require('../models/user');
 const Product = require('../models/product');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
+const  isValidPassword  = require('../utils/passwordValid');
 
 //for otp////
 // Nodemailer configuration
@@ -16,7 +17,9 @@ const transporter = nodemailer.createTransport({
   
 
 exports.getForgotPassword = (req, res) => {
-    res.render('forgot_password');
+  const error =req.query.error;
+
+    res.render('forgot_password',{error});
   };
 
  exports.postForgotPassword=async(req,res)=>{
@@ -27,7 +30,7 @@ exports.getForgotPassword = (req, res) => {
         if (!existingUser) {
           // If the user does not exist, return an error
           console.log('User not found');
-          return res.status(404).send('User not found');
+          return res.render('forgot_password',{error:'User not found'})
         }
     
         // Generate a random 6-digit OTP
@@ -54,7 +57,7 @@ exports.getForgotPassword = (req, res) => {
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
             console.log('Error sending email:', error);
-            res.status(500).send('Internal Server Error');
+            res.render('forgot_password',{error:'Internal Server Error. Please try again Later!'})
           } else {
             console.log('Email sent:', info.response);
             res.redirect(`/verify_otp?email=${req.body.email}`);
@@ -62,7 +65,7 @@ exports.getForgotPassword = (req, res) => {
         });
       } catch (error) {
         console.error('Error in forgot password:', error);
-        res.status(500).send('Internal Server Error');
+        res.render('forgot_password',{error:' Server faild! Please try again Later!'})
       }
  } 
 
@@ -97,7 +100,7 @@ exports.getForgotPassword = (req, res) => {
         }
       } catch (error) {
         console.error('Error in OTP verification:', error);
-        res.status(500).send('Internal Server Error');
+       res.render('verify_otp',{error:'Server Error'})
       }
  }
   
@@ -151,7 +154,8 @@ exports.getForgotPassword = (req, res) => {
  //signup
 
  exports.getSignup=(req,res)=>{
-    res.render('signup');
+  const error = req.query.error;
+  res.render('signup', { error });
  }
 // Signup  with OTP generation and verification
  exports.postSignup=async(req,res)=>{
@@ -163,9 +167,13 @@ exports.getForgotPassword = (req, res) => {
 
     if (userExists) {
       // User with the provided email already exists
-      return res.status(400).send('User with this email already exists');
+      return res.render('signup',{error:'User with this email already exists!'});
     }
-
+ // Validate the password
+ if (!isValidPassword(password)) {
+  // Password does not meet the requirements
+  return res.render('signup', { error: 'Poor Password. Password must be strong and not contain spaces.' });
+}
     // Generate a random 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
 
@@ -198,7 +206,7 @@ exports.getForgotPassword = (req, res) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log('Error sending email:', error);
-        res.status(500).send('Internal Server Error');
+        return res.render('signup', { error: 'Error sending verification email. Please try again.' });
       } else {
         console.log('Email sent:', info.response);
         // Redirect to the OTP verification page
@@ -207,7 +215,7 @@ exports.getForgotPassword = (req, res) => {
     });
   } catch (error) {
     console.error('Error signing up:', error);
-    res.status(500).send('Internal Server Error');
+    res.render('signup', { error: 'Internal Server Error. Please try again later.' });
   }
  }
 
@@ -227,7 +235,7 @@ exports.getForgotPassword = (req, res) => {
       if (user) {
         // Check if the user is blocked
         if (user.blocked) {
-          return res.send("<h2> Your account is blocked. Please contact the administrator for assistance.</h2>")
+          return res.render('login',{error:" Your account is blocked. Please contact the administrator for assistance!!!"})
           // You can customize the error message or handle it in the frontend accordingly
         }
   
@@ -240,7 +248,7 @@ exports.getForgotPassword = (req, res) => {
           res.redirect('/');
         } else {
           // Invalid password
-          res.redirect('/login?error=invalid');
+          res.redirect('/login?error=invalid password or email ');
           // You can customize the error message or handle it in the frontend accordingly
         }
       } else {

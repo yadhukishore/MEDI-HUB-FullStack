@@ -52,7 +52,9 @@ exports.getAdminRoute = async (req, res) => {
 }
 
 exports.getAdminAddProduct = (req,res)=>{
-  res.render('admin/add_product');
+  const error = req.query.error;
+  console.log('Error:', error);
+  res.render('admin/add_product',{error});
 }
 
 exports.postAdminAddProduct = async (req, res) => {
@@ -75,10 +77,16 @@ exports.postAdminAddProduct = async (req, res) => {
       throw new Error('Please fill out all required fields.');
     }
 
+    const nonNegPrice = parseFloat(productPrice);
+    if(isNaN(nonNegPrice)|| nonNegPrice<0){
+    
+      throw new Error('Product price must be a non-negative number.');
+    }
+
     const newProduct = new Product({
       name: productName,
       description: productDescription,
-      price: productPrice,
+      price: nonNegPrice,
       category: productCategory,
       images: productImages,
     });
@@ -92,7 +100,8 @@ exports.postAdminAddProduct = async (req, res) => {
     res.redirect('/admin');
   } catch (error) {
     console.error('Error adding product:', error.message);
-    res.redirect('/admin/add_product');
+    res.redirect('/admin/add_product?error=' + encodeURIComponent(error.message));
+
   }
 };
 
@@ -101,6 +110,7 @@ exports.getAdminEdit = async (req, res) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId);
+    const error = req.query.error;
 
     if (!product) {
         // Redirect to the admin panel if the product is not found
@@ -108,7 +118,7 @@ exports.getAdminEdit = async (req, res) => {
         return;
     }
 
-    res.render('admin/edit_product', { product });
+    res.render('admin/edit_product', { product ,error});
 } catch (error) {
     console.error('Error fetching product for edit:', error);
     res.redirect('/admin');
@@ -116,41 +126,46 @@ exports.getAdminEdit = async (req, res) => {
  }
 
  exports.postAdminEdit = async (req, res) => {
+  let productId; // Declare productId in the outer scope
   try {
-      const productId = req.params.id;
-      const { name, description, price,category } = req.body;
+    productId = req.params.id;
+    const { name, description, price, category } = req.body;
 
-      // Validate the form data
-      if (!name || !description || !price || !category) {
-          // Handle validation error, you can redirect to a specific page or show an error message
-          res.redirect(`/admin/edit_product/${productId}`);
-          return;
-      }
+    // Validate the form data
+    if (!name || !description || !price || !category) {
+      // Handle validation error, you can redirect to a specific page or show an error message
+      res.redirect(`/admin/edit_product/${productId}?error=Please fill out all required fields.`);
+      return;
+    }
+    const nonNegPrice = parseFloat(price);
+    if (isNaN(nonNegPrice) || nonNegPrice < 0) {
+      throw new Error('Product price must be a non-negative number.');
+    }
+    // Find the product by ID
+    const product = await Product.findById(productId);
 
-      // Find the product by ID
-      const product = await Product.findById(productId);
+    // Update product details
+    product.name = name;
+    product.description = description;
+    product.price = nonNegPrice;
+    product.category = category;
 
-      // Update product details
-      product.name = name;
-      product.description = description;
-      product.price = price;
-      product.category = category;
+    // Check if new images are provided
+    if (req.files && req.files.length > 0) {
+      // Assuming your Product model has an 'images' field for storing multiple images
+      product.images = req.files.map(file => file.filename);
+    }
 
-      // Check if new images are provided
-      if (req.files && req.files.length > 0) {
-          // Assuming your Product model has an 'images' field for storing multiple images
-          product.images = req.files.map(file => file.filename);
-      }
+    // Save the updated product
+    await product.save();
 
-      // Save the updated product
-      await product.save();
-
-      res.redirect('/admin');
+    res.redirect('/admin');
   } catch (error) {
-      console.error('Error updating product:', error);
-      res.redirect('/admin');
+    console.error('Error updating product:', error.message);
+    res.redirect(`/admin/edit_product/${productId}?error=${encodeURIComponent(error.message)}`);
   }
 };
+
 //soft delete
  exports.getAdminDelete= async(req,res)=>{
   const productId = req.params.id;

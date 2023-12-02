@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -152,6 +154,7 @@
       input[type="submit"]:active {
         opacity: 0.6;
       }
+    
       @media (max-width: 900px) {
         section span {
           width: calc(10vw - 2px);
@@ -164,6 +167,10 @@
           height: calc(20vw - 2px);
         }
       }
+      .error-message {
+    color: red;
+    font-weight: bold;
+  }
     </style>
   </head>
 
@@ -227,6 +234,11 @@
       <div class="signin">
         <div class="content">
           <h2>Sign Up</h2>
+
+          <% if (typeof error !== 'undefined' && error !== null) { %>
+            <div class="error-message"><%= error %></div>
+          <% } %>
+          
 
           <form class="form" method="post" action="/signup">
             <div class="inputBox">
