@@ -103,53 +103,102 @@ exports.getForgotPassword = (req, res) => {
        res.render('verify_otp',{error:'Server Error'})
       }
  }
-  
+ 
+exports.postResendOTP = async (req, res) => {
+  try {
+      const email = req.body.email;
+
+      // Generate a new random 6-digit OTP
+      const newOtp = Math.floor(100000 + Math.random() * 900000);
+
+      // Set OTP expiration time to 5 minutes (300 seconds)
+      const otpExpiration = Date.now() + 300000;
+
+      // Update the user's OTP and OTP expiration time in the database
+      const user = await User.findOneAndUpdate(
+          { email },
+          { $set: { otp: newOtp, otpExpiration } },
+          { new: true }
+      );
+
+      // Send the new OTP to the user's email
+      const mailOptions = {
+          from: 'arjunreddy8921@gmail.com',
+          to: email,
+          subject: 'Resend OTP',
+          text: `Your new OTP for verification is ${newOtp}. Please use it to verify your account.`
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+              console.log('Error sending email:', error);
+              res.render('verify_otp', { email, error: 'Error sending OTP. Please try again.' });
+          } else {
+              console.log('Email sent:', info.response);
+              // Redirect to the same verification page with a success message
+              res.redirect(`/verify_otp?email=${email}&success=Resend successful`);
+          }
+      });
+  } catch (error) {
+      console.error('Error in resending OTP:', error);
+      res.status(500).send('Internal Server Error');
+  }
+}
  exports.getResetPassword=(req,res)=>{
     const email = req.params.email;
-    res.render('reset_password', { email, error: null }); // Passing 'error' with a default value of null
+    const error = req.query.error;
+    res.render('reset_password', { email, error}); // Passing 'error' with a default value of null
  };
 
- exports.postResetPassword = async(req,res)=>{
-    try {
-        const email = req.params.email;
-        const { newPassword, confirmPassword } = req.body;
-    
-        // Validate that the passwords match
-        if (newPassword !== confirmPassword) {
+ exports.postResetPassword = async (req, res) => {
+  try {
+      const email = req.params.email;
+      const { newPassword, confirmPassword } = req.body;
+
+      // Validate the password
+      if (!isValidPassword(newPassword)) {
+          // Password does not meet the requirements
+          return res.render('reset_password', { email, error: 'Poor Password. Password must be strong and not contain spaces.' });
+      }
+
+      // Validate that the passwords match
+      if (newPassword !== confirmPassword) {
           const error = 'Passwords do not match';
           console.log(error); // Log the error to the console
           return res.render('reset_password', {
-            email,
-            error
+              email,
+              error
           });
-        }
-       // Hash the new password before storing it in the database
-       const hashedPassword = await bcrypt.hash(newPassword, 10);
-        // Update the user's password in the database
-        const user = await User.findOneAndUpdate(
+      }
+
+      // Hash the new password before storing it in the database
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update the user's password in the database
+      const user = await User.findOneAndUpdate(
           { email },
           { $set: { password: hashedPassword } },
           { new: true }
-        );
-    
-        if (!user) {
+      );
+
+      if (!user) {
           const error = 'User not found';
           console.log(error); // Log the error to the console
           return res.render('reset_password', {
-            email,
-            error
+              email,
+              error
           });
-        }
-    
-        console.log('Password updated successfully:', hashedPassword); // Log the updated password to the console
-    
-        // Redirect to a success page or login page
-        res.redirect('/login');
-      } catch (error) {
-        console.error('Error in resetting password:', error);
-        res.status(500).send('Internal Server Error');
       }
- }
+
+      console.log('Password updated successfully:', hashedPassword); // Log the updated password to the console
+
+      // Redirect to a success page or login page
+      res.redirect('/login');
+  } catch (error) {
+      console.error('Error in resetting password:', error);
+      res.status(500).send('Internal Server Error');
+  }
+};
 
  //signup
 

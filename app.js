@@ -117,7 +117,7 @@ app.post('/forgot_password', userAuthController.postForgotPassword);
 
 app.get('/verify_otp', userAuthController.getVerifyOTP);
 app.post('/verify_otp', userAuthController.postVerifyOTP);
-
+app.post('/resend_otp', userAuthController.postResendOTP)
 // Route for displaying the reset password form
 app.get('/reset_password/:email',userAuthController.getResetPassword);
 
