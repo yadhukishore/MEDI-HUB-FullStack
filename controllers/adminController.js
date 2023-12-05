@@ -193,16 +193,25 @@ exports.getAdminEdit = async (req, res) => {
   });
  }
 
- exports.getUserList = async (req, res) => {
-  try {
-    // Fetch all users from the database
-    const users = await User.find();
 
-    // Render the userList view and pass the users data
-    res.render('admin/userList', { users });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).send('Internal Server Error');
+ exports.getUserList = async (req, res) => {
+  // Check if the user is logged in and is an admin
+  if (req.session.user && req.session.user.isAdmin) {
+    try {
+      // Fetch all users from the database
+      const users = await User.find();
+
+      // Render the userList view and pass the users data
+      res.render('admin/userList', { users });
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      // res.status(500).send('Internal Server Error');
+      res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
+
+    }
+  } else {
+    // Redirect to the login page if the user is not an admin
+    res.redirect('/admin/admin_login');
   }
 };
 
@@ -214,13 +223,16 @@ exports.blockUser = async (req, res) => {
 
     if (!user) {
       // Handle the case where the user is not found
-      return res.status(404).send('User not found');
+      // return res.status(404).send('User not found');
+      res.render('/admin/userList',{error:' User not found!'})
     }
 
     res.redirect('/admin/userList');
   } catch (error) {
     console.error('Error blocking user:', error);
-    res.status(500).send('Internal Server Error');
+    // res.status(500).send('Internal Server Error');
+    res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
+
   }
 };
 
@@ -232,13 +244,15 @@ exports.unblockUser = async (req, res) => {
 
     if (!user) {
       // Handle the case where the user is not found
-      return res.status(404).send('User not found');
+      // return res.status(404).send('User not found');
+      res.render('/admin/userList',{error:' User not found!'})
     }
 
     res.redirect('/admin/userList');
   } catch (error) {
     console.error('Error unblocking user:', error);
-    res.status(500).send('Internal Server Error');
+    // res.status(500).send('Internal Server Error');
+    res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
   }
 };
 
@@ -277,6 +291,32 @@ exports.postAdminAddUser = async (req, res) => {
     res.redirect('/admin/userList'); // Redirect to the user list page
   } catch (error) {
     console.error('Error adding user:', error);
-    res.status(500).send('Internal Server Error');
+    // res.status(500).send('Internal Server Error');
+    res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
+  }
+};
+
+
+
+exports.getCategoryList = async (req, res) => {
+  // Check if the user is logged in and is an admin
+  if (req.session.user && req.session.user.isAdmin) {
+    try {
+      // Fetch distinct categories from the products in the database
+      const categories = await Product.distinct('category');
+
+      // Fetch all products from the database
+      const products = await Product.find();
+
+      // Render the category list view with the fetched categories and products
+      res.render('admin/category_list', { categories, products });
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      // res.status(500).send('Internal Server Error');
+      res.render('admin/category_list',{error:'Internal Server Error. Please try again Later!'})
+    }
+  } else {
+    // Redirect to the login page if the user is not an admin
+    res.redirect('/admin/admin_login');
   }
 };

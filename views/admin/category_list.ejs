@@ -1,11 +1,10 @@
-<!-- views/admin/admin_panel.ejs -->
+<!-- category_list.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to the Admin Panel</title>
+    <title>Category List</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -24,6 +23,10 @@
             background-color: #333;
             padding: 20px;
             color: white;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         #content {
@@ -32,7 +35,7 @@
         }
 
         nav img {
-            height: 50px; /* Set the desired height for your logo */
+            height: 50px;
         }
 
         nav button {
@@ -45,16 +48,12 @@
         }
 
         .container {
-            margin-top: 20px; /* Add space between the navigation bar and content */
-        }
-
-        .add-product-button {
-            margin-bottom: 20px; /* Add space below the "Add Product" button */
+            margin-top: 20px;
         }
 
         table {
             width: 100%;
-            margin-bottom: 20px; /* Add space below the table */
+            margin-top: 20px;
         }
 
         th, td {
@@ -70,7 +69,7 @@
 
         .navbar {
             position: sticky;
-            top: 1;
+            top: 0;
             z-index: 1000;
             margin-left: -20px;
             margin-right: -20px;
@@ -78,23 +77,12 @@
         }
 
         .navbar-brand {
-            margin-right: 0; /* Remove default margin for the brand */
+            margin-right: 0;
         }
 
         .sidebar-link {
-            font-size: 18px; /* Adjust the font size as needed */
-            font-weight: bold; /* Optional: Add bold styling */
-            /* Add any additional styling properties as needed */
-        }
-        #sidebar {
-            min-width: 250px;
-            background-color: #333;
-            padding: 20px;
-            color: white;
-            position: sticky;
-            top: 0;
-            height: 100vh; /* Set a fixed height for the sidebar */
-            overflow-y: auto; /* Add scroll if content exceeds the height */
+            font-size: 18px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -104,60 +92,50 @@
         <div id="sidebar">
             <h2>Admin Panel</h2>
             <hr style="border-top: 1px solid white; width: 100%;">
-            <!-- Users link in the sidebar -->
-            <a href="/admin/userList" class="btn btn-info mb-3 sidebar-link">Users List</a><br>
-
-          <hr style="border-top: 1px solid white; width: 100%;">
-            <a href="/admin" class="btn btn-warning mb-3 sidebar-link">Product list</a><br>  <hr style="border-top: 1px solid white; width: 100%;">
-            <a href="/admin/category_list" class="btn btn-info mb-3 sidebar-link">Category List</a><br>  <hr style="border-top: 1px solid white; width: 100%;">
+            <!-- Navigation links in the sidebar -->
+            <a href="/admin/userList" class="btn btn-info mb-3 sidebar-link">Users List</a><br>  <hr style="border-top: 1px solid white; width: 100%;">
+            <a href="/admin" class="btn btn-info mb-3 sidebar-link">Product List</a><br>  <hr style="border-top: 1px solid white; width: 100%;">
+            <a href="/admin/categoryList" class="btn btn-warning mb-3 sidebar-link">Category List</a><br>  <hr style="border-top: 1px solid white; width: 100%;">
         </div>
 
         <!-- Page Content -->
         <div id="content">
+            <!-- Navbar -->
             <nav class="navbar navbar-dark bg-dark fixed-top">
                 <button class="btn btn-dark" id="sidebar-toggle">MENU</button>
-
                 <!-- Logo on the left -->
-                <img src="/public/images/logoMedi.jpg" alt="Logo">
-
+                <img src="/public/images/logoMedi.jpg" alt="LoGo">
                 <!-- Logout button on the right -->
                 <form action="/admin/logout" method="POST">
                     <button type="submit" class="btn btn-outline-light">Logout</button>
                 </form>
             </nav>
 
+            <!-- Page Content -->
             <div class="container">
-                <!-- Add Product button -->
-                <a href="/admin/add_product" class="btn btn-success add-product-button ">Add Product</a>
-
-                
-
-                <h2>Product List</h2>
+                <h1>Category List</h1>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Price</th>
                             <th>Category</th>
-                            <th>Image</th> 
+                            <th>Product Name</th>
                             <th>Actions</th>
+                            <th>Check</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% products.forEach(product => { %>
-                            <tr>
-                                <td><%= product.name %></td>
-                                <td><%= product.description %></td>
-                                <td><%= product.price %> rs</td>
-                                <td><%= product.category %></td>
-                                <td> <% product.images.forEach(image => { %>
-                                    <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" style="max-width: 100px;">
-                                <% }); %></td>
-                                <!-- Add Edit button with a link to the edit_product route -->
-                                <td><a href="/admin/edit_product/<%= product._id %>" class="btn btn-warning">Edit</a>
-                                    <a href="/admin/delete_product/<%= product._id %>" class="btn btn-danger" onclick=" return confirm('Are you want to delete <%=product.name%> ?')">Delete</a></td>
-                            </tr>
+                        <% categories.forEach(category => { %>
+                            <% products.filter(product => product.category === category).forEach(product => { %>
+                                <tr>
+                                    <td><%= category %></td>
+                                    <td><%= product.name %></td>
+                                    <td>
+                                        <a href="/edit-product/<%= product._id %>" class="btn btn-warning">Edit</a>
+                                        <a href="/delete-product/<%= product._id %>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete <%= product.name %> ?')">Delete</a>
+                                    </td>
+                                    <td><%= product.deleted ? 'Not Listed' : 'Listed' %></td>
+                                </tr>
+                            <% }); %>
                         <% }); %>
                     </tbody>
                 </table>

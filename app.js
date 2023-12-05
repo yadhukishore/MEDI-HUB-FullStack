@@ -8,6 +8,7 @@ const User = require('./models/user');
 const Product = require('./models/product');
 const multer = require('multer');
 const upload = require('./utils/multer');
+const path = require('path');
 
 const bodyParser = require('body-parser');
 const adminController = require('./controllers/adminController');
@@ -43,6 +44,7 @@ app.use(session({
   store: store
 }));
 
+app.set('views', path.join(__dirname, 'views'));
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 
@@ -146,6 +148,7 @@ app.get('/admin/block_user/:id',adminController.blockUser);
 app.get('/admin/unblock_user/:id',adminController.unblockUser);
 app.get('/admin/add_user',adminController.getAdminAddUser);
 app.post('/admin/add_user',adminController.postAdminAddUser);
+app.get('/admin/category_list',adminController.getCategoryList);
 app.get('/search',productController.searchProducts)
 // Fetch Products from the Database
 app.get('/',  async (req, res) => {

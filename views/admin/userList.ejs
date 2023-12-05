@@ -1,3 +1,4 @@
+<!-- views/admin/userList.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,13 +15,24 @@
             padding: 0;
         }
 
-        nav {
+        .wrapper {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+        }
+
+        #sidebar {
+            min-width: 250px;
             background-color: #333;
-            padding: 10px;
+            padding: 20px;
             color: white;
+            position: sticky;
+            top: 0;
+            height: 100vh; /* Set a fixed height for the sidebar */
+            overflow-y: auto; /* Add scroll if content exceeds the height */
+        }
+
+        #content {
+            flex-grow: 1;
+            padding: 20px;
         }
 
         nav img {
@@ -59,68 +71,98 @@
             background-color: #4CAF50;
             color: white;
         }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-top: -20px;
+        }
+
+        .navbar-brand {
+            margin-right: 0; /* Remove default margin for the brand */
+        }
+
+        .sidebar-link {
+            font-size: 18px; /* Adjust the font size as needed */
+            font-weight: bold; /* Optional: Add bold styling */
+            /* Add any additional styling properties as needed */
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <!-- Logo on the left -->
-        <img src="/public/images/logoMedi.jpg" alt="LoGo">
-          <!-- User link with dropdown -->
-          <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle btn btn-info" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Products
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <!-- Insert the link to the users' list page -->
-                <a class="dropdown-item" href="/admin">View all the produts</a>
-            </div>
+
+    
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <h2>Admin Panel</h2>
+            <hr style="border-top: 1px solid white; width: 100%;">
+            <!-- Users link in the sidebar -->
+            <a href="/admin/userList" class="btn btn-warning mb-3 sidebar-link">Users List</a><br>
+            <hr style="border-top: 1px solid white; width: 100%;">
+            <a href="/admin" class="btn btn-info mb-3 sidebar-link">Product list</a><br>  <hr style="border-top: 1px solid white; width: 100%;">
+            <a href="/admin/category_list" class="btn btn-info mb-3 sidebar-link">Category List</a><br>  <hr style="border-top: 1px solid white; width: 100%;">
         </div>
 
-        <!-- Logout button on the right -->
-        <form action="/admin/logout" method="POST">
-            <button type="submit" class="btn btn-outline-light">Logout</button>
-        </form>
-    </nav>
+        <!-- Page Content -->
+        <div id="content">
+            <nav class="navbar navbar-dark bg-dark fixed-top">
+                <button class="btn btn-dark" id="sidebar-toggle">MENU</button>
+                <!-- Logo on the left -->
+                <img src="/public/images/logoMedi.jpg" alt="LoGo">
+                <!-- Logout button on the right -->
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="btn btn-outline-light">Logout</button>
+                </form>
+            </nav>
 
-    <div class="container">
-      <!-- Update the Add User button -->
-<a href="/admin/add_user" class="btn btn-success add-product-button">Add User</a>
+            <!-- Update the Add User button -->
+            <a href="/admin/add_user" class="btn btn-success add-product-button">Add User</a>
 
-
-        <h1>Welcome to the Admin Panel!</h1>
-
-        <h2>Users List</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Blocked</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% users.forEach(user => { %>
-                    <tr>
-                        <td><%= user.username %></td>
-                        <td><%= user.email %></td>
-                        <td><%= user.blocked ? 'Blocked' : 'Active' %></td>
-                        <td>
-                            <% if (user.blocked) { %>
-                                <a href="/admin/unblock_user/<%= user._id %>" class="btn btn-success">Unblock</a>
-                            <% } else { %>
-                                <a href="/admin/block_user/<%= user._id %>" class="btn btn-danger">Block</a>
-                            <% } %>
-                        </td>
-                    </tr>
-                <% }); %>
-            </tbody>
-        </table>
+            <div class="container">
+                <h2>Users List</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Blocked</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(user => { %>
+                            <tr>
+                                <td><%= user.username %></td>
+                                <td><%= user.email %></td>
+                                <td><%= user.blocked ? 'Blocked' : 'Active' %></td>
+                                <td>
+                                    <% if (user.blocked) { %>
+                                        <a href="/admin/unblock_user/<%= user._id %>" class="btn btn-success">Unblock</a>
+                                    <% } else { %>
+                                        <a href="/admin/block_user/<%= user._id %>" class="btn btn-danger">Block</a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Include Bootstrap JS and Popper.js (required for Bootstrap dropdowns) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $("#sidebar-toggle").click(function() {
+            $("#sidebar").toggle();
+        });
+    </script>
 </body>
 </html>
