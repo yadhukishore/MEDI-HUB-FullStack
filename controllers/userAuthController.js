@@ -26,30 +26,25 @@ exports.getForgotPassword = (req, res) => {
 
 exports.postForgotPassword = async (req, res) => {
   try {
-    // Check if the user with the provided email exists in the database
+
     const existingUser = await User.findOne({ email: req.body.email });
 
     if (!existingUser) {
-      // If the user does not exist, return an error
+
       console.log('User not found');
       req.flash('error', 'User not found');
       return res.redirect('/forgot_password');
     }
 
-    // Generate a random 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
 
-    // Set OTP expiration time to 5 minutes (300 seconds)
     const otpExpiration = Date.now() + 300000;
 
-    // Update the user's OTP and OTP expiration time in the database
     const user = await User.findOneAndUpdate(
       { email: req.body.email },
       { $set: { otp, otpExpiration } },
       { new: true, upsert: true }
     );
-
-    // Send the OTP to the user's email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: req.body.email,
@@ -76,31 +71,25 @@ exports.postForgotPassword = async (req, res) => {
 
  exports.getVerifyOTP=(req,res)=>{
     const email = req.query.email;
-    const error = req.query.error; // Assuming you handle errors with a query parameter
+    const error = req.query.error; 
     res.render('verify_otp', { email, error });
  }
 
  exports.postVerifyOTP=async(req,res)=>{
     try {
         const { email, otp } = req.body;
-    
-        // Find the user by email
         const user = await User.findOne({ email });
     
         if (user) {
-          // Check if the provided OTP matches the stored OTP
           if (user.otp === otp) {
             console.log('OTP Matched!');
-            // Redirect to the reset password page
             res.redirect(`/reset_password/${email}`);
           } else {
             console.log('Invalid OTP');
-            // Invalid OTP, redirect to the verification page with an error message
             res.render('verify_otp', { email, error: 'Invalid OTP. Please try again.' });
           }
         } else {
           console.log('User not found');
-          // User not found, redirect to the verification page with an error message
           res.render('verify_otp', { email, error: 'User not found. Please try again.' });
         }
       } catch (error) {
@@ -113,20 +102,16 @@ exports.postResendOTP = async (req, res) => {
   try {
       const email = req.body.email;
 
-      // Generate a new random 6-digit OTP
       const newOtp = Math.floor(100000 + Math.random() * 900000);
 
-      // Set OTP expiration time to 5 minutes (300 seconds)
       const otpExpiration = Date.now() + 300000;
 
-      // Update the user's OTP and OTP expiration time in the database
       const user = await User.findOneAndUpdate(
           { email },
           { $set: { otp: newOtp, otpExpiration } },
           { new: true }
       );
 
-      // Send the new OTP to the user's email
       const mailOptions = {
           from: process.env.EMAIL_USER,
           to: email,
@@ -140,7 +125,6 @@ exports.postResendOTP = async (req, res) => {
               res.render('verify_otp', { email, error: 'Error sending OTP. Please try again.' });
           } else {
               console.log('Email sent:', info.response);
-              // Redirect to the same verification page with a success message
               res.redirect(`/verify_otp?email=${email}&success=Resend successful`);
           }
       });
@@ -201,37 +185,28 @@ exports.getSignup = (req, res) => {
   res.render('signup', { error });
 };
 
-// Signup with OTP generation and verification
 exports.postSignup = async (req, res) => {
   const { email, username, password } = req.body;
 
   try {
-    // Check if the user already exists in the database
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      // User with the provided email already exists
       req.flash('error', 'User with this email already exists!');
       return res.redirect('/signup');
     }
 
-    // Validate the password
     if (!isValidPassword(password)) {
-      // Password does not meet the requirements
       req.flash('error', 'Poor Password. Password must be strong and not contain spaces.');
       return res.redirect('/signup');
     }
 
-    // Generate a random 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
 
-    // Set OTP expiration time to 5 minutes (300 seconds)
     const otpExpiration = Date.now() + 300000;
 
-    // Hash the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user with the provided details
     const newUser = new User({
       email,
       username,
@@ -240,7 +215,6 @@ exports.postSignup = async (req, res) => {
       otpExpiration,
     });
 
-    // Save the user to the database
     await newUser.save();
 
     // Send the OTP to the user's email (similar to forgot password logic)
@@ -258,7 +232,6 @@ exports.postSignup = async (req, res) => {
         return res.redirect('/signup');
       } else {
         console.log('Email sent:', info.response);
-        // Redirect to the OTP verification page
         res.redirect(`/verify_otp?email=${email}`);
       }
     });
@@ -285,7 +258,7 @@ exports.postUserLogin = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user) {
-      // Check if the user is blocked
+
       if (user.blocked) {
         req.flash('error', 'Your account is blocked. Please contact the administrator for assistance!!!');
         return res.redirect('/login');
@@ -301,10 +274,8 @@ exports.postUserLogin = async (req, res) => {
         res.redirect('/login');
       }
     } else {
-      // User not found
       req.flash('error', 'User not found');
-      res.redirect('/login');
-      // You can customize the error message or handle it in the frontend accordingly
+      res.redirect('/login');y
     }
   } catch (error) {
     console.error('Error logging in:', error);

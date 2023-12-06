@@ -15,7 +15,7 @@ const bodyParser = require('body-parser');
 const adminController = require('./controllers/adminController');
 const userAuthController = require('./controllers/userAuthController');
 const  productController  = require('./controllers/productController');
-
+const  userCartController = require('./controllers/userCartController');
 
 
 
@@ -161,10 +161,10 @@ app.get('/',  async (req, res) => {
     res.redirect('/login');
   }
 })
-// Add a new route for displaying multiple images and product details
+
 app.get('/product/:productId',productController.getProduct )
-
-
+app.get('/add-to-cart/:productId',userCartController.addToCart)
+app.get('/userCart',userCartController.getUserCart)
 
 
 

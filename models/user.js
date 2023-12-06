@@ -22,13 +22,24 @@ const userSchema = new mongoose.Schema({
   otp: {
     type: String,
     default: null,
-    
   },
   otpExpiration: Date,
   blocked: {
     type: Boolean,
     default: false,
   },
+  cart: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+      },
+      quantity: {
+        type: Number,
+        default: 1
+      }
+    }
+  ]
 });
 
 userSchema.methods.toJSON = function () {

@@ -1,0 +1,42 @@
+<!-- userNavbar.ejs -->
+<nav class="navbar navbar-dark bg-dark">
+    <!-- Logo on the left -->
+    <img src="/public/images/logoMedi.jpg" alt="LoGo">
+
+    <!-- Centered Search Form with Icon -->
+    <div class="mx-auto">
+        <form class="form-inline my-2 my-lg-0 ml-auto" action="/search" method="GET" style="width: 600px;">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search Products and Categories" aria-label="Search" name="query" style="width: 80%;">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+                <i class="material-icons">search</i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Cart icon on the right -->
+    <div class="ml-auto">
+        <!-- Add your cart icon here -->
+        <!-- For example, using Bootstrap's badge and cart icon -->
+        <a href="/userCart" class="btn btn-dark">
+            <i class="material-icons">shopping_cart</i>
+            <!-- You can also display the number of items in the cart using a badge -->
+            <!-- Example: <span class="badge badge-danger">3</span> -->
+        </a>
+    </div>
+
+    <!-- Login button or user name on the right -->
+    <% if (user) { %>
+        <div class="user-dropdown">
+            <button class="btn btn-success" onclick="toggleDropdown()">Welcome, <%= user.username %>!</button>
+            <div id="dropdown-content">
+                <a href="/userCart" class="btn">Cart</a> <!-- Add cart link here -->
+                <form action="/logout" method="POST">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
+        </div>
+    <% } else { %>
+        <button class="btn btn-outline-success" onclick="window.location.href='/login'">Login/Register</button>
+    <% } %>
+</nav>

@@ -108,40 +108,9 @@
     </script>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <!-- Logo on the left -->
-        <img src="/public/images/logoMedi.jpg" alt="LoGo">
- <!-- Centered Search Form with Icon -->
- <div class="mx-auto">
-    <form class="form-inline my-2 my-lg-0 ml-auto" action="/search" method="GET" style="width: 600px;">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search Products and Categories" aria-label="Search" name="query" style="width: 80%;">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-                    <i class="material-icons">search</i>
-                </button>
-            </div>
-        </div>
-    </form>
-</div>
+    <!-- nav bar -->
+   <%- include("../views/partials/userNavbar.ejs") %>
 
-
-
-
-        <!-- Login button or user name on the right -->
-        <% if (user) { %>
-            <div class="user-dropdown">
-                <button class="btn btn-success" onclick="toggleDropdown()">Welcome, <%= user.username %>!</button>
-                <div id="dropdown-content">
-                    <form action="/logout" method="POST">
-                        <button>Cart</button>
-                        <button type="submit" class="btn btn-danger">Logout</button>
-                    </form>
-                </div>
-            </div>
-        <% } else { %>
-            <button class="btn btn-outline-success" onclick="window.location.href='/login'">Login/Register</button>
-        <% } %>
-    </nav>
     <div class="container">
         <div class="row">
           <!-- Loop through products and create Bootstrap cards -->
@@ -161,9 +130,9 @@
                   <h5 class="card-title"><%= product.name %></h5>
                   <!-- <p class="card-text"><%= product.description %></p> -->
                   <p class="card-text" style="color: rgb(7, 182, 123);">Category: <%= product.category %> </p>
-                  <p class="card-text">Price: <strong><%= product.price %> rs</strong></p>
+                  <p class="card-text"> &#8377<strong><%= product.price %> </strong></p>
 
-                 
+                  <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning">Add to Cart</a>
                 </div>
               </div>
             </div>
