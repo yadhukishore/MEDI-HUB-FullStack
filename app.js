@@ -1,5 +1,6 @@
 // Import required modules
 const express = require('express');
+const flash = require('express-flash');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongodb-session')(session);
@@ -43,7 +44,7 @@ app.use(session({
   saveUninitialized: false,
   store: store
 }));
-
+app.use(flash());
 app.set('views', path.join(__dirname, 'views'));
 // Set EJS as the view engine
 app.set('view engine', 'ejs');

@@ -7,67 +7,72 @@ const  isValidPassword  = require('../utils/passwordValid');
 
 //for otp////
 // Nodemailer configuration
+require('dotenv').config();
+
+// Nodemailer configuration
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'arjunreddy8921@gmail.com',
-        pass: 'jsds kafa dwcu mfce'
-    }
-  });
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
   
-
+// forgot_password
 exports.getForgotPassword = (req, res) => {
-  const error =req.query.error;
+  const error = req.flash('error');
+  res.render('forgot_password', { error });
+};
 
-    res.render('forgot_password',{error});
-  };
+exports.postForgotPassword = async (req, res) => {
+  try {
+    // Check if the user with the provided email exists in the database
+    const existingUser = await User.findOne({ email: req.body.email });
 
- exports.postForgotPassword=async(req,res)=>{
-    try {
-        // Check if the user with the provided email exists in the database
-        const existingUser = await User.findOne({ email: req.body.email });
-    
-        if (!existingUser) {
-          // If the user does not exist, return an error
-          console.log('User not found');
-          return res.render('forgot_password',{error:'User not found'})
-        }
-    
-        // Generate a random 6-digit OTP
-        const otp = Math.floor(100000 + Math.random() * 900000);
-    
-        // Set OTP expiration time to 5 minutes (300 seconds)
-        const otpExpiration = Date.now() + 300000;
-    
-        // Update the user's OTP and OTP expiration time in the database
-        const user = await User.findOneAndUpdate(
-          { email: req.body.email },
-          { $set: { otp, otpExpiration } },
-          { new: true, upsert: true }
-        );
-    
-        // Send the OTP to the user's email
-        const mailOptions = {
-          from: 'arjunreddy8921@gmail.com',
-          to: req.body.email,
-          subject: 'Reset Your Password',
-          text: `Your OTP for resetting the password is ${otp}. Please use it to reset your password.`
-        };
-    
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.log('Error sending email:', error);
-            res.render('forgot_password',{error:'Internal Server Error. Please try again Later!'})
-          } else {
-            console.log('Email sent:', info.response);
-            res.redirect(`/verify_otp?email=${req.body.email}`);
-          }
-        });
-      } catch (error) {
-        console.error('Error in forgot password:', error);
-        res.render('forgot_password',{error:' Server faild! Please try again Later!'})
+    if (!existingUser) {
+      // If the user does not exist, return an error
+      console.log('User not found');
+      req.flash('error', 'User not found');
+      return res.redirect('/forgot_password');
+    }
+
+    // Generate a random 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    // Set OTP expiration time to 5 minutes (300 seconds)
+    const otpExpiration = Date.now() + 300000;
+
+    // Update the user's OTP and OTP expiration time in the database
+    const user = await User.findOneAndUpdate(
+      { email: req.body.email },
+      { $set: { otp, otpExpiration } },
+      { new: true, upsert: true }
+    );
+
+    // Send the OTP to the user's email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: req.body.email,
+      subject: 'Reset Your Password',
+      text: `Your OTP for resetting the password is ${otp}. Please use it to reset your password.`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Error sending email:', error);
+        req.flash('error', 'Internal Server Error. Please try again later!');
+        res.redirect('/forgot_password');
+      } else {
+        console.log('Email sent:', info.response);
+        res.redirect(`/verify_otp?email=${req.body.email}`);
       }
- } 
+    });
+  } catch (error) {
+    console.error('Error in forgot password:', error);
+    req.flash('error', 'Server failed! Please try again later!');
+    res.redirect('/forgot_password');
+  }
+};
 
  exports.getVerifyOTP=(req,res)=>{
     const email = req.query.email;
@@ -123,7 +128,7 @@ exports.postResendOTP = async (req, res) => {
 
       // Send the new OTP to the user's email
       const mailOptions = {
-          from: 'arjunreddy8921@gmail.com',
+          from: process.env.EMAIL_USER,
           to: email,
           subject: 'Resend OTP',
           text: `Your new OTP for verification is ${newOtp}. Please use it to verify your account.`
@@ -144,71 +149,61 @@ exports.postResendOTP = async (req, res) => {
       res.status(500).send('Internal Server Error');
   }
 }
- exports.getResetPassword=(req,res)=>{
-    const email = req.params.email;
-    const error = req.query.error;
-    res.render('reset_password', { email, error}); // Passing 'error' with a default value of null
- };
+//reset_password
+exports.getResetPassword = (req, res) => {
+  const email = req.params.email;
+  const error = req.flash('error');
+  res.render('reset_password', { email, error }); 
+};
 
- exports.postResetPassword = async (req, res) => {
+exports.postResetPassword = async (req, res) => {
   try {
-      const email = req.params.email;
-      const { newPassword, confirmPassword } = req.body;
+    const email = req.params.email;
+    const { newPassword, confirmPassword } = req.body;
 
-      // Validate the password
-      if (!isValidPassword(newPassword)) {
-          // Password does not meet the requirements
-          return res.render('reset_password', { email, error: 'Poor Password. Password must be strong and not contain spaces.' });
-      }
+    if (!isValidPassword(newPassword)) {
+      req.flash('error', 'Poor Password. Password must be strong and not contain spaces.');
+      return res.redirect(`/reset_password/${email}`);
+    }
 
-      // Validate that the passwords match
-      if (newPassword !== confirmPassword) {
-          const error = 'Passwords do not match';
-          console.log(error); // Log the error to the console
-          return res.render('reset_password', {
-              email,
-              error
-          });
-      }
+    if (newPassword !== confirmPassword) {
+      req.flash('error', 'Passwords do not match');
+      return res.redirect(`/reset_password/${email}`);
+    }
 
-      // Hash the new password before storing it in the database
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-      // Update the user's password in the database
-      const user = await User.findOneAndUpdate(
-          { email },
-          { $set: { password: hashedPassword } },
-          { new: true }
-      );
+    const user = await User.findOneAndUpdate(
+      { email },
+      { $set: { password: hashedPassword } },
+      { new: true }
+    );
 
-      if (!user) {
-          const error = 'User not found';
-          console.log(error); // Log the error to the console
-          return res.render('reset_password', {
-              email,
-              error
-          });
-      }
+    if (!user) {
+      req.flash('error', 'User not found');
+      return res.redirect(`/reset_password/${email}`);
+    }
 
-      console.log('Password updated successfully:', hashedPassword); // Log the updated password to the console
-
-      // Redirect to a success page or login page
-      res.redirect('/login');
+    console.log('Password updated successfully:', hashedPassword); 
+    res.redirect('/login');
   } catch (error) {
-      console.error('Error in resetting password:', error);
-      res.status(500).send('Internal Server Error');
+    console.error('Error in resetting password:', error);
+    req.flash('error', 'Internal Server Error');
+    res.redirect(`/reset_password/${email}`);
   }
 };
 
+
  //signup
 
- exports.getSignup=(req,res)=>{
-  const error = req.query.error;
+exports.getSignup = (req, res) => {
+  const error = req.flash('error');
   res.render('signup', { error });
- }
-// Signup  with OTP generation and verification
- exports.postSignup=async(req,res)=>{
-    const { email, username, password } = req.body;
+};
+
+// Signup with OTP generation and verification
+exports.postSignup = async (req, res) => {
+  const { email, username, password } = req.body;
 
   try {
     // Check if the user already exists in the database
@@ -216,13 +211,17 @@ exports.postResendOTP = async (req, res) => {
 
     if (userExists) {
       // User with the provided email already exists
-      return res.render('signup',{error:'User with this email already exists!'});
+      req.flash('error', 'User with this email already exists!');
+      return res.redirect('/signup');
     }
- // Validate the password
- if (!isValidPassword(password)) {
-  // Password does not meet the requirements
-  return res.render('signup', { error: 'Poor Password. Password must be strong and not contain spaces.' });
-}
+
+    // Validate the password
+    if (!isValidPassword(password)) {
+      // Password does not meet the requirements
+      req.flash('error', 'Poor Password. Password must be strong and not contain spaces.');
+      return res.redirect('/signup');
+    }
+
     // Generate a random 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
 
@@ -246,7 +245,7 @@ exports.postResendOTP = async (req, res) => {
 
     // Send the OTP to the user's email (similar to forgot password logic)
     const mailOptions = {
-      from: 'arjunreddy8921@gmail.com',
+      from: process.env.EMAIL_USER,
       to: email,
       subject: 'OTP for Account Verification',
       text: `Your OTP for account verification is ${otp}. Please use it to verify your account.`,
@@ -255,7 +254,8 @@ exports.postResendOTP = async (req, res) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log('Error sending email:', error);
-        return res.render('signup', { error: 'Error sending verification email. Please try again.' });
+        req.flash('error', 'Error sending verification email. Please try again.');
+        return res.redirect('/signup');
       } else {
         console.log('Email sent:', info.response);
         // Redirect to the OTP verification page
@@ -264,52 +264,54 @@ exports.postResendOTP = async (req, res) => {
     });
   } catch (error) {
     console.error('Error signing up:', error);
-    res.render('signup', { error: 'Internal Server Error. Please try again later.' });
+    req.flash('error', 'Internal Server Error. Please try again later.');
+    res.redirect('/signup');
   }
- }
+};
 
- exports.getUserLogin=(req,res)=>{
-  if(req.session.user){
-    res.redirect('/')
-  }else{
-    res.render('login', { error: req.query.error });
+ exports.getUserLogin = (req, res) => {
+  if (req.session.user) {
+    res.redirect('/');
+  } else {
+    const errorMessage = req.flash('error'); 
+    res.render('login', { error: errorMessage });
   }
- }
- exports.postUserLogin = async (req, res) => {
-    const { email, password } = req.body;
-  
-    try {
-      const user = await User.findOne({ email });
-  
-      if (user) {
-        // Check if the user is blocked
-        if (user.blocked) {
-          return res.render('login',{error:" Your account is blocked. Please contact the administrator for assistance!!!"})
-          // You can customize the error message or handle it in the frontend accordingly
-        }
-  
-        // Proceed with password verification
-        const passwordMatch = await bcrypt.compare(password, user.password);
-  
-        if (passwordMatch) {
-          // User login successful
-          req.session.user = user; // Store user in session
-          res.redirect('/');
-        } else {
-          // Invalid password
-          res.redirect('/login?error=invalid password or email ');
-          // You can customize the error message or handle it in the frontend accordingly
-        }
-      } else {
-        // User not found
-        res.redirect('/login?error=notfound');
-        // You can customize the error message or handle it in the frontend accordingly
+};
+
+exports.postUserLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (user) {
+      // Check if the user is blocked
+      if (user.blocked) {
+        req.flash('error', 'Your account is blocked. Please contact the administrator for assistance!!!');
+        return res.redirect('/login');
       }
-    } catch (error) {
-      console.error('Error logging in:', error);
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+      if (passwordMatch) {
+        req.session.user = user; 
+        res.redirect('/');
+      } else {
+       
+        req.flash('error', 'Invalid password or email');
+        res.redirect('/login');
+      }
+    } else {
+      // User not found
+      req.flash('error', 'User not found');
       res.redirect('/login');
+      // You can customize the error message or handle it in the frontend accordingly
     }
-  };
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.redirect('/login');
+  }
+};
+
 
  exports.postUserLogout=(req,res)=>{
     req.session.destroy((err) => {
