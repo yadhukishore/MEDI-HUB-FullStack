@@ -1,0 +1,221 @@
+<!-- userAddress.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Address Detail </title>
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #dfede0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+
+        nav img {
+            height: 50px;
+            width: 80px; 
+        }
+
+        .login-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-button-not-logged-in {
+            border: 2px solid #4CAF50;
+            background-color: white;
+            color: #4CAF50;
+        }
+
+        .user-dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        #dropdown-content button {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            background-color: #f9f9f9;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .address-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .address-item {
+            margin-bottom: 10px;
+        }
+
+        .add-address-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .add-address-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .default-address-dot {
+        width: 10px;
+        height: 10px;
+        background-color: #4CAF50;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .sidebar {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+           
+            height: 100vh;
+           
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px ;
+            padding-left: 25px;
+            padding-right: 45px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #333;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        
+        .main-content {
+            margin-left: 250px; /* Adjust this margin based on your sidebar width */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- nav bar -->
+    <%- include("../partials/userNavbar.ejs") %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <a href="/userAccount">Account Details</a>
+                    <a href="/userAddress">Addresses</a>
+                    <a href="#">Orders</a>
+                </div>
+            </div>
+            <div class="col-md-9">
+    <div class="container">
+        <h2>Your Account</h2>
+
+      <!-- Address Container -->
+<div class="address-container">
+    <% if (user && user.addresses && user.addresses.length > 0) { %>
+        <% user.addresses.forEach((address, index) => { %>
+            <div class="address-item">
+                <% if (address.isDefault) { %>
+                    <span class="default-address-dot"></span>
+                <% } %>
+                <strong>Address <%= index + 1 %>:</strong>
+                <p> <%= address.fullAddress %></p>
+                <p><%= address.landmark %></p>
+                <p><%= address.state %>,<%= address.city %>, <strong><%= address.pincode %></strong></p>
+                
+                <!-- Edit Button -->
+                <a href="/userAddress/editAddress/<%= address._id %>" class="btn btn-info btn-sm">Edit</a>
+
+
+                <!-- Delete Button -->
+                <form action="/userAddress/deleteAddress/<%= address._id %>" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+                
+                <hr>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <p>No addresses found.</p>
+    <% } %>
+</div>
+</div>
+
+
+
+<!-- Add Address Button -->
+<div class="add-address-container">
+    <h3>Add Address</h3>
+    <a href="/add_address" class="btn btn-primary">Add Address</a>
+</div>
+    <!-- Optional: Add Bootstrap JS and Popper.js for Bootstrap functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

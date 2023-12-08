@@ -1,8 +1,9 @@
 <!-- userNavbar.ejs -->
 <nav class="navbar navbar-dark bg-dark">
     <!-- Logo on the left -->
-    <img src="/public/images/logoMedi.jpg" alt="LoGo">
-
+    <a href="/">
+    <img  src="/public/images/logoMedi.jpg" alt="LoGo" >
+</a>
     <!-- Centered Search Form with Icon -->
     <div class="mx-auto">
         <form class="form-inline my-2 my-lg-0 ml-auto" action="/search" method="GET" style="width: 600px;">
@@ -20,8 +21,11 @@
         <!-- For example, using Bootstrap's badge and cart icon -->
         <a href="/userCart" class="btn btn-dark">
             <i class="material-icons">shopping_cart</i>
-            <!-- You can also display the number of items in the cart using a badge -->
-            <!-- Example: <span class="badge badge-danger">3</span> -->
+            <!-- Display the number of items in the cart using a badge -->
+        <% if (user && user.cart && user.cart.length > 0) { %>
+          
+            <span class="badge badge-info"><%= user.cart.length %></span>
+        <% } %>
         </a>
     </div>
 
@@ -30,7 +34,8 @@
         <div class="user-dropdown">
             <button class="btn btn-success" onclick="toggleDropdown()">Welcome, <%= user.username %>!</button>
             <div id="dropdown-content">
-                <a href="/userCart" class="btn">Cart</a> <!-- Add cart link here -->
+                <a href="/userCart" class="btn">Cart</a> <br>
+                <a href="/userAccount" class="btn">Your Profile</a>
                 <form action="/logout" method="POST">
                     <button type="submit" class="btn btn-danger">Logout</button>
                 </form>
@@ -39,4 +44,11 @@
     <% } else { %>
         <button class="btn btn-outline-success" onclick="window.location.href='/login'">Login/Register</button>
     <% } %>
+
+    <script>
+        function toggleDropdown() {
+            const dropdownContent = document.getElementById('dropdown-content');
+            dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
 </nav>

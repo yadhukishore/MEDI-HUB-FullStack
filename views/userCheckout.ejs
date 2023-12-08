@@ -1,0 +1,185 @@
+<!-- userCheckout.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Checkout Page </title>
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #dfede0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+
+        nav img {
+            height: 50px;
+            width: 80px; 
+        }
+
+        .login-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-button-not-logged-in {
+            border: 2px solid #4CAF50;
+            background-color: white;
+            color: #4CAF50;
+        }
+
+        .user-dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        #dropdown-content button {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            background-color: #f9f9f9;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .container-box {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 40px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+        .payment-method-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payment-method-radio {
+            margin-right: 10px;
+        }
+    </style>
+ 
+    <script>
+        function toggleDropdown() {
+            const dropdownContent = document.getElementById('dropdown-content');
+            dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</head>
+<body>
+    <!-- nav bar -->
+    <%- include("../views/partials/userNavbar.ejs") %>
+    <div class="container">
+        <div class="row">
+            <!-- Left Column: User Information and Addresses -->
+            <div class="col-md-6">
+                <div class="container-box">
+                    <h4>User Information</h4><hr>
+                    <p>Username: <span style="color: blue;"><%= user.username %></span></p>
+                    <p>Email: <span style="color: blue;"><%= user.email %></span></p>
+                </div>
+
+                <div class="container-box">
+                    <h4>Addresses</h4><hr>
+                    <form method="post" action="/saveDefaultAddress">
+                        <!-- Loop through user's addresses and display them -->
+                        <% if (user.addresses && user.addresses.length > 0) { %>
+                            <% user.addresses.forEach((address, index) => { %>
+                                <div>
+                                    <!-- Display address details -->
+                                    <p><%= address.fullAddress %></p>
+                                    <p><%= address.landmark %></p>
+                                    <p><%= address.state %>, <%= address.city %>, <strong><%= address.pincode %></strong></p>
+                
+                                    <!-- Radio button to set address as default -->
+                                    <input type="radio" id="defaultAddress_<%= index %>" name="defaultAddress" <% if (address.isDefault) { %>checked<% } %> value="<%= address._id %>">
+                                    <label for="defaultAddress_<%= index %>">Set as Default Address</label><br>
+                
+                                    <!-- Edit address button -->
+                                    <a href="/userAddress/editAddress/<%= address._id %>" class="btn btn-primary">Edit Address</a>
+                                </div>
+                                <hr>
+                            <% }); %>
+                        <% } else { %>
+                            <p>No addresses added. Add a new address.</p>
+                        <% } %>
+                        <button type="submit" class="btn btn-secondary float-right">Save Default Address</button>
+                    </form>
+                    <a href="/add_address" class="btn btn-success">Add Address+</a>
+                </div>
+                
+                
+            </div>
+
+            <!-- Right Column: Order Summary and Select Payment Method -->
+            <div class="col-md-6">
+                <div class="container-box">
+                    <h4>Order Summary</h4><hr>
+                    <P>Shipping Fee:  <strong>Free</strong></P>
+                    <p>Total Price :   <strong> ₹ <%= totalPrice %></strong></p>
+                    <!-- Pay Now Button -->
+                    <button class="btn btn-warning btn-lg">Pay Now</button>
+                </div>
+
+                <div class="container-box">
+                    <h4>Select Payment Method</h4><hr>
+                    <!-- Use radio buttons for payment method selection -->
+                    <div class="form-check">
+                        <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="creditCard" value="creditCard" checked>
+                        <label class="form-check-label" for="creditCard">
+                            Credit Card
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="paypal" value="paypal">
+                        <label class="form-check-label" for="paypal">
+                            PayPal
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="COD" value="COD" checked>
+                        <label class="form-check-label" for="COD">
+                            Cash On Delivery
+                        </label>
+                    </div>
+                    <div>
+                        <br>
+                    <a href="" class="btn btn-info" >Proceed</a>
+                    </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

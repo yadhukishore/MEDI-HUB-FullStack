@@ -7,32 +7,76 @@ const verifyLogin = (req, res, next) => {
     if (req.session.user) {
         next();
     } else {
+        req.flash('error', 'Please log in to view your cart.');
         res.redirect('/login');
     }
 };
-
 // Render user cart page
 exports.getUserCart = [verifyLogin, async (req, res) => {
     try {
-        // Check if the user is authenticated
         if (!req.session.user) {
+            req.flash('error', 'Please log in to view your cart.');
             return res.redirect('/login');
         }
 
-        // Find the logged-in user by their session user ID and populate the cart property
+        //user variable lek userinfo um with cart-le productinfo um ketti
         const user = await User.findById(req.session.user._id).populate('cart.product');
 
-        // Log the session user ID and found user ID
         console.log('Session User ID:', req.session.user._id);
         console.log('Found User ID:', user ? user._id : 'User not found');
 
-        // Check if the user and user cart are found
+        if (!user || !user.cart) {
+            req.flash('error', 'User or user cart not found.');
+            return res.status(404).json({ message: 'User or user cart not found' });
+        }
+
+       
+        // req.flash('success', 'User cart retrieved successfully.');
+
+        res.render('userCart', { user });
+
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'Internal Server Error. Please try again later.');
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}];
+
+
+// Add product to user's cart
+exports.addToCart = [verifyLogin,async (req, res) => {
+    try {
+        if (!req.session.user) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const user = await User.findById(req.session.user._id).populate('cart.product');
+
+        console.log('Session User ID:', req.session.user._id);
+        console.log('Found User ID:', user ? user._id : 'User not found');
+
         if (!user || !user.cart) {
             return res.status(404).json({ message: 'User or user cart not found' });
         }
 
-        // Render the userCart template with the user and cart information
-        res.render('userCart', { user });
+        const productId = req.params.productId;
+
+        console.log('Product ID:', productId);
+
+        // Check if the product is already in the cart
+        const cartItem = user.cart.find(item => item.product._id.toString() === productId);
+
+        if (cartItem) {
+            cartItem.quantity += 1; 
+        } else {
+            user.cart.push({
+                product: productId,
+                quantity: 1 
+            });
+        }
+
+         await user.save();
+        res.redirect('/userCart'); 
 
     } catch (error) {
         console.error(error);
@@ -40,56 +84,102 @@ exports.getUserCart = [verifyLogin, async (req, res) => {
     }
 }];
 
-// Add product to user's cart
-exports.addToCart = async (req, res) => {
+// Remove product from user's cart
+exports.removeFromCart = [verifyLogin, async (req, res) => {
     try {
-        // Check if the user is authenticated
+
         if (!req.session.user) {
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
-        // Find the logged-in user by their session user ID and populate the cart property
         const user = await User.findById(req.session.user._id).populate('cart.product');
 
-        // Log the session user ID and found user ID
         console.log('Session User ID:', req.session.user._id);
         console.log('Found User ID:', user ? user._id : 'User not found');
 
-        // Check if the user and user cart are found
         if (!user || !user.cart) {
             return res.status(404).json({ message: 'User or user cart not found' });
         }
 
         const productId = req.params.productId;
 
-        // Log the product ID
-        console.log('Product ID:', productId);
-
-        // Check if the product is already in the cart
-        const cartItem = user.cart.find(item => item.product._id.toString() === productId);
-
-        if (cartItem) {
-            // If the product is in the cart, increment the quantity
-            cartItem.quantity += 1; // You can adjust the quantity increment as needed
-        } else {
-            // If the product is not in the cart, add a new item
-            user.cart.push({
-                product: productId,
-                quantity: 1 // You can adjust the quantity as needed
-            });
-        }
-
-        // Save the updated user document
+        user.cart = user.cart.filter(item => item.product._id.toString() !== productId);
         await user.save();
 
-        // Redirect or respond as needed
-        res.redirect('/userCart'); // Redirect to the user's cart page
+        res.redirect('/userCart'); 
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
-};
+}];
 
+exports.updateProductQuantity = [verifyLogin, async (req, res) => {
+    try {
+        const productId = req.body.productId;
+        const newQuantity = req.body.newQuantity;
 
+        await User.updateOne(
+            { _id: req.session.user._id, 'cart.product': productId },
+            { $set: { 'cart.$.quantity': newQuantity } }
+        );
+
+        res.status(200).json({ message: 'Quantity updated successfully' });
+    } catch (error) {
+        console.error('Error updating quantity:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}];
+
+exports.updateTotalPrice = [verifyLogin, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.user._id).populate('cart.product');
+
+        if (!user || !user.cart) {
+            return res.status(404).json({ message: 'User or user cart not found' });
+        }
+
+        let totalPrice = 0;
+
+        user.cart.forEach(item => {
+            totalPrice += item.product.price * item.quantity;
+        });
+
+        user.totalPrice = totalPrice;
+
+        await user.save();
+
+        res.status(200).json({ totalPrice: totalPrice });
+    } catch (error) {
+        console.error('Error updating total price:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}];
+
+exports.getUpdatedPrices = [verifyLogin, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.user._id).populate('cart.product');
+
+        if (!user || !user.cart) {
+            return res.status(404).json({ message: 'User or user cart not found' });
+        }
+
+        let totalPrice = 0;
+        let updatedPrices = [];
+
+        user.cart.forEach(item => {
+            totalPrice += item.product.price * item.quantity;
+            updatedPrices.push({ productId: item.product._id, price: item.product.price * item.quantity });
+        });
+
+        user.totalPrice = totalPrice;
+
+        await user.save();
+
+        res.status(200).json({ totalPrice: totalPrice, updatedPrices: updatedPrices });
+    } catch (error) {
+        console.error('Error fetching updated prices:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}];
 module.exports = exports;

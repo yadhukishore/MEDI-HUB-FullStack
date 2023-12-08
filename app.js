@@ -16,6 +16,8 @@ const adminController = require('./controllers/adminController');
 const userAuthController = require('./controllers/userAuthController');
 const  productController  = require('./controllers/productController');
 const  userCartController = require('./controllers/userCartController');
+const userAccController = require('./controllers/userAccController');
+const userCheckoutController =require('./controllers/userCheckoutController');
 
 
 
@@ -152,22 +154,44 @@ app.post('/admin/add_user',adminController.postAdminAddUser);
 app.get('/admin/category_list',adminController.getCategoryList);
 app.get('/search',productController.searchProducts)
 // Fetch Products from the Database
-app.get('/',  async (req, res) => {
+app.get('/', async (req, res) => {
   try {
     const products = await Product.find({ deleted: false });
-    res.render('index', { products, isAdmin: req.session.user ? req.session.user.isAdmin : false });
+
+    // Check if the user is authenticated
+    let user = null;
+    if (req.session.user) {
+      // If authenticated, fetch user information including the cart
+      user = await User.findById(req.session.user._id).populate('cart.product');
+    }
+
+    res.render('index', { products, isAdmin: req.session.user ? req.session.user.isAdmin : false, user });
   } catch (error) {
     console.error('Error fetching products:', error);
     res.redirect('/login');
   }
-})
+});
+
 
 app.get('/product/:productId',productController.getProduct )
 app.get('/add-to-cart/:productId',userCartController.addToCart)
-app.get('/userCart',userCartController.getUserCart)
+app.get('/userCart',userCartController.getUserCart);
+app.post('/update-product-quantity',userCartController.updateProductQuantity);
+app.get('/get-updated-total-price',userCartController.updateTotalPrice);
+app.get('/get-updated-prices',userCartController.getUpdatedPrices);
+app.post('/saveDefaultAddress',userCheckoutController.saveDefaultAddress);
 
-
-
+app.post('/removeFromCart/:productId', userCartController.removeFromCart);
+app.get('/userAccount',userAccController.getAccountDetails);
+app.post('/userAccount',userAccController.postAccountDetails);
+app.post('/changePassword',userAccController.postChangePassword);
+app.get('/userAddress',userAccController.getUserAddress);
+app.get('/add_address',userAccController.getAddAddress);
+app.post('/add_address',userAccController.postAddAddress);
+app.post('/userAddress/deleteAddress/:addressId',userAccController.deleteAddress);
+app.get('/userAddress/editAddress/:addressId',userAccController.getEditAddress);
+app.post('/userAddress/editAddress/:addressId',userAccController.postEditAddress);
+app.get('/userCheckout',userCheckoutController.getCheckoutPage);
 app.post('/logout', userAuthController.postUserLogout);
 
 

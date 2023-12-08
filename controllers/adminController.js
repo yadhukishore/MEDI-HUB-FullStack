@@ -64,15 +64,12 @@ exports.postAdminAddProduct = async (req, res) => {
 
     const { productName, productDescription, productPrice,productCategory } = req.body;
     
-    // Check if files are uploaded
     if (!req.files || req.files.length === 0) {
       throw new Error('No files uploaded.');
     }
 
-    // Map filenames from uploaded files
     const productImages = req.files.map(file => file.filename);
 
-    // Validate required fields
     if (!productName || !productDescription || !productPrice || !productCategory) {
       throw new Error('Please fill out all required fields.');
     }
@@ -91,7 +88,6 @@ exports.postAdminAddProduct = async (req, res) => {
       images: productImages,
     });
 
-    // Save to db
     await newProduct.save();
 
     console.log('Product saved successfully.');
@@ -113,7 +109,6 @@ exports.getAdminEdit = async (req, res) => {
     const error = req.query.error;
 
     if (!product) {
-        // Redirect to the admin panel if the product is not found
         res.redirect('/admin');
         return;
     }
@@ -131,9 +126,7 @@ exports.getAdminEdit = async (req, res) => {
     productId = req.params.id;
     const { name, description, price, category } = req.body;
 
-    // Validate the form data
     if (!name || !description || !price || !category) {
-      // Handle validation error, you can redirect to a specific page or show an error message
       res.redirect(`/admin/edit_product/${productId}?error=Please fill out all required fields.`);
       return;
     }
@@ -141,22 +134,17 @@ exports.getAdminEdit = async (req, res) => {
     if (isNaN(nonNegPrice) || nonNegPrice < 0) {
       throw new Error('Product price must be a non-negative number.');
     }
-    // Find the product by ID
     const product = await Product.findById(productId);
 
-    // Update product details
     product.name = name;
     product.description = description;
     product.price = nonNegPrice;
     product.category = category;
 
-    // Check if new images are provided
     if (req.files && req.files.length > 0) {
-      // Assuming your Product model has an 'images' field for storing multiple images
       product.images = req.files.map(file => file.filename);
     }
 
-    // Save the updated product
     await product.save();
 
     res.redirect('/admin');
@@ -195,22 +183,19 @@ exports.getAdminEdit = async (req, res) => {
 
 
  exports.getUserList = async (req, res) => {
-  // Check if the user is logged in and is an admin
+
   if (req.session.user && req.session.user.isAdmin) {
     try {
-      // Fetch all users from the database
+     
       const users = await User.find();
 
-      // Render the userList view and pass the users data
       res.render('admin/userList', { users });
     } catch (error) {
       console.error('Error fetching users:', error);
-      // res.status(500).send('Internal Server Error');
       res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
 
     }
   } else {
-    // Redirect to the login page if the user is not an admin
     res.redirect('/admin/admin_login');
   }
 };
@@ -222,15 +207,12 @@ exports.blockUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(userId, { blocked: true }, { new: true });
 
     if (!user) {
-      // Handle the case where the user is not found
-      // return res.status(404).send('User not found');
       res.render('/admin/userList',{error:' User not found!'})
     }
 
     res.redirect('/admin/userList');
   } catch (error) {
     console.error('Error blocking user:', error);
-    // res.status(500).send('Internal Server Error');
     res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
 
   }
@@ -243,15 +225,13 @@ exports.unblockUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(userId, { blocked: false }, { new: true });
 
     if (!user) {
-      // Handle the case where the user is not found
-      // return res.status(404).send('User not found');
+     
       res.render('/admin/userList',{error:' User not found!'})
     }
 
     res.redirect('/admin/userList');
   } catch (error) {
     console.error('Error unblocking user:', error);
-    // res.status(500).send('Internal Server Error');
     res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
   }
 };
@@ -265,30 +245,25 @@ exports.postAdminAddUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Validate form data (you may want to add more validation)
     if (!username || !email || !password) {
       return res.redirect('/admin/add_user');
     }
- // Check if email already exists
  const existingUser = await User.findOne({ email: req.body.email });
  if (existingUser) {
-     // Set 'email_exists' error and render the form again
      return res.render('admin/add_user', { error: 'email_exists' });
  }
-    // Hash the password before saving it
-    const hashedPassword = await bcrypt.hash(password, 10); // Adjust the salt rounds as needed
+   
+    const hashedPassword = await bcrypt.hash(password, 10); 
 
-    // Create a new user
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
     });
 
-    // Save the new user to the database
     await newUser.save();
 
-    res.redirect('/admin/userList'); // Redirect to the user list page
+    res.redirect('/admin/userList'); 
   } catch (error) {
     console.error('Error adding user:', error);
     // res.status(500).send('Internal Server Error');
@@ -299,24 +274,18 @@ exports.postAdminAddUser = async (req, res) => {
 
 
 exports.getCategoryList = async (req, res) => {
-  // Check if the user is logged in and is an admin
-  if (req.session.user && req.session.user.isAdmin) {
+ if (req.session.user && req.session.user.isAdmin) {
     try {
-      // Fetch distinct categories from the products in the database
       const categories = await Product.distinct('category');
 
-      // Fetch all products from the database
       const products = await Product.find();
 
-      // Render the category list view with the fetched categories and products
       res.render('admin/category_list', { categories, products });
     } catch (error) {
       console.error('Error fetching categories:', error);
-      // res.status(500).send('Internal Server Error');
-      res.render('admin/category_list',{error:'Internal Server Error. Please try again Later!'})
+   res.render('admin/category_list',{error:'Internal Server Error. Please try again Later!'})
     }
   } else {
-    // Redirect to the login page if the user is not an admin
-    res.redirect('/admin/admin_login');
+ res.redirect('/admin/admin_login');
   }
 };

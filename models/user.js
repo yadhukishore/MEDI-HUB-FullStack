@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const addressSchema = new mongoose.Schema({
+  state: String,
+  city: String,
+  pincode: String,
+  landmark: String,
+  fullAddress: String,
+  isDefault: {
+      type: Boolean,
+      default: false,
+  },
+});
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -10,6 +22,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true
+  },
+  phone:{
+    type:Number,
+    require:false
   },
   password: {
     type: String,
@@ -39,7 +55,9 @@ const userSchema = new mongoose.Schema({
         default: 1
       }
     }
-  ]
+  ],
+  addresses: [addressSchema],
+
 });
 
 userSchema.methods.toJSON = function () {

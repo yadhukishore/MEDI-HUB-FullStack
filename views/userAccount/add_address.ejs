@@ -1,0 +1,117 @@
+<!-- userAddress.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Add Address  </title>
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #dfede0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+
+        nav img {
+            height: 50px;
+            width: 80px; 
+        }
+
+        .login-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-button-not-logged-in {
+            border: 2px solid #4CAF50;
+            background-color: white;
+            color: #4CAF50;
+        }
+
+        .user-dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        #dropdown-content button {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            background-color: #f9f9f9;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+       
+    </style>
+</head>
+<body>
+    <!-- nav bar -->
+    <%- include("../partials/userNavbar.ejs") %>
+
+    <div class="container mt-4">
+        <h2><strong>Add Address</strong></h2>
+        <form action="/add_address" method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="place">State</label>
+                    <input type="text" class="form-control" id="state" name="state" placeholder="Enter state" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control" id="city" name="city" placeholder="Enter city" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="pincode">Pin Code</label>
+                    <input type="text" class="form-control" id="pincode" name="pincode" placeholder="Enter pin code" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="landmark">Landmark</label>
+                    <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter landmark">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="address">Full Address</label>
+                <textarea class="form-control" id="address" name="address" rows="4" placeholder="Enter your full address" required></textarea>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault">
+                <label class="form-check-label" for="isDefault">Set as default</label>
+            </div><br>
+            <button type="submit" class="btn btn-primary">Add Address</button>
+        </form>
+    </div>
+</body>
+</html>

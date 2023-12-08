@@ -1,3 +1,4 @@
+<!-- userCart.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,9 +12,8 @@
     <!-- Link to Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-     <!-- Link to Font Awesome -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-   
+    <!-- Link to Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -144,6 +144,7 @@
             background-color: #28a745; /* Green background for table headers */
             color: white;
         }
+       
     </style>
  
     <script>
@@ -156,60 +157,151 @@
 <body>
     <!-- nav bar -->
     <%- include("../views/partials/userNavbar.ejs") %>
-    <section class="h-100" style="background-color: #e7dddd;">
-        <div class="container h-100 py-10">
-            <div class="row d-flex justify-content-center align-items-center h-100">
+    
+    <section  style="background-color: transparent;">
+        <div class="container py-5">
+            <div class="row justify-content-center">
                 <div class="col-12">
+                    <!--  display flash messages -->
+                    <% if (typeof messages !== 'undefined' && messages.error) { %>
+                        <div class="alert alert-danger" role="alert">
+                            <%= messages.error %>
+                        </div>
+                    <% } %>
+                    <% if (typeof messages !== 'undefined' && messages.success) { %>
+                        <div class="alert alert-success" role="alert">
+                            <%= messages.success %>
+                        </div>
+                    <% } %>
 
-    <h2>Your Cart</h2>
-    <% if (user && user.cart && user.cart.length > 0) { %>
-        <!-- Cart Table -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Title</th>
-                    <th>Quantity</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% user.cart.forEach(item => { %>
-                    <tr>
-                        <td>
-                            <!-- Show images of the product (Modify this based on your Product model) -->
-                            <% if (item.product.images.length > 0) { %>
-                                <img src="/public/uploads/<%= item.product.images[0] %>" alt="<%= item.product.name %>" style="max-width: 50px;">
-                            <% } else { %>
-                                <!-- Provide a default image or message if there are no images -->
-                                <img src="/public/default-image.jpg" alt="No Image" style="max-width: 50px;">
-                            <% } %>
-                        </td>
-                        <td><%= item.product.name %></td>
-                        <td>
-                            <!-- Quantity with + and - buttons (Modify as needed) -->
-                            <button class=" btn-outline-danger">-</button>
-                            <%= item.quantity  %> 
-                            <button class="btn-outline-success">+</button>
-                        </td>
-                        <td>
-                            <!-- Actions for removing product -->
-                            <button class="btn btn-danger" onclick="removeFromCart('<%= item.product._id %>')">Remove</button>
-                        </td>
-                    </tr>
-                <% }); %>
-            </tbody>
-        </table>
-    <% } else { %>
-        <p>No items in the cart.</p>
-    <% } %>
-</div>
-</div>
-</div>
-</div>
-</section>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+                    <h2>Your Cart</h2>
+                    <% if (user && user.cart && user.cart.length > 0) { %>
+                        <!-- Cart Table -->
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Title</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% let totalPrice = 0; %>
+                                <% user.cart.forEach(item => { %>
+                                    <tr>
+                                        <td>
+                                            <!-- Show images of the product -->
+                                            <% if (item.product.images.length > 0) { %>
+                                                <img src="/public/uploads/<%= item.product.images[0] %>" alt="<%= item.product.name %>" style="max-width: 50px;">
+                                            <% } else { %>
+                                                <!-- Provide a default image or message if there are no images -->
+                                                <img src="/public/default-image.jpg" alt="No Image" style="max-width: 50px;">
+                                            <% } %>
+                                        </td>
+                                        <td><%= item.product.name %></td>
+                                        <td>
+                                            <!-- Quantity with + and - buttons  -->
+                                            <button class="btn btn-outline-danger" onclick="updateQuantity('<%= item.product._id %>', -1, this)">-</button>
+                                            <span class="quantity" data-product-id="<%= item.product._id %>"><%= typeof item.quantity !== 'undefined' ? item.quantity : 0 %></span>
+                                            <button class="btn btn-outline-success" onclick="updateQuantity('<%= item.product._id %>', 1, this)">+</button>
+
+                                            
+                                        </td>
+                                        <td class="product-price" data-product-id="<%= item.product._id %>">₹ <%= item.product.price * item.quantity %></td>
+                                        <td>
+                                            <form method="post" action="/removeFromCart/<%= item.product._id %>">
+                                                <button class="btn btn-danger" onclick="return confirm('Are you sure you want to Remove <%= item.product.name %> ?')">Remove</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <% totalPrice += item.product.price * item.quantity; %>
+                                <% }); %>
+                            </tbody>
+                        </table>
+
+                        <!-- Display Total Price and Checkout Button -->
+                        <div class="mt-4 text-right" id="totalPriceContainer">
+                            <p>Total Price: <strong> ₹<span id="totalPrice"><%= totalPrice %></span></strong></p>
+                          <a href="/userCheckout" class="btn btn-warning btn-lg">Proceed to Checkout </a>
+                        </div>
+                        
+                            
+                   
+                        </div>
+                    <% } else { %>
+                        <p>No items in the cart.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+   
+    
+    <script>
+        function updateQuantity(productId, quantityChange, button) {
+            var quantityElement = $(button).siblings('.quantity');
+             var currentQuantity = parseInt(quantityElement.text());
+            var newQuantity = currentQuantity + quantityChange;
+            newQuantity = Math.max(0, newQuantity);
+    
+          
+            $.ajax({
+                url: '/update-product-quantity',
+                method: 'POST',
+                data: {
+                    productId: productId,
+                    newQuantity: newQuantity
+                },
+                success: function (data) {
+                    
+                    quantityElement.text(newQuantity);
+    
+                   
+                    $.ajax({
+                        url: '/get-updated-total-price',
+                        method: 'GET',
+                        success: function (totalPriceData) {
+                          
+                            $('#totalPrice').text(totalPriceData.totalPrice);
+    
+                           
+                            $.ajax({
+                                url: '/get-updated-prices',
+                                method: 'GET',
+                                success: function (pricesData) {
+                                   
+                                    $('#totalPrice').text(pricesData.totalPrice);
+    
+                                  
+                                    pricesData.updatedPrices.forEach(updatedPrice => {
+                                        
+                                        $('td[data-product-id="' + updatedPrice.productId + '"]').text('₹ ' + updatedPrice.price);
+                                    });
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching updated prices:', error);
+                                }
+                            });
+                        },
+                        error: function (error) {
+                            console.error('Error fetching updated total price:', error);
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.error('Error updating quantity:', error);
+                }
+            });
+        }
+    </script>
+    
+    
+
 </body>
-
 </html>
