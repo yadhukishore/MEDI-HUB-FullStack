@@ -17,8 +17,6 @@
 
     <!-- Cart icon on the right -->
     <div class="ml-auto">
-        <!-- Add your cart icon here -->
-        <!-- For example, using Bootstrap's badge and cart icon -->
         <a href="/userCart" class="btn btn-dark">
             <i class="material-icons">shopping_cart</i>
             <!-- Display the number of items in the cart using a badge -->
@@ -35,6 +33,7 @@
             <button class="btn btn-success" onclick="toggleDropdown()">Welcome, <%= user.username %>!</button>
             <div id="dropdown-content">
                 <a href="/userCart" class="btn">Cart</a> <br>
+                <a href="/myOrders" class="btn">My Orders</a><br>
                 <a href="/userAccount" class="btn">Your Profile</a>
                 <form action="/logout" method="POST">
                     <button type="submit" class="btn btn-danger">Logout</button>

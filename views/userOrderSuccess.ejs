@@ -1,0 +1,71 @@
+<!-- userOrderSuccess.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- Custom Styles -->
+    <style>
+        body {
+            background-color: #8aaed2;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .order-details {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-check {
+            color: #28a745;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="order-details">
+                    <h1 class="text-success"><i class="fas fa-check-circle icon-check"></i> Order Success!</h1>
+                    <p>Your order has been placed successfully.</p>
+
+                    <h3>Thankyou for Shopping with us!</h3>
+                    <p>Order ID: <%= order._id %></p>
+                    
+                    <p>Order Date: <%= order.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p><hr>
+
+
+                    <p>Total Amount: ₹ <%= order.totalAmount %></p>
+                    <p>Payment Method: <%= order.paymentMethod %></p><hr>
+
+                    <a href="/" class="btn btn-primary"><i class="fas fa-shopping-cart"></i> Continue Shopping</a>
+                    <a href="/myOrders" class="btn btn-info"><i class="fas fa-shopping-cart"></i>My Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- Font Awesome JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+
+</body>
+
+</html>

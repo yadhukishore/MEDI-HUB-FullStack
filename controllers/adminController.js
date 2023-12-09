@@ -2,42 +2,79 @@
 const User = require('../models/user');
 const Product = require('../models/product');
 const bcrypt = require('bcrypt');
+const Admin = require('../models/admin');
+const saltRounds = 10;
 
 
 
+exports.getAdminSignup=(req,res)=>{
+  res.render('admin/adminSignup'); 
+}
 
-exports.showAdminLogin = (req, res) => {
-  if(req.session.user){
-    res.redirect('/admin');
-  }
-  else{
-  res.render('admin/admin_login');
+exports.postAdminSignup = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Check if the admin already exists
+    const existingAdmin = await Admin.findOne({ username });
+    if (existingAdmin) {
+      return res.status(400).send('Admin with this username already exists');
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create a new admin with the hashed password
+    const newAdmin = new Admin({ username, email, password: hashedPassword });
+    await newAdmin.save();
+    console.log("Saved to admin!");
+
+    res.redirect('/admin/admin_login'); // Redirect to admin login after successful signup
+  } catch (error) {
+    console.error('Error in admin signup:', error);
+    res.status(500).send('Internal Server Error');
   }
 };
 
-exports.postAdminLogin = async (req, res) => { 
+exports.showAdminLogin = (req, res) => {
+  if(req.session.adminUser){
+    res.redirect('/admin');
+  }else
+  {
+  res.render('admin/admin_login');
+  }
+}
+
+
+
+exports.postAdminLogin = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    
-    const adminUser = await User.findOne({ username });
+    const adminUser = await Admin.findOne({ username });
+    console.log("adminuser:"+adminUser);
 
     // Check if the user exists and if their password is correct
-    if (adminUser && adminUser.isAdmin && (password === adminUser.password)) {
-      req.session.user = { isAdmin: true }; // Set isAdmin to true for the session
-      res.redirect('/admin');
-    } else {
-      res.redirect('/admin/admin_login'); 
+    if (adminUser && adminUser.isAdmin) {
+      const passwordMatch = await bcrypt.compare(password, adminUser.password);
+      console.log("passwordMatch");
+
+      if (passwordMatch) {
+        req.session.user = { isAdmin: true }; // Set isAdmin to true for the session
+        res.redirect('/admin');
+        return;
+      }
     }
+
+    res.redirect('/admin/admin_login');
   } catch (error) {
     console.error('Error during admin login:', error);
-    res.redirect('/admin/admin_login'); 
+    res.redirect('/admin/admin_login');
   }
 };
 
-
 exports.getAdminRoute = async (req, res) => { 
-
+  console.log('Session user:', req.session.user);
   if (req.session.user && req.session.user.isAdmin) {
     try {
       const products = await Product.find({ deleted: false }); // Fetch only non-deleted products
@@ -49,7 +86,7 @@ exports.getAdminRoute = async (req, res) => {
   } else {
     res.redirect('/admin/admin_login'); 
   }
-}
+};
 
 exports.getAdminAddProduct = (req,res)=>{
   const error = req.query.error;

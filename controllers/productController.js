@@ -22,8 +22,6 @@ exports.getProduct= async(req,res)=>{
 exports.searchProducts = async (req, res) => {
   try {
     const { query } = req.query;
-
-    // Perform the search logic here, excluding deleted products
     const products = await Product.find({
       $and: [
         {

@@ -111,7 +111,8 @@
                 </div>
 
                 <div class="container-box">
-                    <h4>Addresses</h4><hr>
+                    <h4>Addresses</h4><p style="color: darkcyan;">Select Default address before payment!</p><hr>
+                    
                     <form method="post" action="/saveDefaultAddress">
                         <!-- Loop through user's addresses and display them -->
                         <% if (user.addresses && user.addresses.length > 0) { %>
@@ -134,11 +135,13 @@
                         <% } else { %>
                             <p>No addresses added. Add a new address.</p>
                         <% } %>
+                        <!-- Add a hidden input field for the current default address -->
+                        <input type="hidden" name="currentDefaultAddress" value="<%= user.addresses.find(a => a.isDefault)?.id %>">
                         <button type="submit" class="btn btn-secondary float-right">Save Default Address</button>
+                        
                     </form>
                     <a href="/add_address" class="btn btn-success">Add Address+</a>
                 </div>
-                
                 
             </div>
 
@@ -148,38 +151,45 @@
                     <h4>Order Summary</h4><hr>
                     <P>Shipping Fee:  <strong>Free</strong></P>
                     <p>Total Price :   <strong> ₹ <%= totalPrice %></strong></p>
-                    <!-- Pay Now Button -->
-                    <button class="btn btn-warning btn-lg">Pay Now</button>
                 </div>
 
                 <div class="container-box">
                     <h4>Select Payment Method</h4><hr>
                     <!-- Use radio buttons for payment method selection -->
-                    <div class="form-check">
-                        <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="creditCard" value="creditCard" checked>
-                        <label class="form-check-label" for="creditCard">
-                            Credit Card
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="paypal" value="paypal">
-                        <label class="form-check-label" for="paypal">
-                            PayPal
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="COD" value="COD" checked>
-                        <label class="form-check-label" for="COD">
-                            Cash On Delivery
-                        </label>
-                    </div>
-                    <div>
-                        <br>
-                    <a href="" class="btn btn-info" >Proceed</a>
-                    </div>
+                    <form method="post" action="/processOrder">
+                        <div class="form-check">
+                            <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="creditCard" value="creditCard" checked>
+                            <label class="form-check-label" for="creditCard">
+                                Credit Card
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="paypal" value="paypal">
+                            <label class="form-check-label" for="paypal">
+                                PayPal
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="COD" value="COD" checked>
+                            <label class="form-check-label" for="COD">
+                                Cash On Delivery
+                            </label>
+                        </div>
+                        <div>
+
+                <!-- Proceed to Payment Button -->
+                <div class="container-box">
+                    <form method="post" action="/processOrder">
+                       <!--  hidden input field for the current default address -->
+                       <input type="hidden" name="currentDefaultAddress" value="<%= user.addresses.find(a => a.isDefault)?.id %>">
+                       <button type="submit" class="btn btn-warning btn-lg">Proceed to Payment</button>
+                       
+
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-    
 </body>
+
 </html>

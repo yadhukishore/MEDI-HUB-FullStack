@@ -18,7 +18,7 @@ const  productController  = require('./controllers/productController');
 const  userCartController = require('./controllers/userCartController');
 const userAccController = require('./controllers/userAccController');
 const userCheckoutController =require('./controllers/userCheckoutController');
-
+const userOrderController = require('./controllers/userOrderController');
 
 
 
@@ -130,6 +130,8 @@ app.get('/reset_password/:email',userAuthController.getResetPassword);
 app.post('/reset_password/:email', userAuthController.postResetPassword);
 
 // Admin section routes
+app.get('/admin/adminSignup',adminController.getAdminSignup);
+app.post('/admin/adminSignup',adminController.postAdminSignup);
 app.get('/admin/admin_login', adminController.showAdminLogin);
 
 app.post('/admin/login', adminController.postAdminLogin);
@@ -192,6 +194,11 @@ app.post('/userAddress/deleteAddress/:addressId',userAccController.deleteAddress
 app.get('/userAddress/editAddress/:addressId',userAccController.getEditAddress);
 app.post('/userAddress/editAddress/:addressId',userAccController.postEditAddress);
 app.get('/userCheckout',userCheckoutController.getCheckoutPage);
+
+
+app.post('/processOrder',userOrderController.postProcessOrder);
+app.get('/orderSuccess',userOrderController.getOrderSuccess);
+app.get('/myOrders',userOrderController.getMyOrders);
 app.post('/logout', userAuthController.postUserLogout);
 
 
