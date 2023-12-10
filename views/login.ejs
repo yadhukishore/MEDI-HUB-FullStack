@@ -213,37 +213,28 @@ input[type="submit"]:active
 
      <h2>Log In</h2> 
 
-     <form class="form" method="post" action="/login"> 
-
-      <% if (typeof error !== 'undefined'&& error !== null){%>
-        <div class="error-message"><%= error  %></div>
-
-        <% } %>
-
-      <div class="inputBox"> 
-
-       <input type="text" required name="email"> <i>Email</i> 
-
-      </div> 
-
-      <div class="inputBox"> 
-
-       <input type="password" required name="password"> <i>Password</i> 
-
-      </div> 
-
+     <form class="form" method="post" action="/login">
+      <% if (typeof error !== 'undefined' && error !== null) { %>
+        <div class="error-message"><%= error %></div>
+      <% } %>
+    
+      <div class="inputBox">
+        <input type="text"  name="email"> <i>Email</i>
+      </div>
+    
+      <div class="inputBox">
+        <input type="password"  name="password"> <i>Password</i>
+      </div>
+    
       <div class="links">
         <a href="/forgot_password">Forgot Password</a>
-        <a href="/signup">Signup</a>
-    </div>
-
-      <div class="inputBox"> 
-
-       <input type="submit" value="Login"> 
-
-      </div> 
-
-     </form> 
+        <a href="/signup">New User?</a>
+      </div>
+    
+      <div class="inputBox">
+        <input type="submit" value="Login">
+      </div>
+    </form>
 
     </div> 
 

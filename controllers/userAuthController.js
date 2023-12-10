@@ -4,7 +4,7 @@ const Product = require('../models/product');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const  isValidPassword  = require('../utils/passwordValid');
-
+const { check, validationResult } = require('express-validator');
 //for otp////
 // Nodemailer configuration
 require('dotenv').config();
@@ -169,6 +169,8 @@ exports.postResetPassword = async (req, res) => {
     }
 
     console.log('Password updated successfully:', hashedPassword); 
+    console.log('User after update:', user);
+
     res.redirect('/login');
   } catch (error) {
     console.error('Error in resetting password:', error);
@@ -185,62 +187,81 @@ exports.getSignup = (req, res) => {
   res.render('signup', { error });
 };
 
-exports.postSignup = async (req, res) => {
-  const { email, username, password } = req.body;
+exports.postSignup = [
+  check('username', 'This username must be 3+ characters long')
+    .exists()
+    .isLength({ min: 3 }),
+  check('email', 'Email is not valid')
+    .isEmail()
+    .normalizeEmail(),
+  async (req, res) => {
+    const { email, username } = req.body;
 
-  try {
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      req.flash('error', 'User with this email already exists!');
+    if(!email || !username){
+      req.flash('error', 'Please enter details');
       return res.redirect('/signup');
     }
 
-    if (!isValidPassword(password)) {
-      req.flash('error', 'Poor Password. Password must be strong and not contain spaces.');
+    // Check for validation errors
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // Extract the error message from the validation error
+      const errorMessage = errors.array()[0].msg;
+
+      // Flash an error message and redirect to the signup page
+      req.flash('error', errorMessage);
       return res.redirect('/signup');
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000);
+    try {
+      // Use findOne with a case-insensitive query to check for an existing user
+      const userExists = await User.findOne({ email: { $regex: new RegExp(email, 'i') } });
 
-    const otpExpiration = Date.now() + 300000;
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({
-      email,
-      username,
-      password: hashedPassword,
-      otp,
-      otpExpiration,
-    });
-
-    await newUser.save();
-
-    // Send the OTP to the user's email (similar to forgot password logic)
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'OTP for Account Verification',
-      text: `Your OTP for account verification is ${otp}. Please use it to verify your account.`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log('Error sending email:', error);
-        req.flash('error', 'Error sending verification email. Please try again.');
+      if (userExists) {
+        req.flash('error', 'User with this email already exists!');
         return res.redirect('/signup');
-      } else {
-        console.log('Email sent:', info.response);
-        res.redirect(`/verify_otp?email=${email}`);
       }
-    });
-  } catch (error) {
-    console.error('Error signing up:', error);
-    req.flash('error', 'Internal Server Error. Please try again later.');
-    res.redirect('/signup');
+
+      // Remove the password-related logic since it's not part of the form anymore
+
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      const otpExpiration = Date.now() + 300000;
+
+      const newUser = new User({
+        email,
+        username,
+        otp,
+        otpExpiration,
+      });
+
+      await newUser.save();
+
+      // Send the OTP to the user's email (similar to forgot password logic)
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'OTP for Account Verification',
+        text: `Your OTP for account verification is ${otp}. Please use it to verify your account.`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log('Error sending email:', error);
+          req.flash('error', 'Error sending verification email. Please try again.');
+          return res.redirect('/signup');
+        } else {
+          console.log('Email sent:', info.response);
+          res.redirect(`/verify_otp?email=${email}`);
+        }
+      });
+    } catch (error) {
+      console.error('Error signing up:', error);
+      req.flash('error', 'Internal Server Error. Please try again later.');
+      res.redirect('/signup');
+    }
   }
-};
+];
 
  exports.getUserLogin = (req, res) => {
   if (req.session.user) {
@@ -251,37 +272,47 @@ exports.postSignup = async (req, res) => {
   }
 };
 
-exports.postUserLogin = async (req, res) => {
+exports.postUserLogin = [
+  check('email', 'Email is not valid')
+  .isEmail()
+  .normalizeEmail(),
+  async (req, res) => {
+  
   const { email, password } = req.body;
 
+
   try {
+    if (!email || !password) {
+      req.flash('error', 'Fill in all the details!');
+      return res.redirect('/login');  // Add return statement here
+    }
     const user = await User.findOne({ email });
 
     if (user) {
-
       if (user.blocked) {
         req.flash('error', 'Your account is blocked. Please contact the administrator for assistance!!!');
         return res.redirect('/login');
       }
+
       const passwordMatch = await bcrypt.compare(password, user.password);
 
       if (passwordMatch) {
-        req.session.user = user; 
-        res.redirect('/');
+        req.session.user = user;
+        return res.redirect('/');
       } else {
-       
         req.flash('error', 'Invalid password or email');
-        res.redirect('/login');
+        return res.redirect('/login');
       }
     } else {
       req.flash('error', 'User not found');
-      res.redirect('/login');y
+      return res.redirect('/login');
     }
   } catch (error) {
     console.error('Error logging in:', error);
-    res.redirect('/login');
+    return res.redirect('/login');
   }
-};
+}];
+
 
 
  exports.postUserLogout=(req,res)=>{
