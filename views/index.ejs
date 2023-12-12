@@ -129,8 +129,9 @@
                 <div class="card-body">
                   <h5 class="card-title"><%= product.name %></h5>
                   <!-- <p class="card-text"><%= product.description %></p> -->
-                  <p class="card-text" style="color: rgb(7, 182, 123);">Category: <%= product.category %> </p>
-                  <p class="card-text"> &#8377<strong><%= product.price %> </strong></p>
+                  Category: <%= product.category ? product.category.categoryName : 'N/A' %>
+
+                  <p class="card-text">₹<strong><%= product.price %> </strong></p>
 
                   <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning">Add to Cart</a>
                 </div>

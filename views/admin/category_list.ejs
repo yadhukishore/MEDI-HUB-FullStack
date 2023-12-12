@@ -96,36 +96,63 @@
          <div id="content">
             <!-- Navbar -->
             <%- include('../partials/adminNavbar.ejs') %>
-
-            <!-- Page Content -->
-            <div class="container">
-                <h1>Category List</h1>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>Product Name</th>
-                            <th>Actions</th>
-                            <th>Check</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% categories.forEach(category => { %>
-                            <% products.filter(product => product.category === category).forEach(product => { %>
-                                <tr>
-                                    <td><%= category %></td>
-                                    <td><%= product.name %></td>
-                                    <td>
-                                        <a href="/edit-product/<%= product._id %>" class="btn btn-warning">Edit</a>
-                                        <a href="/delete-product/<%= product._id %>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete <%= product.name %> ?')">Delete</a>
-                                    </td>
-                                    <td><%= product.deleted ? 'Not Listed' : 'Listed' %></td>
-                                </tr>
+<!-- Page Content -->
+<div class="container">
+    <h1>Category List</h1>
+    <% if (successMessage && successMessage.length > 0) { %>
+        <div class="alert alert-success" role="alert">
+          <%= successMessage[0] %>
+        </div>
+      <% } %>
+      
+      <% if (errorMessage && errorMessage.length > 0) { %>
+        <div class="alert alert-danger" role="alert">
+          <%= errorMessage[0] %>
+        </div>
+      <% } %>
+      
+    <button class="btn-sm btn-secondary">
+        <a href="/add_category" style="color: aliceblue; text-decoration: none;">Add Category</a>
+    </button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Product Name</th>
+                <th>Actions</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+            <% categories.forEach(category => { %>
+                <tr>
+                    <td><%= category.categoryName %></td>
+                    <td>
+                        <% const categoryProducts = products.filter(product => product.category && product.category.categoryName === category.categoryName); %>
+                        <% if (categoryProducts.length > 0) { %>
+                            <% categoryProducts.forEach(product => { %>
+                                <%= product.name %>, <br>
                             <% }); %>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
+                        <% } else { %>
+                            No products in this category.
+                        <% } %>
+                    </td>
+                    <td>
+                        <a href="/edit_category/<%=category._id %>" class="btn btn-warning">Edit</a>
+                        <form method="post" action="/delete_category/<%= category._id %>" onsubmit="return confirm('Are you sure you want to delete <%= category.categoryName %> ?')">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                          </form>
+
+                        
+                    </td>
+                   
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
         </div>
     </div>
 

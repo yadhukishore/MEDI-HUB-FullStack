@@ -248,7 +248,7 @@
             var quantityElement = $(button).siblings('.quantity');
              var currentQuantity = parseInt(quantityElement.text());
             var newQuantity = currentQuantity + quantityChange;
-            newQuantity = Math.max(0, newQuantity);
+            newQuantity = Math.max(1, newQuantity);
     
           
             $.ajax({

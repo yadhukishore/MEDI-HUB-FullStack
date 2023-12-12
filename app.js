@@ -7,9 +7,10 @@ const MongoStore = require('connect-mongodb-session')(session);
 const bcrypt = require('bcrypt');
 const User = require('./models/user');
 const Product = require('./models/product');
-const multer = require('multer');
+
 const upload = require('./utils/multer');
 const path = require('path');
+const categoryName = require('./models/category');
 
 const bodyParser = require('body-parser');
 const adminController = require('./controllers/adminController');
@@ -138,11 +139,12 @@ app.post('/admin/login', adminController.postAdminLogin);
 
 // Admin section routes
 app.get('/admin', adminController.getAdminRoute)
+app.get('/admin/add_product', adminController.getAdminAddProduct)
+app.post('/admin/add_product', upload, adminController.postAdminAddProduct);
+app.get('/admin/edit_product/:id', adminController.getAdminEdit)
+app.post('/admin/edit_product/:id', upload, adminController.postAdminEdit);
+app.patch('/delete-in-editProduct/:productId/:imageName', adminController.deleteInEditProduct);
 
-app.get('/admin/add_product',adminController.getAdminAddProduct)
-app.post('/admin/add_product', upload.array('productImages', 12), adminController.postAdminAddProduct);
-app.get('/admin/edit_product/:id',adminController.getAdminEdit)
-app.post('/admin/edit_product/:id', upload.array('images'), adminController.postAdminEdit);
 // Logout route for admin
 app.post('/admin/logout',adminController.postAdminLogout)
 // Soft delete route
@@ -154,11 +156,16 @@ app.get('/admin/unblock_user/:id',adminController.unblockUser);
 app.get('/admin/add_user',adminController.getAdminAddUser);
 app.post('/admin/add_user',adminController.postAdminAddUser);
 app.get('/admin/category_list',adminController.getCategoryList);
+app.get('/add_category',adminController.getAddCategory);
+app.post('/add_category',adminController.postAddCategory);
+app.get('/edit_category/:id',adminController.getEditCategory);
+app.post('/edit_category/:id',adminController.postEditCategory);
 app.get('/search',productController.searchProducts)
 // Fetch Products from the Database
 app.get('/', async (req, res) => {
   try {
-    const products = await Product.find({ deleted: false });
+    const products = await Product.find({ deleted: false })
+    .populate('category', 'categoryName');
 
     // Check if the user is authenticated
     let user = null;
@@ -193,6 +200,7 @@ app.post('/add_address',userAccController.postAddAddress);
 app.post('/userAddress/deleteAddress/:addressId',userAccController.deleteAddress);
 app.get('/userAddress/editAddress/:addressId',userAccController.getEditAddress);
 app.post('/userAddress/editAddress/:addressId',userAccController.postEditAddress);
+app.post('/delete_category/:id',adminController.deleteCategory );
 app.get('/userCheckout',userCheckoutController.getCheckoutPage);
 
 

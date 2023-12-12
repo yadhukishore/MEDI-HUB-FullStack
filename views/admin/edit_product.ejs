@@ -30,35 +30,89 @@
             </div>
             <div class="form-group">
                 <label for="productCategory">Product Category:</label>
-                <select class="form-control" id="productCategory" name="category" required>
-                    <!-- Add your category options dynamically based on your categories -->
-                    <option value="Tablets" <%= product.category === "Tablets" ? "selected" : "" %>>Tablets</option>
-                    <option value="Sprays" <%= product.category === "Sprays" ? "selected" : "" %>>Sprays</option>
-                    <option value="Oilments" <%= product.category === "Oilments" ? "selected" : "" %>>Oilments</option>
-                    <option value="Liquid" <%= product.category === "Liquid" ? "selected" : "" %>>Liquid</option>
-                    <option value="Balm" <%= product.category === "Balm" ? "selected" : "" %>>Balm</option>
-
-                    <!-- Add more options as needed -->
+                <select class="form-control" id="productCategory" name="productCategory" required>
+                  <option value="" disabled>Choose Category</option>
+                  <% categories.forEach(category => { %>
+                    <option value="<%= category.categoryName %>" <% if (category.categoryName === product.category.categoryName) { %>selected<% } %>>
+                      <%= category.categoryName %>
+                    </option>
+                  <% }); %>
                 </select>
-            </div>
+              </div>
     
             <br>
+<!-- Cover Image -->
+<div class="form-group">
+    <label for="coverImage">Cover Image:</label>
+    <img src="/public/uploads/<%= product.images[0] %>" alt="Cover Image" style="max-width: 100px;" id="coverImageView" class="p-3">
+    
+    <input type="file" class="form-control-file" id="coverImage" name="updateImages" accept="image/*" onchange="handleFileSelect('coverImage', 'coverImageView')">
+    <input type="hidden" name="imageToDelete" value="<%= product.images[0] %>">
+    <button class="btn btn-danger delete-image" onclick="deleteImage('/delete-in-editProduct/<%= product._id %>/<%= product.images[0] %>')">Delete</button>
+</div>
 
+<!-- Image 2 -->
+<div class="form-group">
+    <label for="image2">Image 2:</label>
+    <img src="/public/uploads/<%= product.images[1] %>" alt="Image 2" style="max-width: 100px;" id="image2View" class="p-3">
+    <input type="file" class="form-control-file" id="image2" name="updateImages" accept="image/*" onchange="handleFileSelect('image2', 'image2View')">
+    <input type="hidden" name="imageToDelete" value="<%= product.images[1] %>">
+    <button class="btn btn-danger delete-image" onclick="deleteImage('/delete-in-editProduct/<%= product._id %>/<%= product.images[1] %>')">Delete</button>
+</div>
 
-            <div class="form-group">
-                <label for="images">Product Images</label>
-                <input type="file" class="form-control-file" id="images" name="images" multiple>
-                <small class="form-text text-muted">Leave empty if you don't want to change the images.</small>
-            </div>
-            <!-- Add more form fields as needed -->
+<!-- Image 3 -->
+<div class="form-group">
+    <label for="image3">Image 3 (Optional):</label>
+    <img src="/public/uploads/<%= product.images[2] %>" alt="Image 3" style="max-width: 100px;" id="image3View" class="p-3">
+    <input type="file" class="form-control-file" id="image3" name="updateImages" accept="image/*" onchange="handleFileSelect('image3', 'image3View')">
+    <button class="btn btn-danger delete-image" onclick="deleteImage('/delete-in-editProduct/<%= product._id %>/<%= product.images[2] %>')">Delete</button>
+</div>
 
-            <button type="submit" class="btn btn-primary">Update Product</button>
-        </form>
-    </div>
+<!-- Image 4 -->
+<div class="form-group">
+    <label for="image4">Image 4 (Optional):</label>
+    <img src="/public/uploads/<%= product.images[3] %>" alt="Image 4" style="max-width: 100px;" id="image4View" class="p-3">
+    <input type="file" class="form-control-file" id="image4" name="updateImages" accept="image/*" onchange="handleFileSelect('image4', 'image4View')">
+    <button class="btn btn-danger delete-image" onclick="deleteImage('/delete-in-editProduct/<%= product._id %>/<%= product.images[3] %>')">Delete</button>
+</div>
+    
+                <button type="submit" class="btn btn-primary">Update Product</button>
+            </form>
+        </div>
+    
+        <!-- Include Bootstrap JS and Popper.js (required for Bootstrap modal) -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!-- Include Bootstrap JS and Popper.js (required for Bootstrap dropdowns) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+        <script>
+            function deleteImage(deleteUrl) {
+                fetch(deleteUrl, { method: 'PATCH' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Optionally update the UI to reflect the deleted image
+                            console.log('Image deleted successfully');
+                        } else {
+                            console.error('Error deleting image:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting image:', error);
+                    });
+            }
+        </script>
+        <script>
+            // Additional function for handling file selection
+            function handleFileSelect(inputId, previewId) {
+                const input = document.getElementById(inputId);
+                const preview = document.getElementById(previewId);
+    
+                const files = input.files;
+                if (files.length > 0) {
+                    preview.src = URL.createObjectURL(files[0]);
+                }
+            }
+        </script>
+    </body>
+    </html>

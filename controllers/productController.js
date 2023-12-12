@@ -2,11 +2,12 @@ const User = require('../models/user');
 const Product = require('../models/product');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
+const categoryName = require('../models/category');
 
 exports.getProduct= async(req,res)=>{
     try {
         const productId = req.params.productId;
-        const product = await Product.findById(productId);
+        const product = await Product.findById(productId) .populate('category', 'categoryName');        ;
     
         if (!product) {
           return res.status(404).send('Product not found');

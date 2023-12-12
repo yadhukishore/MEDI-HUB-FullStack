@@ -132,7 +132,13 @@
                                 <td><%= product.name %></td>
                                 <td><%= product.description %></td>
                                 <td><%= product.price %> rs</td>
-                                <td><%= product.category %></td>
+                                <td>
+                                    <% if (product.category && product.category.categoryName) { %>
+                                      <%= product.category.categoryName %>
+                                    <% } else { %>
+                                      Category not available
+                                    <% } %>
+                                  </td>
                                 <td> <% product.images.forEach(image => { %>
                                     <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" style="max-width: 100px;">
                                 <% }); %></td>
