@@ -42,9 +42,7 @@ exports.getUserCart = [verifyLogin, async (req, res) => {
     }
 }];
 
-
-// Add product to user's cart
-exports.addToCart = [verifyLogin,async (req, res) => {
+exports.addToCart = [verifyLogin, async (req, res) => {
     try {
         if (!req.session.user) {
             return res.status(401).json({ message: 'User not authenticated' });
@@ -52,31 +50,42 @@ exports.addToCart = [verifyLogin,async (req, res) => {
 
         const user = await User.findById(req.session.user._id).populate('cart.product');
 
-        console.log('Session User ID:', req.session.user._id);
-        console.log('Found User ID:', user ? user._id : 'User not found');
-
         if (!user || !user.cart) {
             return res.status(404).json({ message: 'User or user cart not found' });
         }
 
         const productId = req.params.productId;
+        const product = await Product.findById(productId);
 
-        console.log('Product ID:', productId);
-
-        // Check if the product is already in the cart
-        const cartItem = user.cart.find(item => item.product._id.toString() === productId);
-
-        if (cartItem) {
-            cartItem.quantity += 1; 
-        } else {
-            user.cart.push({
-                product: productId,
-                quantity: 1 
-            });
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
         }
 
-         await user.save();
-        res.redirect('/userCart'); 
+        const userCartItem = user.cart.find(item => item.product._id.toString() === productId);
+
+        console.log("User cart item: ",userCartItem);
+        // Check if stock is greater than 0 and userStock is less than or equal to global stock
+        if (product.stock > 0 && (!userCartItem || userCartItem.userStock < product.stock)) {
+            if (userCartItem) {
+                userCartItem.quantity += 1;
+                userCartItem.userStock += 1;
+            } else {
+                user.cart.push({
+                    product: productId,
+                    quantity: 1,
+                    userStock: Math.min(1, product.stock), // Initialize userStock with the minimum of 1 and the current global stock
+                });
+            }
+
+            // Temporarily reduce the global stock
+            product.stock -= 1;
+
+            await user.save();
+
+            return res.redirect('/userCart');
+        } else {
+            return res.status(400).json({ message: 'Product is out of stock or userStock limit reached' });
+        }
 
     } catch (error) {
         console.error(error);
@@ -84,6 +93,8 @@ exports.addToCart = [verifyLogin,async (req, res) => {
     }
 }];
 
+
+  
 // Remove product from user's cart
 exports.removeFromCart = [verifyLogin, async (req, res) => {
     try {
@@ -113,18 +124,44 @@ exports.removeFromCart = [verifyLogin, async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }];
-
 exports.updateProductQuantity = [verifyLogin, async (req, res) => {
     try {
         const productId = req.body.productId;
         const newQuantity = req.body.newQuantity;
 
-        await User.updateOne(
-            { _id: req.session.user._id, 'cart.product': productId },
-            { $set: { 'cart.$.quantity': newQuantity } }
-        );
+        const user = await User.findById(req.session.user._id).populate('cart.product');
+        const cartItem = user.cart.find(item => item.product._id.toString() === productId);
 
-        res.status(200).json({ message: 'Quantity updated successfully' });
+        if (!cartItem) {
+            return res.status(404).json({ message: 'Product not found in cart' });
+        }
+
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Calculate the difference in quantity
+        const quantityDiff = newQuantity - cartItem.quantity;
+
+        // Check if userStock limit is sufficient for the update
+        if (cartItem.userStock + quantityDiff <= product.stock) {
+            // Update user's cart quantity
+            cartItem.quantity = newQuantity;
+            cartItem.userStock += quantityDiff;
+
+            // Update product stock
+            product.stock -= quantityDiff;
+
+            await user.save();
+           
+
+            res.status(200).json({ message: 'Quantity updated successfully', updatedStock: product.stock });
+        } else {
+            res.status(400).json({ message: 'Insufficient userStock limit' });
+        }
+
     } catch (error) {
         console.error('Error updating quantity:', error);
         res.status(500).json({ message: 'Internal Server Error' });

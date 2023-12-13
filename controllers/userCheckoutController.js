@@ -40,13 +40,14 @@ function calculateTotalPrice(cart) {
     }
     return totalPrice;
 }
+exports.calculateTotalPrice = calculateTotalPrice;
 
 
 exports.saveDefaultAddress = [verifyLogin, async (req, res) => {
     try {
         const userId = req.session.user._id;
         const addressId = req.body.defaultAddress;
-
+console.log("addressId: ",addressId);
         // Update all other addresses to mark them as non-default
         await User.updateMany(
             { _id: userId },

@@ -122,6 +122,7 @@
                             <th>Description</th>
                             <th>Price</th>
                             <th>Category</th>
+                            <th>Stock</th>
                             <th>Image</th> 
                             <th>Actions</th>
                         </tr>
@@ -139,6 +140,7 @@
                                       Category not available
                                     <% } %>
                                   </td>
+                                  <td><%= product.stock || 'Not Available' %></td> <!-- Display quantity or 'Not Available' if not present -->
                                 <td> <% product.images.forEach(image => { %>
                                     <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" style="max-width: 100px;">
                                 <% }); %></td>

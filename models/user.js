@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema({
       quantity: {
         type: Number,
         default: 1
+      },
+      userStock: { // User-specific stock for the product
+        type: Number,
+        default: 0,
+        min: 0
       }
     }
   ],

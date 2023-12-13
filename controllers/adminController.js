@@ -116,7 +116,7 @@ exports.getAdminRoute = async (req, res) => {
   if (req.session.user && req.session.user.isAdmin) {
     try {
       const products = await Product.find({ deleted: false })
-        .populate('category', 'categoryName'); // Specify the fields you want to populate
+        .populate('category', 'categoryName')  .select('-__v'); 
 
       res.render('admin/admin_panel', { products });
     } catch (error) {
@@ -127,7 +127,6 @@ exports.getAdminRoute = async (req, res) => {
     res.redirect('/admin/admin_login');
   }
 };
-
 exports.getAdminAddProduct = async (req, res) => {
   try {
     const error = req.query.error;
@@ -149,6 +148,7 @@ exports.postAdminAddProduct = async (req, res) => {
       productDescription,
       productPrice,
       productCategory,
+      stock, // New field for quantity
     } = req.body;
 
     // Access the file data from req.files
@@ -158,13 +158,19 @@ exports.postAdminAddProduct = async (req, res) => {
       throw new Error('No files uploaded.');
     }
 
-    if (!productName || !productDescription || !productPrice || !productCategory) {
+    if (!productName || !productDescription || !productPrice || !productCategory || !stock) {
       throw new Error('Please fill out all required fields.');
     }
 
     const nonNegPrice = parseFloat(productPrice);
     if (isNaN(nonNegPrice) || nonNegPrice < 0) {
       throw new Error('Product price must be a non-negative number.');
+    }
+
+    // Validate quantity
+    const parsedStock = parseInt(stock);
+    if (isNaN(parsedStock) || parsedStock < 1) {
+      throw new Error('You need to add at least one quantity of your product!');
     }
 
     // Retrieve the category document based on the category name
@@ -181,7 +187,12 @@ exports.postAdminAddProduct = async (req, res) => {
       price: nonNegPrice,
       category: category._id, // Use the _id of the category
       images: productImages,
+      stock: parsedStock, // Add quantity to the product
     });
+
+console.log("Product is about to save!");
+
+console.log("Newproduct: ",newProduct);
 
     await newProduct.save();
 
@@ -193,6 +204,7 @@ exports.postAdminAddProduct = async (req, res) => {
     res.redirect('/admin/add_product?error=' + encodeURIComponent(error.message));
   }
 };
+
 
 
 
@@ -224,16 +236,21 @@ exports.getAdminEdit = async (req, res) => {
     console.log('Request body:', req.body);
     console.log('Request files:', req.files);
 
-    const { name, description, price, productCategory } = req.body;
+    const { name, description, price, productCategory, stock } = req.body;
 
-    if (!name || !description || !price || !productCategory) {
-      res.redirect(`/admin/edit_product/${productId}?error=Please fill out all required fields.`);
+    if (!name || !description || !price || !productCategory || stock < 0) {
+      res.redirect(`/admin/edit_product/${productId}?error=Please fill out all required fields and enter a valid quantity.`);
       return;
     }
 
     const nonNegPrice = parseFloat(price);
     if (isNaN(nonNegPrice) || nonNegPrice < 0) {
       throw new Error('Product price must be a non-negative number.');
+    }
+
+    const parsedStock = parseInt(stock);
+    if (isNaN(parsedStock) || parsedStock < 1) {
+      throw new Error('You need to add at least one quantity of your product!');
     }
 
     const category = await categoryName.findOne({ categoryName: productCategory });
@@ -248,6 +265,7 @@ exports.getAdminEdit = async (req, res) => {
       description,
       price: nonNegPrice,
       category: category._id,
+      stock: parseInt(parsedStock), 
     };
 
     // Update existing images

@@ -1,27 +1,28 @@
-// order.js
-
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-    userId: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
     address: {
+        // Assuming you have an Address schema, replace with the actual reference
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User.addresses',
+        ref: 'Address',
         required: true,
     },
     products: [
         {
-            productId: {
+            product: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Product',
+                required: true,
             },
             quantity: {
                 type: Number,
                 default: 1,
+                required: true,
             },
         },
     ],
@@ -33,10 +34,10 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 const Order = mongoose.model('Order', orderSchema);

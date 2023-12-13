@@ -131,9 +131,27 @@
                   <!-- <p class="card-text"><%= product.description %></p> -->
                   Category: <%= product.category ? product.category.categoryName : 'N/A' %>
 
-                  <p class="card-text">₹<strong><%= product.price %> </strong></p>
+                 
+          
+                    <!-- row for price and stock message -->
+                    <div class="row">
+                        <div class="col-md-6">
+                          <p class="card-text">₹<strong><%= product.price %> </strong></p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                          <!-- Display a message if stock is less than or equal to 5 -->
+                          <% if (product.stock <= 5 && product.stock > 1) { %>
+                            <p class="card-text text-danger">Only <%= product.stock %> left!</p>
+                          <% } else if (product.stock === 1) { %>
+                            <p class="card-text text-danger">Last in stock!</p>
+                          <% } else if (product.stock === 0) { %>
+                            <p class="card-text text-danger">Out of Stock!</p>
+                          <% } %>
+                        </div>
+                      </div>
 
                   <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning">Add to Cart</a>
+                  
                 </div>
               </div>
             </div>

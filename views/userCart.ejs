@@ -199,8 +199,10 @@
                                                 <!-- Provide a default image or message if there are no images -->
                                                 <img src="/public/default-image.jpg" alt="No Image" style="max-width: 50px;">
                                             <% } %>
+                                            <p>Stock: <%= item.product.stock %></p>
                                         </td>
                                         <td><%= item.product.name %></td>
+                                        
                                         <td>
                                             <!-- Quantity with + and - buttons  -->
                                             <button class="btn btn-outline-danger" onclick="updateQuantity('<%= item.product._id %>', -1, this)">-</button>
@@ -246,11 +248,12 @@
     <script>
         function updateQuantity(productId, quantityChange, button) {
             var quantityElement = $(button).siblings('.quantity');
-             var currentQuantity = parseInt(quantityElement.text());
+            var stockElement = $(button).closest('tr').find('.stock'); // Add this line to get the stock element
+    
+            var currentQuantity = parseInt(quantityElement.text());
             var newQuantity = currentQuantity + quantityChange;
             newQuantity = Math.max(1, newQuantity);
     
-          
             $.ajax({
                 url: '/update-product-quantity',
                 method: 'POST',
@@ -259,30 +262,26 @@
                     newQuantity: newQuantity
                 },
                 success: function (data) {
-                    
                     quantityElement.text(newQuantity);
     
-                   
                     $.ajax({
                         url: '/get-updated-total-price',
                         method: 'GET',
                         success: function (totalPriceData) {
-                          
                             $('#totalPrice').text(totalPriceData.totalPrice);
     
-                           
                             $.ajax({
                                 url: '/get-updated-prices',
                                 method: 'GET',
                                 success: function (pricesData) {
-                                   
                                     $('#totalPrice').text(pricesData.totalPrice);
     
-                                  
                                     pricesData.updatedPrices.forEach(updatedPrice => {
-                                        
                                         $('td[data-product-id="' + updatedPrice.productId + '"]').text('₹ ' + updatedPrice.price);
                                     });
+    
+                                    // Update the stock information
+                                    stockElement.text('Stock: ' + data.updatedStock); // Assuming the server sends back updated stock
                                 },
                                 error: function (error) {
                                     console.error('Error fetching updated prices:', error);
