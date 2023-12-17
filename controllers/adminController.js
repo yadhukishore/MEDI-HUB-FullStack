@@ -1,6 +1,7 @@
 // controllers/adminController.js
 const User = require('../models/user');
 const Product = require('../models/product');
+const Order = require('../models/order');
 const bcrypt = require('bcrypt');
 const Admin = require('../models/admin');
 const categoryName = require('../models/category');
@@ -86,25 +87,21 @@ exports.postAdminLogin = [
       const adminUser = await Admin.findOne({ username });
       console.log("adminuser:" + adminUser);
 
-      // Check if the user exists and if their password is correct
       if (adminUser && adminUser.isAdmin) {
         const passwordMatch = await bcrypt.compare(password, adminUser.password);
         console.log("passwordMatch");
 
         if (passwordMatch) {
-          req.session.user = { isAdmin: true }; // Set isAdmin to true for the session
+          req.session.adminUser = { isAdmin: true }; 
           res.redirect('/admin');
           return;
         }
       }
 
-      // Set error flash message
       req.flash('error', 'Invalid username or password');
       res.redirect('/admin/admin_login');
     } catch (error) {
       console.error('Error during admin login:', error);
-
-      // Set error flash message
       req.flash('error', 'Internal Server Error');
       res.redirect('/admin/admin_login');
     }
@@ -112,8 +109,7 @@ exports.postAdminLogin = [
 ];
 
 exports.getAdminRoute = async (req, res) => {
-  console.log('Session user:', req.session.user);
-  if (req.session.user && req.session.user.isAdmin) {
+  if (req.session.adminUser && req.session.adminUser.isAdmin) {
     try {
       const products = await Product.find({ deleted: false })
         .populate('category', 'categoryName')  .select('-__v'); 
@@ -148,10 +144,9 @@ exports.postAdminAddProduct = async (req, res) => {
       productDescription,
       productPrice,
       productCategory,
-      stock, // New field for quantity
+      stock, 
     } = req.body;
 
-    // Access the file data from req.files
     const productImages = req.files.map(file => file.filename);
 
     if (productImages.length === 0) {
@@ -167,13 +162,11 @@ exports.postAdminAddProduct = async (req, res) => {
       throw new Error('Product price must be a non-negative number.');
     }
 
-    // Validate quantity
     const parsedStock = parseInt(stock);
     if (isNaN(parsedStock) || parsedStock < 1) {
       throw new Error('You need to add at least one quantity of your product!');
     }
 
-    // Retrieve the category document based on the category name
     const category = await categoryName.findOne({ categoryName: productCategory });
 
     if (!category) {
@@ -185,9 +178,9 @@ exports.postAdminAddProduct = async (req, res) => {
       name: productName,
       description: productDescription,
       price: nonNegPrice,
-      category: category._id, // Use the _id of the category
+      category: category._id, 
       images: productImages,
-      stock: parsedStock, // Add quantity to the product
+      stock: parsedStock, 
     });
 
 console.log("Product is about to save!");
@@ -268,13 +261,11 @@ exports.getAdminEdit = async (req, res) => {
       stock: parseInt(parsedStock), 
     };
 
-    // Update existing images
     if (req.files && req.files.length > 0) {
       const newImages = req.files.map(file => file.filename);
       updateData.images = newImages;
     }
 
-    // Use findOneAndUpdate to update the product without removing existing images
     await Product.findByIdAndUpdate(productId, updateData);
 
     console.log("Update image saved");
@@ -291,13 +282,11 @@ exports.deleteInEditProduct = async (req, res) => {
     const productId = req.params.productId;
     const imageName = req.params.imageName;
 
-    // Find the product by ID
     const product = await Product.findById(productId);
 
-    // Filter out the image to be deleted
+    // Image te assosiation kalanju from the product without actually deleting the image file.
     product.images = product.images.filter(image => image !== imageName);
 
-    // Save the updated product
     await product.save();
 
     res.json({ success: true, message: 'Image deleted successfully' });
@@ -340,7 +329,7 @@ exports.deleteInEditProduct = async (req, res) => {
 
  exports.getUserList = async (req, res) => {
 
-  if (req.session.user && req.session.user.isAdmin) {
+  if (req.session.adminUser && req.session.adminUser.isAdmin) {
     try {
      
       const users = await User.find();
@@ -430,7 +419,7 @@ exports.postAdminAddUser = async (req, res) => {
 
 
 exports.getCategoryList = async (req, res) => {
- if (req.session.user && req.session.user.isAdmin) {
+  if (req.session.adminUser && req.session.adminUser.isAdmin) {
     try {
       const categories = await categoryName.find({},'categoryName');
 
@@ -535,3 +524,81 @@ exports.deleteCategory= async(req,res)=>{
   }
 
 }
+
+exports.getListAllOrders = async (req, res) => {
+  try {
+      // Fetch all orders with relevant information
+      const orders = await Order.find().populate({
+          path: 'products.product',
+          select: 'name category price',
+      }).populate('user', 'username').exec();
+
+      // Render the EJS template for the list of all orders with the orders data
+      res.render('./admin/list-all-orders.ejs', { orders });
+  } catch (error) {
+      console.error('Error fetching all orders:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+exports.updateOrderStatus = async (req, res) => {
+  try {
+      console.log("Called updateOrderStatus");
+      const statusUpdates = Object.keys(req.body)
+          .filter(key => key.startsWith('status_'))
+          .reduce((updates, key) => {
+              const orderId = key.replace('status_', '');
+              updates.push({ orderId, status: req.body[key] });
+              return updates;
+          }, []);
+
+      // Update the status of each order
+      await Promise.all(statusUpdates.map(async update => {
+          await Order.findByIdAndUpdate(update.orderId, { status: update.status });
+      }));
+
+      res.redirect('/list-all-orders');
+  } catch (error) {
+      console.error('Error updating order status:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+exports.getReturnRequests = async (req, res) => {
+  try {
+    const returnRequests = await Order.find({ 'returnRequest.status': 'Pending', 'returnRequest.reason': { $exists: true, $ne: null } })
+      .populate('user') // Populate the user field in the order
+      .exec();
+
+    res.render('./admin/returnRequests.ejs', { returnRequests });
+  } catch (error) {
+    console.error('Error fetching return requests:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+exports.processReturnRequest = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const { action } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (action === 'approve') {
+      order.returnRequest.status = 'Approved';
+    } else if (action === 'decline') {
+      order.returnRequest.status = 'Declined';
+    }
+console.log("order: ",order);
+    await order.save();
+
+    res.redirect('/return-requests');
+  } catch (error) {
+    console.error('Error processing return request:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};

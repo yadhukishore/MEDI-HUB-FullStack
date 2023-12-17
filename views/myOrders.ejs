@@ -35,7 +35,7 @@
   
         nav {
             background-color: #333;
-            padding: 10px;
+            
             color: white;
         }
 
@@ -121,42 +121,118 @@
 </head>
 <body>
     <!-- nav bar -->
-   <%- include("../views/partials/userNavbar.ejs") %>
+    <nav>
+        <%- include("./partials/userNavbar.ejs") %>
+    </nav>
+   
     <div class="container">
         <h1>Your Orders</h1>
-      
-<% if (orders.length > 0) { %>
-    <% orders.forEach(order => { %>
-        <div class="order-container">
-            <h3>Order ID: <%= order._id %></h3>
-            <p>Order Date: <%= order.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
 
+        <% if (messages.success) { %>
+            <div class="alert alert-success">
+              <%= messages.success %>
+            </div>
+          <% } else if (messages.error) { %>
+            <div class="alert alert-danger">
+              <%= messages.error %>
+            </div>
+          <% } %>
 
-            <h4>Products:</h4>
-            <% order.products.forEach(product => { %>
-                <div class="product-container">
-                   
-                    <p>Product Name: <%= product.name %></p>
-                    <p>Product Price: ₹ <%= product.price %></p>
-                    <p>Quantity: <%= product.quantity %></p>
-                </div>
-            <% }); %>
-<hr>
-            <p>Total Amount: ₹ <%= order.totalAmount %></p>
-            <p>Payment Method: <%= order.paymentMethod %></p>
-        </div>
-    <% }); %>
+        <% if (orders.length > 0) { %>
+            <% orders.forEach(order => { %>
+                <div class="order-container">
+                    <h3>Order ID: <%= order._id %></h3>
+                    <p>Ordered Date: <%= order.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                    <p style="color: green;">Delivery Date: <%= order.deliveryDate ? order.deliveryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Calculating...' %></p>
+                    <p style="color: blue;">Status: <%= order.status %></p>
+
+                    <h4>Products:</h4>
+                    <% order.products.forEach(product => { %>
+                        <div class="product-container">
+                            <p>Product Name: <%= product.product.name %></p>
+                            <p>Product Price: ₹ <%= product.price %></p>
+                            <p>Quantity: <%= product.quantity %></p>
+                        </div>
+                    <% }); %>
+
+                    <hr>
+                  
+
+                    <p>Total Amount: ₹ <%= order.totalAmount %></p>
+                    <p>Payment Method: <%= order.paymentMethod %></p>
+                    <p id="returnStatus_<%= order._id %>"></p>
+
+                  <!-- Display Cancel/Return button based on order status -->
+<% if (order.status === 'Delivered') { %>
+    <button class="btn btn-primary" onclick="showReturnForm('<%= order._id %>')">Return Order</button>
+    <!-- Hidden return request form -->
+    <div id="returnForm_<%= order._id %>" style="display: none;">
+        <form method="post" action="/submit-return-request/<%= order._id %>">
+            <label for="returnReason_<%= order._id %>">Return Reason:</label>
+            <textarea id="returnReason_<%= order._id %>" name="returnReason" rows="4" cols="50"></textarea>
+            <!-- Include order ID in the form data -->
+            <input type="hidden" name="orderId" value="<%= order._id %>">
+            <button type="submit">Submit Return Request</button>
+        </form>
+    </div>
+<% } else if (order.status === 'OutForDelivery') { %>
+    <!-- Disable the Cancel Order button -->
+    <button class="btn btn-danger" disabled>Cancel(Out for Delivery)</button>
 <% } else { %>
-    <p>No orders found.</p>
+    <button class="btn btn-danger" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
 <% } %>
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <!-- Font Awesome JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No orders found.</p>
+        <% } %>
 
+        <!-- Bootstrap JS and Popper.js -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <!-- Font Awesome JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+
+        <!-- Script to handle order cancellation/return -->
+        <script>
+            function cancelOrder(orderId) {
+                // Implement cancellation logic here
+                console.log('Order cancelled: ', orderId);
+            }
+
+            function showReturnForm(orderId) {
+                // Show the return request form
+                const returnForm = document.getElementById(`returnForm_${orderId}`);
+                if (returnForm) {
+                    returnForm.style.display = 'block';
+                }
+            }
+        </script>
+        <script>
+            async function cancelOrder(orderId) {
+              try {
+                // Fetch API to send a POST request to cancel the order
+                const response = await fetch(`/cancel-order/${orderId}`, {
+                  method: 'POST',
+                });
+          
+                if (response.ok) {
+                  console.log('Order cancelled successfully');
+                  // You may want to update the UI to reflect the cancelled status
+                } else {
+                  console.error('Failed to cancel order:', response.statusText);
+                }
+              } catch (error) {
+                console.error('Error cancelling order:', error);
+              }
+            }
+          
+            // ... your other functions and script logic
+          </script>
+    </div>
 </body>
+
 
 </html>

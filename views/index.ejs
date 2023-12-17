@@ -98,6 +98,11 @@
         .card :hover{
             background-color: #dfede0;
         }
+        .pagination-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
     </style>
  
     <script>
@@ -112,6 +117,16 @@
    <%- include("../views/partials/userNavbar.ejs") %>
 
     <div class="container">
+
+      <% if (messages.success) { %>
+        <div class="alert alert-success">
+            <%= messages.success %>
+        </div>
+    <% } else if (messages.error) { %>
+        <div class="alert alert-danger">
+            <%= messages.error %>
+        </div>
+    <% } %>
         <div class="row">
           <!-- Loop through products and create Bootstrap cards -->
           <% products.forEach(product => { %>
@@ -150,13 +165,20 @@
                         </div>
                       </div>
 
-                  <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning">Add to Cart</a>
+                      <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning">
+                        <% if (user && user.cart && user.cart.some(item => item.product._id.toString() === product._id.toString())) { %>
+                          Go to Cart
+                        <% } else { %>
+                          Add to Cart
+                        <% } %>
+                      </a>
                   
                 </div>
               </div>
             </div>
           <% }); %>
         </div>
+        
       </div>
 
     <!-- Optional: Add Bootstrap JS and Popper.js for Bootstrap functionality -->

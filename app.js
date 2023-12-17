@@ -20,7 +20,7 @@ const  userCartController = require('./controllers/userCartController');
 const userAccController = require('./controllers/userAccController');
 const userCheckoutController =require('./controllers/userCheckoutController');
 const userOrderController = require('./controllers/userOrderController');
-
+const errorHandlerMiddleware = require('./utils/errorHandler');
 
 
 // Connect to MongoDB
@@ -48,9 +48,10 @@ app.use(session({
   store: store
 }));
 app.use(flash());
-app.set('views', path.join(__dirname, 'views'));
+
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use('/public', express.static('public'));
 
@@ -160,6 +161,12 @@ app.get('/add_category',adminController.getAddCategory);
 app.post('/add_category',adminController.postAddCategory);
 app.get('/edit_category/:id',adminController.getEditCategory);
 app.post('/edit_category/:id',adminController.postEditCategory);
+app.get('/list-all-orders', adminController.getListAllOrders);
+app.post('/update-order-status',adminController.updateOrderStatus);
+app.post('/cancel-order/:orderId',userOrderController.cancelOrder);
+app.post('/submit-return-request/:orderId',userOrderController.submitReturnRequest);
+app.get('/returnRequests',adminController.getReturnRequests);
+app.post('/admin/process-return-request/:orderId',adminController.processReturnRequest);
 app.get('/search',productController.searchProducts)
 // Fetch Products from the Database
 app.get('/', async (req, res) => {
@@ -167,10 +174,8 @@ app.get('/', async (req, res) => {
     const products = await Product.find({ deleted: false })
     .populate('category', 'categoryName');
 
-    // Check if the user is authenticated
     let user = null;
     if (req.session.user) {
-      // If authenticated, fetch user information including the cart
       user = await User.findById(req.session.user._id).populate('cart.product');
     }
 
@@ -209,7 +214,9 @@ app.get('/orderSuccess',userOrderController.getOrderSuccess);
 app.get('/myOrders',userOrderController.getMyOrders);
 app.post('/logout', userAuthController.postUserLogout);
 
-
+//ErrorHandler
+app.use(errorHandlerMiddleware.notFound);
+app.use(errorHandlerMiddleware.errorHandler);
 
 app.listen(3009, () => {
   console.log('Server started on port 3009');

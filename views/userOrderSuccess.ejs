@@ -35,6 +35,7 @@
 </head>
 
 <body>
+    
 
     <div class="container">
         <div class="row">
@@ -47,7 +48,7 @@
                     <p>Order ID: <%= order._id %></p>
                     
                     <p>Order Date: <%= order.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p><hr>
-
+                    <p>Delivery Date: <%= order.deliveryDate ? order.deliveryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Pending...' %></p>
 
                     <p>Total Amount: ₹ <%= order.totalAmount %></p>
                     <p>Payment Method: <%= order.paymentMethod %></p><hr>

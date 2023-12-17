@@ -6,15 +6,16 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
-      padding-top: 0;
-      margin-top: 56px;
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #dfede0;
     }
 
     nav {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+      background-color: #333;
+            padding: 10px;
+            color: white;
     }
 
     nav img {
@@ -180,25 +181,9 @@
 </head>
 <body>
   <!-- Bootstrap Navbar -->
-  <nav class="navbar navbar-dark bg-dark fixed-top">
-    <!-- Logo on the left -->
-    <img src="/public/images/logoMedi.jpg" alt="LoGo">
+    <!-- nav bar -->
+    <%- include("../views/partials/userNavbar.ejs") %>
 
-    <!-- Login button or user name on the right -->
-    <% if (user) { %>
-      <div class="user-dropdown">
-        <button class="btn btn-success" onclick="toggleDropdown()">Welcome, <%= user.username %>!</button>
-        <div id="dropdown-content">
-          <form action="/logout" method="POST">
-            <button>Cart</button>
-            <button type="submit" class="btn btn-danger">Logout</button>
-          </form>
-        </div>
-      </div>
-    <% } else { %>
-      <button class="btn btn-outline-success" onclick="window.location.href='/login'">Login/Register</button>
-    <% } %>
-  </nav>
 
   <!-- Product Details Container -->
   <div class="container product-container">
@@ -237,14 +222,27 @@
       <p class="lead">Details: <%= product.description %></p>
       <p class="text-muted">Category: <%= product.category.categoryName %> </p>
       <p class="h4">Price: <span class="text-success"><strong><%= product.price %> rs</strong></span></p>
-
+      <div class="col-md-6 text-right">
+        <!-- Display a message if stock is less than or equal to 5 -->
+        <% if (product.stock <= 5 && product.stock > 1) { %>
+          <p class="card-text text-danger">Only <%= product.stock %> left!</p>
+        <% } else if (product.stock === 1) { %>
+          <p class="card-text text-danger">Last in stock!</p>
+        <% } else if (product.stock === 0) { %>
+          <p class="card-text text-danger">Out of Stock!</p>
+        <% } %>
+      </div>
       <!-- Additional details or features -->
 
       <!-- Action buttons -->
       <div class="action-buttons mt-4">
         <button class="btn btn-primary btn-lg">Buy Now</button>
        
-        <a href="/add-to-cart/<%= product._id %>" class="btn btn-outline-danger btn-lg">Add to Cart</a>
+        <a href="/add-to-cart/<%= product._id %>" class="btn btn-outline-danger btn-lg"> <% if (user && user.cart && user.cart.some(item => item.product._id.toString() === product._id.toString())) { %>
+          Go to Cart
+        <% } else { %>
+          Add to Cart
+        <% } %></a>
         <button class="btn btn-outline-secondary btn-lg">Add to Wishlist</button>
       </div>
     </div>

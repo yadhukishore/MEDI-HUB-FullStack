@@ -184,6 +184,7 @@
                                     <th>Title</th>
                                     <th>Quantity</th>
                                     <th>Price</th>
+                                    <th>Total</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -199,7 +200,8 @@
                                                 <!-- Provide a default image or message if there are no images -->
                                                 <img src="/public/default-image.jpg" alt="No Image" style="max-width: 50px;">
                                             <% } %>
-                                            <p>Stock: <%= item.product.stock %></p>
+                                            <p>Stock of <%= item.product.stock %></p>
+                                            
                                         </td>
                                         <td><%= item.product.name %></td>
                                         
@@ -211,6 +213,7 @@
 
                                             
                                         </td>
+                                        <td><p>₹ <%= item.product.price %></p></td>
                                         <td class="product-price" data-product-id="<%= item.product._id %>">₹ <%= item.product.price * item.quantity %></td>
                                         <td>
                                             <form method="post" action="/removeFromCart/<%= item.product._id %>">
@@ -225,7 +228,7 @@
 
                         <!-- Display Total Price and Checkout Button -->
                         <div class="mt-4 text-right" id="totalPriceContainer">
-                            <p>Total Price: <strong> ₹<span id="totalPrice"><%= totalPrice %></span></strong></p>
+                            <p>Checkout Price: <strong> ₹<span id="totalPrice"><%= totalPrice %></span></strong></p>
                           <a href="/userCheckout" class="btn btn-warning btn-lg">Proceed to Checkout </a>
                         </div>
                         
@@ -248,7 +251,7 @@
     <script>
         function updateQuantity(productId, quantityChange, button) {
             var quantityElement = $(button).siblings('.quantity');
-            var stockElement = $(button).closest('tr').find('.stock'); // Add this line to get the stock element
+            var stockElement = $(button).closest('tr').find('.stock');
     
             var currentQuantity = parseInt(quantityElement.text());
             var newQuantity = currentQuantity + quantityChange;

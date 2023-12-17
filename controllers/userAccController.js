@@ -162,7 +162,7 @@ exports.deleteAddress = [verifyLogin, async (req, res) => {
             { $pull: { addresses: { _id: addressId } } },
             { new: true } // To get the updated user document
         );
-
+        req.flash('success', 'Address Deleted!!!');
         console.log("Address Deleted!!!!");
         res.redirect('/userAccount'); 
     } catch (error) {

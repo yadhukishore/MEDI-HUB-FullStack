@@ -7,7 +7,6 @@ const orderSchema = new mongoose.Schema({
         required: true,
     },
     address: {
-        // Assuming you have an Address schema, replace with the actual reference
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address',
         required: true,
@@ -24,6 +23,14 @@ const orderSchema = new mongoose.Schema({
                 default: 1,
                 required: true,
             },
+            price: {
+                type: Number, 
+                required: true,
+            },
+            name: {
+                type: String,
+                required: true,
+            },
         },
     ],
     totalAmount: {
@@ -33,6 +40,27 @@ const orderSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
         required: true,
+    },
+    deliveryDate: {
+        type: Date,
+    },
+    status: {
+        type: String,
+        enum: ['Confirmed','Shipped','Delivered','Out for delivery', 'Cancelled'],
+        default: 'Pending',
+        required: true,
+    },
+    returnRequest: {
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        reason: String,
+        status: {
+            type: String,
+            enum: ['Pending', 'Approved', 'Declined'],
+            default: 'Pending',
+        },
     },
     createdAt: {
         type: Date,

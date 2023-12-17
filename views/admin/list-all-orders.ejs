@@ -1,0 +1,159 @@
+<!-- list-all-orders.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List All Orders</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            display: flex;
+        }
+
+        #sidebar {
+            min-width: 250px;
+            background-color: #333;
+            padding: 20px;
+            color: white;
+        }
+
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        nav img {
+            height: 50px;
+        }
+
+        nav button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        } .navbar {
+            position: sticky;
+            top: 1;
+            z-index: 1000;
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-top: -20px;
+        }
+
+        .navbar-brand {
+            margin-right: 0; /* Remove default margin for the brand */
+        }
+
+        .sidebar-link {
+            font-size: 18px; /* Adjust the font size as needed */
+            font-weight: bold; /* Optional: Add bold styling */
+            /* Add any additional styling properties as needed */
+        }
+        #sidebar {
+            min-width: 250px;
+            background-color: #333;
+            padding: 20px;
+            color: white;
+            position: sticky;
+            top: 0;
+            height: 100vh; /* Set a fixed height for the sidebar */
+            overflow-y: auto; /* Add scroll if content exceeds the height */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <%- include('../partials/adminSidebar.ejs', { activePage: 'ordersList' }) %>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Navbar -->
+            <%- include('../partials/adminNavbar.ejs') %>
+
+            <div class="container">
+                <form method="post" action="/update-order-status">
+                    <h1>List of All Orders</h1>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Order ID</th>
+                                <th>Username</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orders.forEach(order => { %>
+                                <tr>
+                                    <td><%= order.products && order.products[0] && order.products[0].product && order.products[0].product.name || 'N/A' %></td>
+                                    <td><%= order._id %></td>
+                                    <td><%= order.user && order.user.username || 'N/A' %></td>
+                                    <td>₹<%= order.products && order.products[0] && order.products[0].price || 'N/A' %></td>
+                                    <td>
+                                        <select name="status_<%= order._id %>">
+                                            <option value="Confirmed" <%= order.status === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                            <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                            <option value="OutForDelivery" <%= order.status === 'OutForDelivery' ? 'selected' : '' %>>Out For Delivery</option>
+                                            <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                            <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    <button type="submit">Update Status</button>
+                   
+                </form>
+                <button class="btn btn-primary float-right" onclick="location.href='/returnRequests'">See all return requests</button>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $("#sidebar-toggle").click(function() {
+            $("#sidebar").toggle();
+        });
+    </script>
+</body>
+
+</html>

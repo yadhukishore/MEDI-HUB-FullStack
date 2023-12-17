@@ -19,7 +19,12 @@ exports.getCheckoutPage = [verifyLogin, async (req, res) => {
             
             const user = await User.findById(req.session.user._id).populate('cart.product');
              const totalPrice = calculateTotalPrice(user.cart);
-            res.render('./userCheckout.ejs', { user, totalPrice });
+             const productDetails = user.cart.map(item => ({
+                name: item.product.name,
+                price: item.product.price,
+                quantity: item.quantity
+            }));
+            res.render('./userCheckout.ejs', { user, totalPrice,productDetails });
         } else {
             req.flash('error', 'Please log in to view your account details.');
             res.redirect('/login');

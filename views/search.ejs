@@ -14,16 +14,16 @@
 </head>
 <body>
     <div class="container">
-        <h3 style="color: rgb(11, 184, 126);"> </style>Search Results for "<%= query %>"</h3>
+        <h3 style="color: rgb(11, 184, 126);">Search Results for "<%= query %>"</h3>
 
-        <% if (products.length > 0) { %>
+        <% if (products.length > 0 || categories.length > 0) { %>
             <!-- Display search results as cards or any preferred format -->
             <div class="row">
                 <% products.forEach(product => { %>
                     <div class="col-md-4 mb-4">
                         <div class="card">
                             <a href="/product/<%= product._id %>">
-                                <% if (product.images.length > 0) { %>
+                                <% if (product.images && product.images.length > 0) { %>
                                     <img src="/public/uploads/<%= product.images[0] %>" alt="<%= product.name %>" style="max-width: 100%;">
                                 <% } else { %>
                                     <img src="/public/default-image.jpg" alt="No Image" style="max-width: 100%;">
@@ -36,9 +36,38 @@
                         </div>
                     </div>
                 <% }); %>
+
+                <% categories.forEach(category => { %>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Category: <%= category.categoryName %></h5>
+                                <!-- You may want to adjust the href below based on your requirements -->
+                                <a href="/category/<%= category._id %>">
+                                    <!-- Assuming you want to display the first product associated with the category -->
+                                    <% const categoryProduct = categoryProducts.find(product => product.category._id.equals(category._id)); %>
+                                    <% if (categoryProduct && categoryProduct.images && categoryProduct.images.length > 0) { %>
+                                        <img src="/public/uploads/<%= categoryProduct.images[0] %>" alt="<%= categoryProduct.name %>" style="max-width: 100%;">
+                                    <% } else { %>
+                                        <img src="/public/default-image.jpg" alt="No Image" style="max-width: 100%;">
+                                    <% } %>
+                                </a>
+                                <div class="card-body">
+                                    <!-- Display the name and price of the first product associated with the category -->
+                                    <% if (categoryProduct) { %>
+                                        <h5 class="card-title"><%= categoryProduct.name %></h5>
+                                        <p class="card-text">Price: <%= categoryProduct.price %> rs</p>
+                                    <% } else { %>
+                                        <p>No products found in this category.</p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
             </div>
         <% } else { %>
-            <p>No products found.</p>
+            <p>No products or categories found.</p>
         <% } %>
     </div>
 

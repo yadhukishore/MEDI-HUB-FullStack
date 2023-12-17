@@ -1,12 +1,17 @@
 <!-- views/admin/add_product.ejs -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.css" integrity="sha384-vQzlfxhMj8NOQJUYUJZ7c5MKu7f4sJq/mh65aDwa5NA0MLGYnWxZ3ZtIovdmO61s" crossorigin="anonymous">
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.css"
+        integrity="sha384-vQzlfxhMj8NOQJUYUJZ7c5MKu7f4sJq/mh65aDwa5NA0MLGYnWxZ3ZtIovdmO61s"
+        crossorigin="anonymous">
     <!-- Add your CSS styles for the form here -->
     <style>
         body {
@@ -15,24 +20,27 @@
             padding: 0;
         }
 
-        form {
-            width: 60%;
-            margin: 20px auto;
+        .wrapper {
+            display: flex;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
+        #sidebar {
+            min-width: 250px;
+            background-color: #333;
+            padding: 20px;
+            color: white;
         }
 
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 16px;
-            box-sizing: border-box;
+        #content {
+            flex-grow: 1;
+            padding: 20px;
         }
 
-        button {
+        nav img {
+            height: 50px; /* Set the desired height for your logo */
+        }
+
+        nav button {
             background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
@@ -40,91 +48,175 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        .container {
+            margin-top: 20px; /* Add space between the navigation bar and content */
+        }
+
+        .add-product-button {
+            margin-bottom: 20px; /* Add space below the "Add Product" button */
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px; /* Add space below the table */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 1;
+            z-index: 1000;
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-top: -20px;
+        }
+
+        .navbar-brand {
+            margin-right: 0; /* Remove default margin for the brand */
+        }
+
+        .sidebar-link {
+            font-size: 18px; /* Adjust the font size as needed */
+            font-weight: bold; /* Optional: Add bold styling */
+            /* Add any additional styling properties as needed */
+        }
+        #sidebar {
+            min-width: 250px;
+            background-color: #333;
+            padding: 20px;
+            color: white;
+            position: sticky;
+            top: 0;
+            height: 100vh; /* Set a fixed height for the sidebar */
+            overflow-y: auto; /* Add scroll if content exceeds the height */
+        }
     </style>
 </head>
+
 <body>
-    <h1>Add Product</h1>
-    <form action="/admin/add_product" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="productName">Product Name</label>
-            <input type="text" class="form-control" id="productName" name="productName" required>
-        </div>
-        <div class="form-group">
-            <label for="productDescription">Product Description</label>
-            <textarea class="form-control" id="productDescription" name="productDescription" rows="3" required></textarea>
-        </div>
-        <div class="form-group">
-            <% if(error){%>
-                <p style="color: red;"><%= error %></p>
-                <% console.log('Error in view:', error); %>
-                <% } %>
-            <label for="productPrice">Product Price</label>
-            <input type="number" class="form-control" id="productPrice" name="productPrice" step="0.01" required>
-        </div>
-        <div class="form-group">
-           
-            <label for="productCategory">Product Category:</label>
-            <select class="form-control" id="productCategory" name="productCategory" required>
-                <option value="" selected disabled>Choose Category</option>
-                <% categories.forEach(category => { %>
-                    <option value="<%= category.categoryName %>"><%= category.categoryName %></option>
-                <% }); %>
-            </select>
-        </div>
-        <br><hr>
-        <div class="form-group">
-            <label for="coverImage">Cover Image:</label>
-            <input type="file" class="form-control-file" id="coverImage" name="productImages" accept="image/*" required>
-            <div id="selectedImagesCover"></div>
-        </div><hr>
-        
-        <div class="form-group">
-            <label for="image2">Image 2:</label>
-            <input type="file" class="form-control-file" id="image2" name="productImages" accept="image/*" required>
-            <div id="selectedImages2"></div>
-        </div><hr>
-        
-        <div class="form-group">
-            <label for="image3">Image 3 (Optional):</label>
-            <input type="file" class="form-control-file" id="image3" name="productImages" accept="image/*">
-            <div id="selectedImages3"></div>
-        </div><hr>
-        
-        <div class="form-group">
-            <label for="image4">Image 4 (Optional):</label>
-            <input type="file" class="form-control-file" id="image4" name="productImages" accept="image/*">
-            <div id="selectedImages4"></div>
-        </div><hr>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <%- include('../partials/adminSidebar.ejs', { activePage: 'productList' }) %>
 
-       <!-- field for stock -->
-<div class="mb-3">
-    <label for="stock" class="form-label">Stock</label>
-    <input type="number" class="form-control form-control-lg" id="stock" name="stock" placeholder="Enter stock" aria-label="stock">
-  </div>
-  
-        
-        
-        <button type="submit" class="btn btn-primary">Add Product</button>
-    </form>
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Navbar -->
+            <%- include('../partials/adminNavbar.ejs') %>
+            <div class="container">
+                <h1 class="mt-4">Add Product</h1>
+                <form action="/admin/add_product" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="productName">Product Name</label>
+                        <input type="text" class="form-control" id="productName" name="productName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">Product Description</label>
+                        <textarea class="form-control" id="productDescription" name="productDescription" rows="3"
+                            required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <% if(error){%>
+                        <p style="color: red;"><%= error %></p>
+                        <% console.log('Error in view:', error); %>
+                        <% } %>
+                        <label for="productPrice">Product Price</label>
+                        <input type="number" class="form-control" id="productPrice" name="productPrice" step="0.01"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Product Category:</label>
+                        <select class="form-control" id="productCategory" name="productCategory" required>
+                            <option value="" selected disabled>Choose Category</option>
+                            <% categories.forEach(category => { %>
+                            <option value="<%= category.categoryName %>"><%= category.categoryName %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="coverImage">Cover Image:</label>
+                        <input type="file" class="form-control-file" id="coverImage" name="productImages"
+                            accept="image/*" required>
+                        <div id="selectedImagesCover"></div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="image2">Image 2:</label>
+                        <input type="file" class="form-control-file" id="image2" name="productImages" accept="image/*"
+                            required>
+                        <div id="selectedImages2"></div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="image3">Image 3 (Optional):</label>
+                        <input type="file" class="form-control-file" id="image3" name="productImages"
+                            accept="image/*">
+                        <div id="selectedImages3"></div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="image4">Image 4 (Optional):</label>
+                        <input type="file" class="form-control-file" id="image4" name="productImages"
+                            accept="image/*">
+                        <div id="selectedImages4"></div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" name="stock" placeholder="Enter stock"
+                            aria-label="stock">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </form>
+                <script>
+                    document.getElementById('coverImage').addEventListener('change', handleFileSelect.bind(null,
+                        'selectedImagesCover'));
+                    document.getElementById('image2').addEventListener('change', handleFileSelect.bind(null,
+                        'selectedImages2'));
+                    document.getElementById('image3').addEventListener('change', handleFileSelect.bind(null,
+                        'selectedImages3'));
+                    document.getElementById('image4').addEventListener('change', handleFileSelect.bind(null,
+                        'selectedImages4'));
+
+                    function handleFileSelect(containerId, event) {
+                        const files = event.target.files;
+                        const selectedImagesContainer = document.getElementById(containerId);
+                        selectedImagesContainer.innerHTML = ''; // Clear previous images
+
+                        for (const file of files) {
+                            const image = document.createElement('img');
+                            image.src = URL.createObjectURL(file);
+                            image.alt = file.name;
+                            image.style.maxWidth = '75px'; // Adjust the size as needed
+                            selectedImagesContainer.appendChild(image);
+                        }
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <script>
-        document.getElementById('coverImage').addEventListener('change', handleFileSelect.bind(null, 'selectedImagesCover'));
-        document.getElementById('image2').addEventListener('change', handleFileSelect.bind(null, 'selectedImages2'));
-        document.getElementById('image3').addEventListener('change', handleFileSelect.bind(null, 'selectedImages3'));
-        document.getElementById('image4').addEventListener('change', handleFileSelect.bind(null, 'selectedImages4'));
-
-        function handleFileSelect(containerId, event) {
-            const files = event.target.files;
-            const selectedImagesContainer = document.getElementById(containerId);
-            selectedImagesContainer.innerHTML = ''; // Clear previous images
-
-            for (const file of files) {
-                const image = document.createElement('img');
-                image.src = URL.createObjectURL(file);
-                image.alt = file.name;
-                image.style.maxWidth = '75px'; // Adjust the size as needed
-                selectedImagesContainer.appendChild(image);
-            }
-        }
+        $("#sidebar-toggle").click(function() {
+            $("#sidebar").toggle();
+        });
     </script>
 </body>
+
 </html>

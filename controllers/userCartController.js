@@ -45,7 +45,7 @@ exports.getUserCart = [verifyLogin, async (req, res) => {
 exports.addToCart = [verifyLogin, async (req, res) => {
     try {
         if (!req.session.user) {
-            return res.status(401).json({ message: 'User not authenticated' });
+            return res.status(404).json({ message: 'User not authenticated' });
         }
 
         const user = await User.findById(req.session.user._id).populate('cart.product');
@@ -79,12 +79,14 @@ exports.addToCart = [verifyLogin, async (req, res) => {
 
             // Temporarily reduce the global stock
             product.stock -= 1;
+            req.flash('success', 'Product added to cart successfully.');
 
             await user.save();
 
             return res.redirect('/userCart');
         } else {
-            return res.status(400).json({ message: 'Product is out of stock or userStock limit reached' });
+            req.flash('error', 'Sorry product is out of stock! ');
+            return res.redirect('/');
         }
 
     } catch (error) {
@@ -94,13 +96,11 @@ exports.addToCart = [verifyLogin, async (req, res) => {
 }];
 
 
-  
-// Remove product from user's cart
 exports.removeFromCart = [verifyLogin, async (req, res) => {
     try {
 
         if (!req.session.user) {
-            return res.status(401).json({ message: 'User not authenticated' });
+            return res.status(404).json({ message: 'User not authenticated' });
         }
 
         const user = await User.findById(req.session.user._id).populate('cart.product');
@@ -116,7 +116,7 @@ exports.removeFromCart = [verifyLogin, async (req, res) => {
 
         user.cart = user.cart.filter(item => item.product._id.toString() !== productId);
         await user.save();
-
+        req.flash('success', 'Product Removed from cart !');
         res.redirect('/userCart'); 
 
     } catch (error) {
@@ -207,12 +207,14 @@ exports.getUpdatedPrices = [verifyLogin, async (req, res) => {
         user.cart.forEach(item => {
             totalPrice += item.product.price * item.quantity;
             updatedPrices.push({ productId: item.product._id, price: item.product.price * item.quantity });
+       
         });
 
         user.totalPrice = totalPrice;
 
         await user.save();
-
+        
+        
         res.status(200).json({ totalPrice: totalPrice, updatedPrices: updatedPrices });
     } catch (error) {
         console.error('Error fetching updated prices:', error);

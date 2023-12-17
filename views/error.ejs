@@ -1,14 +1,76 @@
 <!-- views/error.ejs -->
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Error</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ddefa6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .error-image {
+            max-width: 800px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #dc3545;
+        }
+
+        p {
+            color: #6c757d;
+        }
+
+        .btn-home {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .btn-home:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Error</h1>
-  <p><%= error %></p>
+    <div class="container">
+        <img src="https://png.pngtree.com/thumb_back/fh260/background/20211204/pngtree-system-error-background-image_918400.png" alt="Error Image" class="error-image">
+        <h1><strong> Oops!</strong></h1>
+        <h1 class="text-danger"><%= statusCode %> Error Occurred</h1>
+        <p><%= message %></p>
+        <a href="/" class="btn btn-home">Go to Home</a>
+      
+    </div>
+
+    <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
