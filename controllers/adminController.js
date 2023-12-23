@@ -8,7 +8,7 @@ const categoryName = require('../models/category');
 const saltRounds = 10;
 const fs = require('fs').promises;
 const { check, validationResult } = require('express-validator');
-
+const adminAuthMiddleware = require('../middleware/adminAuthMiddleware');
 
 //admin signup
 exports.getAdminSignup=(req,res)=>{
@@ -108,22 +108,24 @@ exports.postAdminLogin = [
   }
 ];
 
-exports.getAdminRoute = async (req, res) => {
-  if (req.session.adminUser && req.session.adminUser.isAdmin) {
+exports.getAdminRoute = [
+  adminAuthMiddleware, 
+  async (req, res) => {
     try {
       const products = await Product.find({ deleted: false })
-        .populate('category', 'categoryName')  .select('-__v'); 
+        .populate('category', 'categoryName')
+        .select('-__v');
 
       res.render('admin/admin_panel', { products });
     } catch (error) {
       console.error('Error fetching products:', error);
       res.redirect('/admin/admin_login');
     }
-  } else {
-    res.redirect('/admin/admin_login');
   }
-};
-exports.getAdminAddProduct = async (req, res) => {
+];
+
+exports.getAdminAddProduct = [
+  adminAuthMiddleware, async (req, res) => {
   try {
     const error = req.query.error;
     console.log('Error:', error);
@@ -133,8 +135,9 @@ exports.getAdminAddProduct = async (req, res) => {
     console.error('Error fetching categories:', error);
     res.redirect('/admin');
   }
-};
-exports.postAdminAddProduct = async (req, res) => {
+}];
+exports.postAdminAddProduct = [
+  adminAuthMiddleware, async (req, res) => {
   try {
     console.log('Form Data:', req.body);
     console.log('Files:', req.files);
@@ -196,13 +199,14 @@ console.log("Newproduct: ",newProduct);
     console.error('Error adding product:', error.message);
     res.redirect('/admin/add_product?error=' + encodeURIComponent(error.message));
   }
-};
+}];
 
 
 
 
 
-exports.getAdminEdit = async (req, res) => {
+exports.getAdminEdit =[
+  adminAuthMiddleware,  async (req, res) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId)
@@ -221,8 +225,9 @@ exports.getAdminEdit = async (req, res) => {
     console.error('Error fetching product for edit:', error);
     res.redirect('/admin');
 }
- }
- exports.postAdminEdit = async (req, res) => {
+ }]
+ exports.postAdminEdit =[
+  adminAuthMiddleware,  async (req, res) => {
   let productId;
   try {
     productId = req.params.id;
@@ -275,9 +280,10 @@ exports.getAdminEdit = async (req, res) => {
     console.error('Error updating product:', error.message);
     res.redirect(`/admin/edit_product/${productId}?error=${encodeURIComponent(error.message)}`);
   }
-};
+}];
 
-exports.deleteInEditProduct = async (req, res) => {
+exports.deleteInEditProduct = [
+  adminAuthMiddleware, async (req, res) => {
   try {
     const productId = req.params.productId;
     const imageName = req.params.imageName;
@@ -294,13 +300,14 @@ exports.deleteInEditProduct = async (req, res) => {
     console.error('Error deleting image:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
-};
+}];
 
 
 
 
 //soft delete
- exports.getAdminDelete= async(req,res)=>{
+ exports.getAdminDelete=[
+  adminAuthMiddleware,  async(req,res)=>{
   const productId = req.params.id;
 
   try {
@@ -314,9 +321,10 @@ exports.deleteInEditProduct = async (req, res) => {
     console.error('Error deleting product:', error);
     res.redirect('/admin');
   }
- }
+ }]
 
- exports.postAdminLogout=(req,res)=>{
+ exports.postAdminLogout=[
+  adminAuthMiddleware, (req,res)=>{
   req.session.destroy((err) => {
     if (err) {
       console.error('Error logging out:', err);
@@ -324,10 +332,11 @@ exports.deleteInEditProduct = async (req, res) => {
       res.redirect('/admin/admin_login');
     }
   });
- }
+ }]
 
 
- exports.getUserList = async (req, res) => {
+ exports.getUserList =[
+  adminAuthMiddleware,  async (req, res) => {
 
   if (req.session.adminUser && req.session.adminUser.isAdmin) {
     try {
@@ -343,10 +352,11 @@ exports.deleteInEditProduct = async (req, res) => {
   } else {
     res.redirect('/admin/admin_login');
   }
-};
+}];
 
 // Block a user
-exports.blockUser = async (req, res) => {
+exports.blockUser = [
+  adminAuthMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findByIdAndUpdate(userId, { blocked: true }, { new: true });
@@ -361,10 +371,11 @@ exports.blockUser = async (req, res) => {
     res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
 
   }
-};
+}];
 
 // Unblock a user
-exports.unblockUser = async (req, res) => {
+exports.unblockUser = [
+  adminAuthMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findByIdAndUpdate(userId, { blocked: false }, { new: true });
@@ -379,14 +390,16 @@ exports.unblockUser = async (req, res) => {
     console.error('Error unblocking user:', error);
     res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
   }
-};
+}];
 
-exports.getAdminAddUser = (req, res) => {
+exports.getAdminAddUser =[
+  adminAuthMiddleware,  (req, res) => {
   const { error } = req.query; // Check if error is present in the query parameters
   res.render('admin/add_user', { error }); // Pass the error variable to the view
-};
+}];
 
-exports.postAdminAddUser = async (req, res) => {
+exports.postAdminAddUser =[
+  adminAuthMiddleware,  async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
@@ -414,11 +427,12 @@ exports.postAdminAddUser = async (req, res) => {
     // res.status(500).send('Internal Server Error');
     res.render('/admin/userList',{error:'Internal Server Error. Please try again Later!'})
   }
-};
+}];
 
 
 
-exports.getCategoryList = async (req, res) => {
+exports.getCategoryList =[
+  adminAuthMiddleware,  async (req, res) => {
   if (req.session.adminUser && req.session.adminUser.isAdmin) {
     try {
       const categories = await categoryName.find({},'categoryName');
@@ -436,15 +450,17 @@ exports.getCategoryList = async (req, res) => {
   } else {
  res.redirect('/admin/admin_login');
   }
-};
+}];
 
 
-exports.getAddCategory=(req,res)=>{
+exports.getAddCategory=[
+  adminAuthMiddleware, (req,res)=>{
   const errorMessage = req.flash('error');
   res.render('./admin/add_category', { errorMessage });
-}
+}]
 
-exports.postAddCategory=async(req,res)=>{
+exports.postAddCategory=[
+  adminAuthMiddleware, async(req,res)=>{
   try {
     const newCategory = req.body;
     console.log("New category: ",newCategory);
@@ -468,9 +484,10 @@ if(existingCategory){
     res.redirect('/admin/category_list')
   }
     
-}
+}]
 
-exports.getEditCategory = async (req, res) => {
+exports.getEditCategory =[
+  adminAuthMiddleware,  async (req, res) => {
   try {
     const categoryId = req.params.id;
     const category = await categoryName.findById(categoryId);
@@ -479,9 +496,10 @@ exports.getEditCategory = async (req, res) => {
     console.error('Error fetching category for edit:', error);
     res.redirect('/admin/category_list');
   }
-};
+}];
 
-exports.postEditCategory =async(req,res)=>{
+exports.postEditCategory =[
+  adminAuthMiddleware, async(req,res)=>{
   try {
     const categoryId = req.params.id;
    const categoryPeru =req.body;
@@ -496,9 +514,10 @@ exports.postEditCategory =async(req,res)=>{
     console.error('Error updating category:', error);
     res.redirect('/admin/category_list');
   }
-}
+}]
 
-exports.deleteCategory= async(req,res)=>{
+exports.deleteCategory= [
+  adminAuthMiddleware, async(req,res)=>{
 
   try {
     const categoryId = req.params.id;
@@ -523,9 +542,10 @@ exports.deleteCategory= async(req,res)=>{
     res.redirect('/admin/category_list');
   }
 
-}
+}]
 
-exports.getListAllOrders = async (req, res) => {
+exports.getListAllOrders = [
+  adminAuthMiddleware, async (req, res) => {
   try {
       // Fetch all orders with relevant information
       const orders = await Order.find().populate({
@@ -539,10 +559,11 @@ exports.getListAllOrders = async (req, res) => {
       console.error('Error fetching all orders:', error);
       res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}];
 
 
-exports.updateOrderStatus = async (req, res) => {
+exports.updateOrderStatus = [
+  adminAuthMiddleware, async (req, res) => {
   try {
       console.log("Called updateOrderStatus");
       const statusUpdates = Object.keys(req.body)
@@ -563,8 +584,9 @@ exports.updateOrderStatus = async (req, res) => {
       console.error('Error updating order status:', error);
       res.status(500).json({ message: 'Internal Server Error' });
   }
-};
-exports.getReturnRequests = async (req, res) => {
+}];
+exports.getReturnRequests = [
+  adminAuthMiddleware, async (req, res) => {
   try {
     const returnRequests = await Order.find({ 'returnRequest.status': 'Pending', 'returnRequest.reason': { $exists: true, $ne: null } })
       .populate('user') // Populate the user field in the order
@@ -575,9 +597,10 @@ exports.getReturnRequests = async (req, res) => {
     console.error('Error fetching return requests:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}];
 
-exports.processReturnRequest = async (req, res) => {
+exports.processReturnRequest = [
+  adminAuthMiddleware, async (req, res) => {
   try {
     const orderId = req.params.orderId;
     const { action } = req.body;
@@ -601,4 +624,4 @@ console.log("order: ",order);
     console.error('Error processing return request:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}];

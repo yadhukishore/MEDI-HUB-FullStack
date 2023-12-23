@@ -1,6 +1,7 @@
 <!-- userCheckout.ejs -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -11,7 +12,10 @@
     <title> Checkout Page </title>
     <!-- Link to Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
+    <!-- Add jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,7 +32,7 @@
 
         nav img {
             height: 50px;
-            width: 80px; 
+            width: 80px;
         }
 
         .login-button {
@@ -80,6 +84,7 @@
             margin-top: 40px;
             border-radius: 10px;
         }
+
         .payment-method-container {
             display: flex;
             flex-direction: column;
@@ -89,7 +94,7 @@
             margin-right: 10px;
         }
     </style>
- 
+
     <script>
         function toggleDropdown() {
             const dropdownContent = document.getElementById('dropdown-content');
@@ -97,104 +102,231 @@
         }
     </script>
 </head>
+
 <body>
     <!-- nav bar -->
     <%- include("../views/partials/userNavbar.ejs") %>
-    <div class="container">
-        <div class="row">
-            <!-- Left Column: User Information and Addresses -->
-            <div class="col-md-6">
-                <div class="container-box">
-                    <h4>User Information</h4><hr>
-                    <p>Username: <span style="color: blue;"><%= user.username %></span></p>
-                    <p>Email: <span style="color: blue;"><%= user.email %></span></p>
+        <div class="container">
+            <div class="row">
+                <!-- Left Column: User Information and Addresses -->
+                <div class="col-md-6">
+                    <div class="container-box">
+                        <h4>User Information</h4>
+                        <hr>
+                        <p>Username: <span style="color: blue;">
+                                <%= user.username %>
+                            </span></p>
+                        <p>Email: <span style="color: blue;">
+                                <%= user.email %>
+                            </span></p>
+                    </div>
+
+                    <div class="container-box">
+                        <h4>Addresses</h4>
+                        <p style="color: darkcyan;">Select Default address before payment!</p>
+                        <hr>
+
+                        <form method="post" action="/saveDefaultAddress">
+                            <!-- Loop through user's addresses and display them -->
+                            <% if (user.addresses && user.addresses.length> 0) { %>
+                                <% user.addresses.forEach((address, index)=> { %>
+                                    <div>
+                                        <!-- Display address details -->
+                                        <p>
+                                            <%= address.fullAddress %>
+                                        </p>
+                                        <p>
+                                            <%= address.landmark %>
+                                        </p>
+                                        <p>
+                                            <%= address.state %>, <%= address.city %>, <strong>
+                                                        <%= address.pincode %>
+                                                    </strong>
+                                        </p>
+
+                                        <!-- Radio button to set address as default -->
+                                        <input type="radio" id="defaultAddress_<%= index %>" name="defaultAddress" <% if
+                                            (address.isDefault) { %>checked<% } %> value="<%= address._id %>">
+                                                <label for="defaultAddress_<%= index %>">Set as Default
+                                                    Address</label><br>
+
+                                                <!-- Edit address button -->
+                                                <a href="/userAddress/editAddress/<%= address._id %>"
+                                                    class="btn btn-primary">Edit Address</a>
+                                    </div>
+                                    <hr>
+                                    <% }); %>
+                                        <% } else { %>
+                                            <p>No addresses added. Add a new address.</p>
+                                            <% } %>
+                                                <!-- Add a hidden input field for the current default address -->
+                                                <input type="hidden" name="currentDefaultAddress"
+                                                    value="<%= user.addresses.find(a => a.isDefault)?.id %>">
+                                                <button type="submit" class="btn btn-secondary float-right">Save Default
+                                                    Address</button>
+
+                        </form>
+                        <a href="/add_address" class="btn btn-success">Add Address+</a>
+                    </div>
+
                 </div>
 
-                <div class="container-box">
-                    <h4>Addresses</h4><p style="color: darkcyan;">Select Default address before payment!</p><hr>
-                    
-                    <form method="post" action="/saveDefaultAddress">
-                        <!-- Loop through user's addresses and display them -->
-                        <% if (user.addresses && user.addresses.length > 0) { %>
-                            <% user.addresses.forEach((address, index) => { %>
-                                <div>
-                                    <!-- Display address details -->
-                                    <p><%= address.fullAddress %></p>
-                                    <p><%= address.landmark %></p>
-                                    <p><%= address.state %>, <%= address.city %>, <strong><%= address.pincode %></strong></p>
-                
-                                    <!-- Radio button to set address as default -->
-                                    <input type="radio" id="defaultAddress_<%= index %>" name="defaultAddress" <% if (address.isDefault) { %>checked<% } %> value="<%= address._id %>">
-                                    <label for="defaultAddress_<%= index %>">Set as Default Address</label><br>
-                
-                                    <!-- Edit address button -->
-                                    <a href="/userAddress/editAddress/<%= address._id %>" class="btn btn-primary">Edit Address</a>
-                                </div>
-                                <hr>
+                <!-- Right Column: Order Summary and Select Payment Method -->
+                <div class="col-md-6">
+                    <div class="container-box">
+                        <h4>Order Summary</h4>
+                        <hr>
+                        <P>Shipping Fee: <strong>Free</strong></P>
+                        <p>Total Price: <strong> ₹<%= totalPrice %></strong></p>
+                        <% productDetails.forEach(product=> { %>
+                            <hr>
+                            <p style="color: green;">Product: <%= product.name %>
+                            </p>
+                            <p>Price: ₹ <%= product.price %>
+                            </p>
+                            <p>Quantity: <%= product.quantity %>
+                            </p>
                             <% }); %>
-                        <% } else { %>
-                            <p>No addresses added. Add a new address.</p>
-                        <% } %>
-                        <!-- Add a hidden input field for the current default address -->
-                        <input type="hidden" name="currentDefaultAddress" value="<%= user.addresses.find(a => a.isDefault)?.id %>">
-                        <button type="submit" class="btn btn-secondary float-right">Save Default Address</button>
-                        
-                    </form>
-                    <a href="/add_address" class="btn btn-success">Add Address+</a>
-                </div>
-                
-            </div>
+                    </div>
 
-            <!-- Right Column: Order Summary and Select Payment Method -->
-            <div class="col-md-6">
-                <div class="container-box">
-                    <h4>Order Summary</h4><hr>
-                    <P>Shipping Fee:  <strong>Free</strong></P>
-                    <p>Total Price: <strong> ₹<%= totalPrice %></strong></p>
-                    <% productDetails.forEach(product => { %>
-                       <hr> <p style="color: green;">Product: <%= product.name %></p>
-                        <p>Price: ₹ <%= product.price %></p>
-                        <p>Quantity: <%= product.quantity %></p>
-                    <% }); %>
-                </div>
+                    <div class="container-box">
+                        <h4>Select Payment Method</h4>
+                        <hr>
+                        <!-- Use radio buttons for payment method selection -->
+                        <form id="placeOrderForm">
+                            <div class="form-check  form-razorpay">
+                                <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod"
+                                    id="razorpay" value="razorpay">
+                                <label class="form-check-label" for="razorpay">
+                                    Razorpay
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod"
+                                    id="COD" value="COD" checked>
+                                <label class="form-check-label" for="COD">
+                                    Cash On Delivery
+                                </label>
+                            </div>
 
-                <div class="container-box">
-                    <h4>Select Payment Method</h4><hr>
-                    <!-- Use radio buttons for payment method selection -->
-                    <form method="post" action="/processOrder">
-                        <!-- <div class="form-check">
-                            <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="creditCard" value="creditCard" checked>
-                            <label class="form-check-label" for="creditCard">
-                                Credit Card
-                            </label>
-                        </div> -->
-                        <div class="form-check">
-                            <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="razorpay" value="razorpay">
-                            <label class="form-check-label" for="razorpay">
-                                Razorpay
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod" id="COD" value="COD" checked>
-                            <label class="form-check-label" for="COD">
-                                Cash On Delivery
-                            </label>
-                        </div>
-                        <div>
 
-                <!-- Proceed to Payment Button -->
-                <div class="container-box">
-                    <form method="post" action="/processOrder">
-                       <!--  hidden input field for the current default address -->
-                       <input type="hidden" name="currentDefaultAddress" value="<%= user.addresses.find(a => a.isDefault)?.id %>">
-                       <button type="submit" class="btn btn-warning btn-lg">Proceed to Payment</button>
-                       
+                            <!-- Proceed to Payment Button -->
+                            <div class="container-box">
+                                <form method="post" action="/processOrder">
+                                    <!--  hidden input field for the current default address -->
+                                    <input type="hidden" name="currentDefaultAddress"
+                                        value="<%= user.addresses.find(a => a.isDefault)?.id %>">
+                                    <button type="submit" class="btn btn-warning btn-lg">Proceed to Payment</button>
 
-                    </form>
+
+                                </form>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
+            <script>
+                $('#placeOrderForm').on('submit', async (e) => {
+                    e.preventDefault();
+                    let form = document.getElementById("placeOrderForm")
+                    let formdata = new FormData(form);
+                    let body = Object.fromEntries(formdata);
+                    $.ajax({
+                        url: "/processOrder",
+                        method: "POST",
+                        data: body,
+                        success: function (response) {
+                            if (response.success) {
+                                showRazorePay(response.order, response.user)
+                            } 
+                            if(response.status){
+                                location.assign(`/success?order_id=${response.order_id}`)
+                            }
+                        },
+                        error: function (error) {
+                            // Handle AJAX errors
+                            console.error("AJAX Error:", error);
+                            alert("An error occurred. Please try again.");
+                        }
+                    })
+                })
+                showRazorePay = (order, user) => {
+                    var options = {
+                        "key": "rzp_test_7K80q0FIlpgZWv", // Enter the Key ID generated from the Dashboard
+                        "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                        "currency": "INR",
+                        "name": "medi hub",
+                        "description": "Test Transaction",
+                        "image": "",
+                        "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                        "handler": function (response) {
+                            verifyPayment(response)
+                        },
+                        "prefill": {
+                            "name": user.username,
+                            "email": user.email,
+                            "contact": user.phone
+                        },
+                        "notes": {
+                            "address": "Razorpay Corporate Office"
+                        },
+                        "theme": {
+                            "color": "#2ade99"
+                        }
+                    };
+
+                    var rzp1 = new Razorpay(options);
+                    rzp1.open();
+                    rzp1.on('payment.failed', function (response) {
+
+                    });
+                }
+
+                verifyPayment = (respose) => {
+                    $.ajax({
+                        url: "/verifyPayment",
+                        method: "POST",
+                        data: respose,
+                        success: function (response) {
+                            if (response.success) {
+                                // alert("succwss")
+                                let paymentId=response.payment_id 
+                                location.assign(`/success?id=${paymentId}`)
+                            } else {
+                                alert(response.msg);
+                            }
+                        },
+                        error: function (error) {
+                            // Handle AJAX errors
+                            console.error("AJAX Error:", error);
+                            alert("An error occurred. Please try again.");
+                        }
+                    })
+                    
+                }
+
+                function initializeRazorpay(options) {
+                    var razorpayObject = new Razorpay(options);
+
+                    razorpayObject.on('payment.failed', function (response) {
+                        // Enhanced error handling
+                        console.error("Payment Failed:", response.error.code, response.error.description);
+                        alert("Payment Failed. Please try again or contact support.");
+                    });
+
+                    razorpayObject.on('payment.success', function (response) {
+                        // Handle successful payment, potentially including redirection
+                        alert("Payment Succeeded!");
+                        // window.open("/order-confirmation", "_self"); // Example redirection
+                    });
+
+                    razorpayObject.open();
+                }
+
+               
+            </script>
+
         </div>
-    </div>
 </body>
 
 </html>

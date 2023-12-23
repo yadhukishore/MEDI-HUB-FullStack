@@ -1,20 +1,23 @@
 <!-- userNavbar.ejs -->
+
 <nav class="navbar navbar-dark bg-dark">
     <!-- Logo on the left -->
     <a href="/">
     <img  src="/public/images/logoMedi.jpg" alt="LoGo" >
 </a>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
     <!-- Centered Search Form with Icon -->
     <div class="mx-auto">
-        <form class="form-inline my-2 my-lg-0 ml-auto" action="/search" method="GET" style="width: 600px;">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search Products and Categories" aria-label="Search" name="query" style="width: 80%;">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <form action="/" method="GET" class="form-inline my-2 my-lg-0 ml-auto" style="width: 600px;">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search items..." aria-label="Search" name="search" style="width: 80%;">
+            <button class="btn btn-success my-2 my-sm-0" type="submit">
                 <i class="material-icons">search</i>
             </button>
         </form>
     </div>
-
+    <a style="color: lightgreen;" class="nav-link " href="/allMedicines">☯ Medicines </a>
     <!-- Cart icon on the right -->
     <div class="ml-auto">
         <a href="/userCart" class="btn btn-dark">

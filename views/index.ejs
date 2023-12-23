@@ -85,6 +85,7 @@
             width: 300px;
             margin: 10px;
             box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+            transition: transform .2s;
         }
 
         .card img {
@@ -97,12 +98,21 @@
         }
         .card :hover{
             background-color: #dfede0;
+         
         }
-        .pagination-container {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-        }
+        .pagination {
+       margin-top: 20px;
+       justify-content: center;
+       
+   }
+        .jumbotron {
+       background-color: #adc9b2;
+       color: #333;
+       margin-right: 30px;
+       box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+       height: 200px;
+   }
+   
     </style>
  
     <script>
@@ -115,8 +125,21 @@
 <body>
     <!-- nav bar -->
    <%- include("../views/partials/userNavbar.ejs") %>
+   <div class="container-fluid">
+
 
     <div class="container">
+
+
+      
+
+  
+      <div class="jumbotron">
+        <h1 class="display-4"><strong>Welcome to MediHub</strong></h1>
+        <p class="lead">Quality makes perfect</p>
+    </div>
+    
+
 
       <% if (messages.success) { %>
         <div class="alert alert-success">
@@ -144,7 +167,7 @@
                 <div class="card-body">
                   <h5 class="card-title"><%= product.name %></h5>
                   <!-- <p class="card-text"><%= product.description %></p> -->
-                  Category: <%= product.category ? product.category.categoryName : 'N/A' %>
+                  Category: <%= product.categoryName ? product.categoryName : 'N/A' %>
 
                  
           
@@ -166,18 +189,59 @@
                       </div>
 
                       <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning">
-                        <% if (user && user.cart && user.cart.some(item => item.product._id.toString() === product._id.toString())) { %>
-                          Go to Cart
+                        <% if (user && user.cart && product._id && user.cart.some(item => item.product && item.product._id && item.product._id.toString() === product._id.toString())) { %>
+                            Go to Cart
                         <% } else { %>
-                          Add to Cart
+                            Add to Cart
                         <% } %>
-                      </a>
+                    </a>
                   
                 </div>
               </div>
             </div>
           <% }); %>
         </div>
+        
+       <!-- Pagination HTML with Previous and Next buttons -->
+<div aria-label="Page navigation">
+  <ul class="pagination">
+      <% if (page > 1) { %>
+          <!-- Previous button is enabled if not on the first page -->
+          <li class="page-item">
+              <a class="page-link" href="/?page=<%= page - 1 %>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+              </a>
+          </li>
+      <% } else { %>
+          <!-- Previous button is disabled on the first page -->
+          <li class="page-item disabled">
+              <span class="page-link" aria-hidden="true">&laquo;</span>
+          </li>
+      <% } %>
+
+      <!-- Page numbers -->
+      <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= i === page ? 'active' : '' %>">
+              <a class="page-link" href="/?page=<%= i %>"><%= i %></a>
+          </li>
+      <% } %>
+
+      <% if (page < totalPages) { %>
+          <!-- Next button is enabled if not on the last page -->
+          <li class="page-item">
+              <a class="page-link" href="/?page=<%= page + 1 %>" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+              </a>
+          </li>
+      <% } else { %>
+          <!-- Next button is disabled on the last page -->
+          <li class="page-item disabled">
+              <span class="page-link" aria-hidden="true">&raquo;</span>
+          </li>
+      <% } %>
+  </ul>
+</div>
+
         
       </div>
 

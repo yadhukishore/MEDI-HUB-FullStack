@@ -1,0 +1,264 @@
+<!-- medicines.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediHub</title>
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #dfede0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+
+        nav img {
+            height: 50px;
+            width: 80px;
+        }
+
+        .login-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-button-not-logged-in {
+            border: 2px solid #4CAF50;
+            background-color: white;
+            color: #4CAF50;
+        }
+
+        .user-dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        #dropdown-content button {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            background-color: #f9f9f9;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .card {
+            width: 300px;
+            margin: 10px;
+            box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+            transition: transform .2s;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .media {
+            margin-left: 100px;
+        }
+
+        .media-body {
+            margin-left: 40px;
+        }
+
+        .sidebar-sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            padding-top: 20px;
+        }
+        p{
+            color: black;
+        }
+  
+   
+    </style>
+ 
+    <script>
+        function toggleDropdown() {
+            const dropdownContent = document.getElementById('dropdown-content');
+            dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</head>
+<body>
+    <!-- Navbar -->
+    <%- include("../views/partials/userNavbar.ejs") %>
+
+    <div class="container-fluid">
+        <div class="row">
+<!-- Sidebar -->
+<nav class="col-md-2 d-none d-md-block bg-light sidebar">
+    <div class="sidebar-sticky">
+        <!-- Add your filtering and sorting options here -->
+        <button class="btn btn-success btn-block mb-2" type="button" data-toggle="collapse" data-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+            Filter
+        </button>
+        <div class="collapse" id="filterCollapse">
+            <hr>
+            <ul class="nav flex-column">
+                <!-- Example filters -->
+                <% categories.forEach(category => { %>
+                    <li class="nav-item">
+                        <div class="form-check">
+                            <input class="form-check-input category-checkbox" type="checkbox" value="<%= category.categoryName %>" id="<%= category.categoryName %>Checkbox" name="categories">
+                            <label class="form-check-label" for="<%= category %>Checkbox">
+                                <p><%= category.categoryName %></p>
+                            </label>
+                        </div>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+
+        <button class="btn btn-success btn-block mb-2" type="button" data-toggle="collapse" data-target="#sortCollapse" aria-expanded="false" aria-controls="sortCollapse">
+            Sort
+        </button>
+        <div class="collapse" id="sortCollapse">
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a style="color: green;" class="nav-link" href="?sort=lowToHigh">
+                        Price: Low to High
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a style="color: darkgreen;" class="nav-link" href="?sort=highToLow">
+                        Price: High to Low
+                    </a>
+                </li>
+                <!-- Add more sorting options as needed -->
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+
+            <!-- Content area -->
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="container">
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success">
+                            <%= messages.success %>
+                        </div>
+                    <% } else if (messages.error) { %>
+                        <div class="alert alert-danger">
+                            <%= messages.error %>
+                        </div>
+                    <% } %>
+
+                    <!-- Bootstrap list group to display products -->
+                    <ul class="list-group">
+                        <!-- Loop through products and create list items in the list group -->
+                        <% products.forEach(product => { %>
+                          <li class="list-group-item product-item" data-categories="<%= product.categoryName %>">
+                                <div class="media">
+                                    <a href="/product/<%= product._id %>">
+                                        <% if (product.images.length > 0) { %>
+                                            <img src="/public/uploads/<%= product.images[0] %>" alt="<%= product.name %>" class="mr-3" style="max-width: 160px;">
+                                        <% } else { %>
+                                            <img src="/public/default-image.jpg" alt="No Image" class="mr-3" style="max-width: 100px;">
+                                        <% } %>
+                                    </a>
+                                    <div class="media-body">
+                                        <h5 class="mt-0"><%= product.name %></h5>
+                                        <p>Category: <%= product.categoryName ? product.categoryName : 'N/A' %></p>
+                                        <p>₹<strong><%= product.price %> </strong></p>
+                                        <% if (product.stock <= 5 && product.stock > 1) { %>
+                                            <p class="text-danger">Only <%= product.stock %> left!</p>
+                                        <% } else if (product.stock === 1) { %>
+                                            <p class="text-danger">Last in stock!</p>
+                                        <% } else if (product.stock === 0) { %>
+                                            <p class="text-danger">Out of Stock!</p>
+                                        <% } %>
+                                        <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning">
+                                            <% if (user && user.cart && product._id && user.cart.some(item => item.product && item.product._id && item.product._id.toString() === product._id.toString())) { %>
+                                                Go to Cart
+                                            <% } else { %>
+                                                Add to Cart
+                                            <% } %>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        <% }); %>
+                    </ul>
+                </div>
+
+
+    <!-- Optional: Add Bootstrap JS and Popper.js for Bootstrap functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const checkboxes = document.querySelectorAll('.category-checkbox');
+          const productList = document.querySelectorAll('.product-item');
+      
+          checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+              filterProducts();
+            });
+          });
+      
+          function filterProducts() {
+            const selectedCategories = Array.from(checkboxes)
+              .filter(checkbox => checkbox.checked)
+              .map(checkbox => checkbox.value);
+      
+            productList.forEach(product => {
+              const productCategories = product.getAttribute('data-categories').split(',');
+      
+              if (selectedCategories.length === 0 || selectedCategories.some(category => productCategories.includes(category))) {
+                product.style.display = 'block';
+              } else {
+                product.style.display = 'none';
+              }
+            });
+          }
+        });
+      </script>
+      
+
+</body>
+</html>

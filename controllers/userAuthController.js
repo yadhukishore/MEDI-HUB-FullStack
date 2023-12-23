@@ -3,7 +3,7 @@ const User = require('../models/user');
 const Product = require('../models/product');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
-const  isValidPassword  = require('../utils/passwordValid');
+const  isValidPassword  = require('../middleware/passwordValid');
 const { check, validationResult } = require('express-validator');
 //for otp////
 // Nodemailer configuration
