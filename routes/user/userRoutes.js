@@ -58,12 +58,13 @@ router.get('/userAddress/editAddress/:addressId', userAccController.getEditAddre
 router.post('/userAddress/editAddress/:addressId', userAccController.postEditAddress);
 
 // User checkout route
-router.get('/userCheckout', userCheckoutController.getCheckoutPage);
-router.post('/processOrder', userOrderController.postProcessOrder);
-router.get('/success', userOrderController.successRouter);
-router.get('/myOrders', userOrderController.getMyOrders);
-router.post('/saveDefaultAddress',userCheckoutController.saveDefaultAddress);
+router.get('/userCheckout', userCheckoutController.verifyLogin ,userCheckoutController.getCheckoutPage);
+router.post('/processOrder',userOrderController.verifyLoginOrderController, userOrderController.postProcessOrder);
+router.get('/success',userOrderController.verifyLoginOrderController, userOrderController.successRouter);
+router.get('/myOrders', userOrderController.verifyLoginOrderController,userOrderController.getMyOrders);
+router.post('/saveDefaultAddress',userCheckoutController.verifyLogin,userCheckoutController.saveDefaultAddress);
 router.post('/verifyPayment',userOrderController.verifyPayment);
+router.post('/applyCoupon',userCheckoutController.verifyLogin,userCheckoutController.applyCoupon);
 // Product routes
 router.get('/product/:productId', productController.getProduct);
 router.get('/allMedicines',productController.getAllMedicines)

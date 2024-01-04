@@ -44,7 +44,7 @@ exports.getHome = async (req, res) => {
       { $skip: (page - 1) * perPage },
       { $limit: perPage },
     ]);
-    console.log('Products:', products); 
+   
     // Calculate totalProducts and totalPages
     const totalProducts = await Product.countDocuments({ deleted: false });
     const totalPages = Math.ceil(totalProducts / perPage);

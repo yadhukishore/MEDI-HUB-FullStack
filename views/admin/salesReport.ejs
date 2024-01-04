@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            display: flex;
+        }
+
+        #sidebar {
+            min-width: 250px;
+            background-color: #333;
+            padding: 20px;
+            color: white;
+        }
+
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        nav img {
+            height: 50px; 
+        }
+
+        nav button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin-top: 20px; /* Add space between the navigation bar and content */
+        }
+
+        .add-product-button {
+            margin-bottom: 20px; /* Add space below the "Add Product" button */
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px; /* Add space below the table */
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 1;
+            z-index: 1000;
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-top: -20px;
+        }
+
+        .navbar-brand {
+            margin-right: 0; /* Remove default margin for the brand */
+        }
+
+        .sidebar-link {
+            font-size: 18px; /* Adjust the font size as needed */
+            font-weight: bold; /* Optional: Add bold styling */
+            /* Add any additional styling properties as needed */
+        }
+
+        #additionalInfo {
+            background-color: rgb(121, 223, 223);
+            padding: 10px;
+            width: 100px;
+            border-radius: 10px;
+            box-shadow: 10px 10px 20px rgb(68, 81, 85);
+            margin: 40px 
+        }
+        #adminPanelHeading{
+            color:rgb(248, 220, 7);
+            background-color: #1d1d1d;
+            padding-left: 8px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <%- include('../partials/adminSidebar.ejs', { activePage: 'null' }) %>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Navbar -->
+            <%- include('../partials/adminNavbar.ejs') %>
+
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="center" valign="middle">
+                       
+                        <h1  style="font-size: 35px; color: #333; text-align: center;">Sales Report</h1><hr>
+                        <div style="width: 80%; margin: auto; text-align: center;">
+                            <div>
+                                <label for="year">Select Year:</label>
+                                <input type="number" id="year" min="2021" max="2024" value="2023" />
+                                <label for="month">Select Month:</label>
+                                <input type="number" id="month" min="1" max="12" value="12" />
+                                <button onclick="fetchAndDrawChart()">Update Chart</button>
+                            </div>
+                            <canvas id="salesChart" style="max-width: 100%; min-height: 300px;"></canvas>
+
+                            <div id="additionalInfo">
+
+                                <p>Total Revenue:₹<span id="totalRevenue"></span></p>
+
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+ 
+
+    <script>
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        let salesChart = null;
+     
+        const fetchAndDrawChart = async () => {
+            try {
+                const yearInput = document.getElementById('year');
+                const monthInput = document.getElementById('month');
+                const selectedYear = yearInput.value;
+                const selectedMonth = monthInput.value;
+                console.log("Selected query: ",selectedYear,selectedMonth);
+     
+                const response = await fetch(`/api/sales-report?year=${selectedYear}&month=${selectedMonth}`);
+                const responseData = await response.json();
+                const salesData = Array.isArray(responseData) ? responseData : [responseData];
+                console.log("Sales Data:\n", salesData);
+
+                const labelsSet = new Set();
+                salesData.forEach(entry => {
+                const label = `${entry._id.month}/${entry._id.day}/${entry._id.year}`;
+                labelsSet.add(label);
+});
+
+const labels = Array.from(labelsSet);
+const sales = salesData.map(entry => entry.totalSales);
+
+  // Calculate total revenue
+  const totalRevenue = sales.reduce((acc, cur) => acc + cur, 0);
+
+       // Update the HTML element with total revenue
+       document.getElementById('totalRevenue').innerText = totalRevenue.toFixed(2); // Assuming you want to display it with 2 decimal places
+     
+                // If the chart exists, destroy it
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+     
+                // Create a new chart
+                salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                       labels: labels,
+                       datasets: [{
+                           label: 'Sales',
+                           data: sales,
+                           backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                           borderColor: 'rgba(10,225,0)',
+                           borderWidth: 2,
+                           fill: true,
+                       }],
+                    },
+                    options: {
+                       scales: {
+                           y: {
+                               beginAtZero: true,
+                               title: {
+                                   display: true,
+                                   text: 'Price',
+                               },
+                           },
+                           x: {
+                               title: {
+                                   display: true,
+                                   text: 'Month',
+                               },
+                           },
+                       },
+                    },
+                });
+     
+                // Force a re-render of the chart
+                salesChart.resize();
+                
+            } catch (error) {
+                console.error('Error fetching or drawing sales data:', error);
+            }
+        };
+     
+        // Initial fetch and draw
+        fetchAndDrawChart();
+     </script>
+
+     <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $("#sidebar-toggle").click(function() {
+            $("#sidebar").toggle();
+        });
+    </script>
+     
+</body>
+
+</html>

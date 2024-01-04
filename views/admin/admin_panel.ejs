@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to the Admin Panel</title>
+    <title>Admin Panel</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -76,6 +76,12 @@
             margin-right: -20px;
             margin-top: -20px;
         }
+        .btn-danger {
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #dc3545;
+            margin-top: 20px;
+                    }
 
         .navbar-brand {
             margin-right: 0; /* Remove default margin for the brand */
@@ -145,8 +151,8 @@
                                     <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" style="max-width: 100px;">
                                 <% }); %></td>
                                 <!-- Add Edit button with a link to the edit_product route -->
-                                <td><a href="/admin/edit_product/<%= product._id %>" class="btn btn-warning">Edit</a>
-                                    <a href="/admin/delete_product/<%= product._id %>" class="btn btn-danger" onclick=" return confirm('Are you want to delete <%=product.name%> ?')">Delete</a></td>
+                                <td><a href="/admin/edit_product/<%= product._id %>" class="btn btn-warning">✎</a>
+                                    <a href="/admin/delete_product/<%= product._id %>" class="btn btn-danger" onclick=" return confirm('Are you want to delete <%=product.name%> ?')">🗑</a></td>
                             </tr>
                         <% }); %>
                     </tbody>

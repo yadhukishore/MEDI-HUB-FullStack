@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Coupon</title>
+ <!-- Include Bootstrap CSS -->
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ 
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.1/sweetalert2.min.css" />
+ <style>
+     body {
+         font-family: Arial, sans-serif;
+         margin: 0;
+         padding: 0;
+     }
+
+     .wrapper {
+         display: flex;
+     }
+
+     #sidebar {
+         min-width: 250px;
+         background-color: #333;
+         padding: 20px;
+         color: white;
+     }
+
+     #content {
+         flex-grow: 1;
+         padding: 20px;
+     }
+
+     nav img {
+         height: 50px; /* Set the desired height for your logo */
+     }
+
+     nav button {
+         background-color: #4CAF50;
+         color: white;
+         padding: 10px 20px;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+     }
+
+     .container {
+         margin-top: 20px; /* Add space between the navigation bar and content */
+     }
+
+     .add-product-button {
+         margin-bottom: 20px; /* Add space below the "Add Product" button */
+     }
+
+     table {
+         width: 100%;
+         margin-bottom: 20px; /* Add space below the table */
+     }
+
+     th, td {
+         border: 1px solid #ddd;
+         padding: 8px;
+         text-align: left;
+     }
+
+     th {
+         background-color: #4CAF50;
+         color: white;
+     }
+
+     .navbar {
+         position: sticky;
+         top: 1;
+         z-index: 1000;
+         margin-left: -20px;
+         margin-right: -20px;
+         margin-top: -20px;
+     }
+
+     .navbar-brand {
+         margin-right: 0; /* Remove default margin for the brand */
+     }
+
+     .sidebar-link {
+         font-size: 18px; /* Adjust the font size as needed */
+         font-weight: bold; /* Optional: Add bold styling */
+         /* Add any additional styling properties as needed */
+     }
+     #sidebar {
+         min-width: 250px;
+         background-color: #333;
+         padding: 20px;
+         color: white;
+         position: sticky;
+         top: 0;
+         height: 100vh; /* Set a fixed height for the sidebar */
+         overflow-y: auto; /* Add scroll if content exceeds the height */
+     }
+ </style>
+</head>
+<body>
+ <div class="wrapper">
+     <!-- Sidebar -->
+     <%- include('../partials/adminSidebar.ejs', { activePage: 'couponManage' }) %>
+
+     <!-- Page Content -->
+     <div id="content">
+         <!-- navbar -->
+         <%- include('../partials/adminNavbar.ejs') %>
+
+         <div class="container">
+           <!-- Add Coupon Form -->
+           <form action="/admin/create_coupon" method="get" class="d-flex">
+            <div class="ml-auto">
+                <button type="submit" class="btn btn-success">New Coupon</button>
+            </div>
+        </form>
+
+             
+
+             <h2>Coupon List</h2>
+             <table class="table">
+                 <thead>
+                     <tr>
+                         <th>Coupon Code</th>
+                         <th>Description</th>
+                         <th>Discount</th>
+                         <th>Start Date</th>
+                         <th>End Date</th>
+                         <th>Used Count</th> 
+                         <th>Actions</th>
+                     </tr>
+                 </thead>
+                 <tbody id="couponListTableBody">
+                    <% coupons.forEach(coupon => { %>
+                        <tr>
+                            <td><%= coupon.coupon_code %></td>
+                            <td><%= coupon.description %></td>
+                            <td><%= coupon.discount %></td>
+                            <td><%= coupon.start_date.toDateString() %></td>
+                            <td><%= coupon.exp_date.toDateString() %></td>
+                            <td><%= coupon.used_count %></td>
+                            <td>
+                                <a href="/admin/edit_coupon/<%= coupon._id %>" class="btn btn-primary">✎</a>
+                                <a href="#" class="btn btn-danger" onclick="deleteCoupon('<%= coupon._id %>')">🗑</a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    
+                 </tbody>
+             </table>
+         </div>
+     </div>
+ </div>
+ <script>
+    // Function to update the coupon list dynamically
+    function updateCouponList(coupon) {
+        const tableBody = document.getElementById('couponListTableBody');
+
+        // Create a new row with coupon details
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>${coupon.coupon_code}</td>
+            <td>${coupon.description}</td>
+            <td>${coupon.discount}</td>
+            <td>${new Date(coupon.start_date).toDateString()}</td>
+            <td>${new Date(coupon.exp_date).toDateString()}</td>
+            <td>${coupon.used_count}</td>
+            <td>
+                <a href="/admin/edit_coupon/${coupon._id}" class="btn btn-primary">Edit</a>
+                <a href="/admin/delete_coupon/${coupon._id}" class="btn btn-danger">Delete</a>
+            </td>
+        `;
+
+        // Append the new row to the table body
+        tableBody.appendChild(newRow);
+    }
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.1/sweetalert2.min.js"></script>
+
+<script>
+    function deleteCoupon(couponId) {
+        // Show a SweetAlert2 confirmation dialog
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, navigate to the delete route
+                window.location.href = `/admin/delete_coupon/${couponId}`;
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // If cancelled, do nothing
+                console.log('User cancelled the operation.');
+            }
+        });
+    }
+</script>
+
+
+
+
+ <!-- Include Bootstrap JS and Popper.js (required for Bootstrap dropdowns) -->
+ <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+ <script>
+     $("#sidebar-toggle").click(function() {
+         $("#sidebar").toggle();
+     });
+ </script>
+</body>
+</html>

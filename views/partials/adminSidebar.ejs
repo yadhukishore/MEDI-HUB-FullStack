@@ -1,6 +1,7 @@
 <!-- sidebar_partial.ejs -->
 <div id="sidebar">
-    <h2>Admin Panel</h2>
+    <h2 id="adminPanelHeading">Admin Panel</h2>
+    <a href="/admin/salesReport" id="adminPanelLink" style="display: none;">Admin Panel Link</a>
     <hr style="border-top: 1px solid white; width: 100%;">
 
     <!-- Users link in the sidebar -->
@@ -19,6 +20,20 @@
     <label>Orders</label>  <br>
     <a href="/list-all-orders" class="btn btn<%= activePage === 'ordersList' ? '-warning' : '-info' %> mb-3 sidebar-link">Orders List</a><br>
 
+    <hr style="border-top: 1px solid white; width: 100%;">
+    <label>Coupons</label>  <br>
+    <a href="/admin/coupon" class="btn btn<%= activePage === 'couponManage' ? '-warning' : '-info' %> mb-3 sidebar-link">Coupon Manage</a><br>
 
     <hr style="border-top: 1px solid white; width: 100%;">
 </div>
+
+<script>
+    // JavaScript to show the hidden link
+    const adminPanelHeading = document.getElementById('adminPanelHeading');
+    const adminPanelLink = document.getElementById('adminPanelLink');
+
+    adminPanelHeading.addEventListener('click', () => {
+        // Replace '/admin-panel' with the desired route
+        window.location.href = '/admin/salesReport';
+    });
+</script>

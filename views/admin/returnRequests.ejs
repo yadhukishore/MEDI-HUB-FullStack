@@ -78,8 +78,15 @@
                     <td><%= request.returnRequest.reason %></td>
                     <td>
                         <form method="post" action="/admin/process-return-request/<%= request._id %>">
-                            <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
-                            <button type="submit" name="action" value="decline" class="btn btn-danger">Decline</button>
+                            <!-- Check if the return request is already approved -->
+                            <% if (request.returnRequest.status !== 'Approved') { %>
+                                <!-- Enable the button if the status is not Approved -->
+                                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                                <button type="submit" name="action" value="decline" class="btn btn-danger">Decline</button>
+                            <% } else { %>
+                                <!-- Disable the button if the status is Approved -->
+                                <button type="button" class="btn btn-success" disabled>Approved</button>
+                            <% } %>
                         </form>
                     </td>
                 </tr>

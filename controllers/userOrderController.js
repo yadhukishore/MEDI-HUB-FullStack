@@ -8,11 +8,13 @@ const cron = require("node-cron");
 const { v4: uuidv4 } = require("uuid");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+require('dotenv').config();
 const Payment = require("../models/payment");
 const razorpay = new Razorpay({
-  key_id: "rzp_test_7K80q0FIlpgZWv",
-  key_secret: "ZtT3Mozrs7nZ7OmE66cJutcT",
+  key_id:  process.env.RAZORPAY_ID_KEY,
+  key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
+
 
 const createRazOrder = (orderId, totalAmount) => {
   return new Promise((resolve, reject) => {
@@ -35,7 +37,7 @@ const createRazOrder = (orderId, totalAmount) => {
 };
 
 // Middleware
-const verifyLogin = (req, res, next) => {
+const verifyLoginOrderController = (req, res, next) => {
   if (req.session.user) {
     next();
   } else {
@@ -43,6 +45,7 @@ const verifyLogin = (req, res, next) => {
     res.redirect("/login");
   }
 };
+exports.verifyLoginOrderController = verifyLoginOrderController;
 
 // Function to reduce stock for each product in the cart
 const reduceStockForProducts = async (cart) => {
@@ -84,14 +87,16 @@ exports.successRouter = async (req, res) => {
     console.error("Error rendering success page:", error);
   }
 };
-exports.postProcessOrder = [
-  verifyLogin,
+exports.postProcessOrder = 
+  
   async (req, res) => {
     try {
       if (req.session.user) {
         const userId = req.session.user._id;
         const user = await User.findById(userId).populate("cart.product");
-        const totalPrice = calculateTotalPrice(user.cart);
+        const appliedCoupon = req.session.appliedCoupon || null;
+        const totalPrice = calculateTotalPrice(user.cart, appliedCoupon);
+        console.log("Process order totalPrice: ",totalPrice);
 
         for (const item of user.cart) {
           const product = await Product.findById(item.product._id);
@@ -144,9 +149,7 @@ exports.postProcessOrder = [
           products: orderProducts,
           totalAmount: totalPrice,
           paymentMethod: selectedPaymentMethod,
-          deliveryDate: new Date(
-            new Date().getTime() + 4 * 24 * 60 * 60 * 1000
-          ),
+          deliveryDate: new Date(new Date().getTime() + 2 * 60 * 1000),
           status: status,
         });
 
@@ -169,7 +172,7 @@ exports.postProcessOrder = [
             order_id: orderCreadted._id,
             status: razorOrder.status,
           });
-
+console.log("PAIYMENTZ:\n",payments);
           await payments.save();
           if (razorOrder) {
             res.json({
@@ -179,35 +182,51 @@ exports.postProcessOrder = [
             });
           }
         }
+// cart clearing logic for COD orders
+if (selectedPaymentMethod === "COD") {
+  await reduceStockForProducts(user.cart);
+  console.log("rEDUCED STOCK!");
+  
+  user.cart = [];
+  console.log("\nCleared cart!!!\n");
+  await user.save();
+  console.log("sAVED COD");
 
-        console.log("OORRder Saved", orderCreadted);
-        await reduceStockForProducts(user.cart);
+}
+       
+        // await reduceStockForProducts(user.cart);
 
-        // cron job
-        cron.schedule(
-          `* * * * *`,
-          async () => {
-            const currentDate = new Date();
-            if (
-              order.deliveryDate &&
-              order.deliveryDate <= currentDate &&
-              order.status === "Confirmed"
-            ) {
-              await Order.findByIdAndUpdate(order._id, { status: "Delivered" });
+        // // cron job
+        // cron.schedule(
+        //   `* * * * *`,
+        //   async () => {
+        //     const currentDate = new Date();
+        //     if (
+        //       order.deliveryDate &&
+        //       order.deliveryDate <= currentDate &&
+        //       order.status === "Confirmed"
+        //     ) {
+        //       await Order.findByIdAndUpdate(order._id, { status: "Delivered" });
 
-              const updatedOrder = await Order.findById(order._id);
+        //       const updatedOrder = await Order.findById(order._id);
 
-              res.render("./userOrderSuccess.ejs", { order: updatedOrder });
-            }
-          },
-          {
-            scheduled: true,
-          }
-        );
+        //       res.render("./userOrderSuccess.ejs", { order: updatedOrder });
+        //     }
+        //   },
+          
+        //   {
+        //     scheduled: true,
+        //   }
+        // );
 
-        user.cart = [];
-        console.log("\nCleared cart!!!\n");
-        await user.save();
+        // user.cart = [];
+        // console.log("\nCleared cart!!!\n");
+        // await user.save();
+         // Check if there's an active coupon and reset it
+         if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
+          req.session.appliedCoupon = null;
+          console.log("coupenDESTTTTTTTTTTTTTTTYT");
+      }
         res.render("./userOrderSuccess.ejs", { order });
       } else {
         req.flash("error", "Please log in to proceed to payment.");
@@ -217,11 +236,15 @@ exports.postProcessOrder = [
       console.error("Error processing payment:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
-  },
-];
+  };
 
 exports.verifyPayment = async (req, res) => {
   console.log("Entered verify payment");
+  try {
+    if (req.session.user) {
+      const userId = req.session.user._id;
+      const user = await User.findById(userId).populate("cart.product");
+      const totalPrice = calculateTotalPrice(user.cart);
   const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
   hmac.update(req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id);
   let generatedSignature = hmac.digest("hex");
@@ -237,44 +260,51 @@ exports.verifyPayment = async (req, res) => {
       { _id: orderID },
       { $set: { status: "Confirmed" } }
     );
+    await reduceStockForProducts(user.cart);
+    console.log("Reduced Srock!!\n");
+    user.cart = [];
+    console.log("\nCleared cart!!!\n");
     console.log("OORRDDEERR: ", order_id);
+
+    await user.save();
     res.json({
       payment_id: paymentId,
       success: true,
     });
   }
-};
+}} catch (error) {
+  console.error("Error verifying payment:", error);
+  res.status(500).json({ message: "Internal Server Error" });
+}}
 
-exports.getOrderSuccess = [
-  verifyLogin,
-  async (req, res) => {
-    try {
-      const userId = req.session.user._id;
-      const orderId = req.query.orderId;
+// exports.getOrderSuccess = 
+//   async (req, res) => {
+//     try {
+//       const userId = req.session.user._id;
+//       const orderId = req.query.orderId;
 
-      const order = await Order.findOne({ _id: orderId, userId: userId })
-        .populate("products.productId")
-        .exec();
+//       const order = await Order.findOne({ _id: orderId, userId: userId })
+//         .populate("products.productId")
+//         .exec();
 
-      if (!order) {
-        throw new Error("Order not found");
-      }
+//       if (!order) {
+//         throw new Error("Order not found");
+//       }
 
-      res.render("./userOrderSuccess.ejs", {
-        order: order,
-        orderDate: order.createdAt,
-        deliveryDate: order.deliveryDate,
-        status: order.status,
-      });
-    } catch (error) {
-      console.error("Error fetching order details:", error);
-      res.redirect("/userCheckout");
-    }
-  },
-];
+//       res.render("./userOrderSuccess.ejs", {
+//         order: order,
+//         orderDate: order.createdAt,
+//         deliveryDate: order.deliveryDate,
+//         status: order.status,
+//       });
+//     } catch (error) {
+//       console.error("Error fetching order details:", error);
+//       res.redirect("/userCheckout");
+//     }
+//   };
 
-exports.getMyOrders = [
-  verifyLogin,
+exports.getMyOrders = 
+  
   async (req, res) => {
     try {
       console.log("getMyOrders controller called");
@@ -283,7 +313,7 @@ exports.getMyOrders = [
         const user = await User.findById(req.session.user._id).populate(
           "cart.product"
         );
-        console.log("user:::", user);
+        // console.log("user:::", user);
 
         const orders = await Order.find({ user: userId })
           .sort({ createdAt: -1 })
@@ -309,8 +339,9 @@ exports.getMyOrders = [
       console.error("Error fetching user orders:", error);
       res.redirect("/");
     }
-  },
-];
+  };
+
+
 exports.cancelOrder = async (req, res) => {
   const orderId = req.params.orderId;
 

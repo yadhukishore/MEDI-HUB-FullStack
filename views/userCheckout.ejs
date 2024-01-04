@@ -190,6 +190,27 @@
                     </div>
 
                     <div class="container-box">
+                        <h4>Available Coupons</h4>
+                        <% const activeCoupons=availableCoupons.filter(coupon=> !coupon.is_delete); %>
+                            <% if (activeCoupons.length> 0) { %>
+                                <form method="post" action="/applyCoupon">
+                                    <select name="couponCode">
+                                        <% activeCoupons.forEach(coupon=> { %>
+                                            <option value="<%= coupon.coupon_code %>">
+                                                <strong>
+                                                    <%= coupon.coupon_code %>
+                                                </strong>- <%= coupon.description %>
+                                            </option>
+                                            <% }); %>
+                                    </select>
+                                    <button type="submit" class="btn btn-info">Check Coupon🏷️</button>
+                                </form>
+                                <% } else { %>
+                                    <p>No coupons available</p>
+                                    <% } %>
+                    </div>
+
+                    <div class="container-box">
                         <h4>Select Payment Method</h4>
                         <hr>
                         <!-- Use radio buttons for payment method selection -->
@@ -278,15 +299,16 @@
                     var rzp1 = new Razorpay(options);
                     rzp1.open();
                     rzp1.on('payment.failed', function (response) {
-
+                                  // Redirect to checkout page on payment failure
+                       location.assign('/userCheckout');
                     });
                 }
 
-                verifyPayment = (respose) => {
+                verifyPayment = (response) => {
                     $.ajax({
                         url: "/verifyPayment",
                         method: "POST",
-                        data: respose,
+                        data: response,
                         success: function (response) {
                             if (response.success) {
                                 // alert("succwss")
