@@ -142,7 +142,7 @@
     .main-image {
       width: 80%;
       height: 50%;
-      object-fit: contain;
+      object-fit: cover;
     }
 
     h1.display-4 {
@@ -201,7 +201,7 @@
         <div class="carousel-inner">
           <% product.images.forEach((image, index) => { %>
             <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-              <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" class="main-image">
+              <img id="primary-img-view" src="/public/uploads/<%= image %>" alt="<%= product.name %>" class="main-image">
             </div>
           <% }); %>
         </div>
@@ -252,5 +252,53 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+$(document).ready(() => {
+ let zoom_area = document.getElementById('productCarousel');
+ let zoom_img = document.getElementById('primary-img-view');
+  // Store the original size of the image
+  let originalSize = zoom_img.style.transform;
+
+ zoom_area.addEventListener('mousemove', (event) => {
+   clientX = event.clientX - zoom_area.offsetLeft;
+   clientY = event.clientY - zoom_area.offsetTop;
+   mWidth = zoom_area.offsetWidth;
+   mHeight = zoom_area.offsetHeight;
+   clientX = clientX / mWidth * 100;
+   clientY = clientY / mHeight * 100;
+   
+   zoom_img.style.transform = 'translate(-' + clientX + '%,-' + clientY + '%) scale(2)';
+ });
+
+ zoom_area.addEventListener('mouseleave', () => {
+  zoom_img.style.transform = originalSize;
+});
+ changeImage = (img) => {
+ let secondary_image = document.getElementById(`secondary_img${img}`);
+ let temp = secondary_image.src;
+ secondary_image.src = zoom_img.src;
+ zoom_img.src = temp
+}
+$('.reviewup').hide();
+$('.reviews').hide();
+
+$('.reviewDown').on('click', () => {
+ $('.reviewup').show();
+ $('.reviews').slideDown();
+ $('.reviewDown').hide();
+})
+
+$('.reviewup').on('click', () => {
+ $('.reviewup').hide();
+ $('.reviewDown').show();
+ $('.reviews').slideUp();
+})
+
+
+});
+
+</script>
 </body>
 </html>
