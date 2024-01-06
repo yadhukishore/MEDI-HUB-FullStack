@@ -1,0 +1,174 @@
+<!-- wishlist.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist</title>
+     <!-- Link to Bootstrap CSS -->
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .order-container {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-details {
+            margin-top: 15px;
+        }
+
+        nav {
+            background-color: #333;
+
+            color: white;
+        }
+
+        nav img {
+            height: 50px;
+            width: 80px;
+        }
+
+        .login-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-button-not-logged-in {
+            border: 2px solid #4CAF50;
+            background-color: white;
+            color: #4CAF50;
+        }
+
+        .user-dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        #dropdown-content button {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            background-color: #f9f9f9;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .product-image {
+           max-width: 100%;
+           height: auto;
+       }
+       img{
+        width: 50px;
+       }
+    </style>
+
+    <script>
+        function toggleDropdown() {
+            const dropdownContent = document.getElementById('dropdown-content');
+            dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</head>
+<body>
+    <!-- Include your header or navigation bar -->
+    <nav>
+        <%- include("./partials/userNavbar.ejs") %>
+    </nav>
+ 
+    <div class="container">
+        <h2>Wishlist 	&#x1F394</h2><br>
+        <% if (messages.error) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= messages.error %>
+            </div>
+        <% } %>
+        
+        <% if (messages.success) { %>
+            <div class="alert alert-success" role="alert">
+                <%= messages.success %>
+            </div>
+        <% } %>
+        <% if (wishlist.length > 0) { %>
+            <!-- Display wished products if there are any -->
+            <table class="table table-striped table-borderless">
+                <thead>
+                   <tr>
+                       <th scope="col">Image</th>
+                       <th scope="col">Name</th>
+                       <th scope="col">Category</th>
+                       <th scope="col">Price</th>
+                       <th scope="col">Actions</th>
+                   </tr>
+                </thead>
+                <tbody>
+                   <% wishlist.forEach(item => { %>
+                       <tr>
+                           <td>
+                               <a href="/product/<%= item.product._id %>">
+                                  <img src="/public/uploads/<%= item.product.images[0] %>" alt="<%= item.product.name %>" style="max-width: 100%; height: auto;">
+                               </a>
+                           </td>
+                           <td><%= item.product.name %></td>
+                           <td><%= item.product.category.categoryName ? item.product.category.categoryName : 'N/A' %></td>
+
+                           <td>₹<%= item.product.price %></td>
+                           <td>
+                               <a href="/product/<%= item.product._id %>" class="btn btn-outline-primary mr-2">✓ Buy Now</a>
+                               <a href="/remove-from-wishlist/<%= item.product._id %>" class="btn btn-danger">✗ Remove  </a>
+                           </td>
+                           
+                       </tr>
+                   <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <!-- Display message when there are no wished products -->
+            <p>No wished products found 	&#x1F494</p>
+        <% } %>
+    </div>
+ 
+    <!-- Bootstrap JS and Popper.js for Bootstrap functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ </body>
+ 
+
+</html>

@@ -12,6 +12,14 @@ const addressSchema = new mongoose.Schema({
   },
 });
 
+const wishlistItemSchema = new mongoose.Schema({
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+  },
+});
+
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -62,7 +70,7 @@ const userSchema = new mongoose.Schema({
     }
   ],
   addresses: [addressSchema],
-
+  wishlist: [wishlistItemSchema],
 });
 
 userSchema.methods.toJSON = function () {

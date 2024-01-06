@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <!-- Centered Search Form with Icon -->
-    <div class="mx-auto">
+    <div id="searchBB" class="mx-auto">
         <form action="/" method="GET" class="form-inline my-2 my-lg-0 ml-auto" style="width: 600px;">
             <input class="form-control mr-sm-2" type="search" placeholder="Search items..." aria-label="Search" name="search" style="width: 80%;">
             <button class="btn btn-success my-2 my-sm-0" type="submit">
@@ -37,6 +37,7 @@
             <div id="dropdown-content">
                 <a href="/userCart" class="btn">Cart</a> <br>
                 <a href="/myOrders" class="btn">My Orders</a><br>
+                <a href="/add_wishlist" class="btn">Wishlist</a><br>
                 <a href="/userAccount" class="btn">Your Profile</a>
                 <form action="/logout" method="POST">
                     <button type="submit" class="btn btn-danger">Logout</button>

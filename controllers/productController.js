@@ -233,3 +233,79 @@ exports.getAllMedicines = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 };
+
+exports.add_wishlist = async(req,res)=>{
+  try {
+    const userId = req.session.user._id;
+
+    if (userId) {
+      const user = await User.findById(userId)
+        .populate({
+          path: 'cart.product wishlist.product',
+          populate: {
+            path: 'category',
+            select: 'categoryName',
+          },
+        });
+
+      if (user) {
+        res.render('wishlist', { wishlist: user.wishlist, cart: user.cart, categories: user.categories });
+        return;
+      }
+    }
+
+    // If user is not found or not logged in, redirect to login or handle accordingly
+    res.redirect('/login'); // Update this based on your login route
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+ }
+
+ exports.postToWishlist=async(req,res)=>{
+  try {
+    console.log("get post req!");
+    const productId = req.params.productId;
+    const userId = req.session.user._id;
+
+    // Check if the product is already in the wishlist
+    const user = await User.findById(userId);
+    if (user.wishlist.some(item => item.product._id.toString() === productId)) {
+      console.log("Product already in the wishlist");
+      req.flash('info', 'Product already in the wishlist');
+      return res.redirect(`/product/${productId}`);
+    }
+
+    // Add the product to the wishlist
+    user.wishlist.push({ product: productId });
+    await user.save();
+    console.log("Product added to the wishlist DB!");
+
+    req.flash('success', 'Product added to the wishlist');
+    res.redirect(`/add_wishlist`);
+  } catch (error) {
+    console.error('Error adding to wishlist:', error);
+    req.flash('error', 'Internal Server Error');
+    res.redirect('/');
+  }
+ }
+
+ exports.removeFromWishlist =async(req,res)=>{
+  const productId = req.params.productId;
+  const userId = req.session.user._id;
+
+  try {
+    const user = await User.findById(userId);
+    user.wishlist = user.wishlist.filter(item => item.product.toString() !== productId);
+    await user.save();
+    console.log("Removed Product from wishList");
+    req.flash('success', 'Product is removed!');
+    res.redirect('/add_wishlist');
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Internal Server Error');
+    res.redirect('/add_wishlist');
+  }
+  }
+ 
+ 

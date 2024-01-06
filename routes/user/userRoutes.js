@@ -70,8 +70,9 @@ router.get('/product/:productId', productController.getProduct);
 router.get('/allMedicines',productController.getAllMedicines)
 router.post('/cancel-order/:orderId', userOrderController.cancelOrder);
 router.post('/submit-return-request/:orderId', userOrderController.submitReturnRequest);
-
-
+router.get('/add_wishlist',userCheckoutController.verifyLogin,productController.add_wishlist);
+router.post('/add-to-wishlist/:productId',productController.postToWishlist);
+router.get('/remove-from-wishlist/:productId',productController.removeFromWishlist);
 // User authentication routes
 router.post('/logout', userAuthController.postUserLogout);
 

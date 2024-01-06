@@ -31,6 +31,25 @@
             height: 50px;
             width: 80px; 
         }
+        /* Styling for screens with width greater than 1110px */
+@media screen and (max-width: 1110px) {
+ /* Hide the logo image */
+ nav img {
+   display: none;
+ }
+ .jumbotron{
+    display: none;
+ }
+ /* Show a small search bar */
+ nav form {
+   width: 100px;
+ }
+#searchBB{
+margin-left: 10px;
+width: 20px;
+}
+
+}
 
         .login-button {
             background-color: #4CAF50;
@@ -112,6 +131,10 @@
        box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
        height: 200px;
    }
+   .btn-info:hover {
+    color: black !important;
+  
+}
    
     </style>
  
@@ -188,14 +211,20 @@
                         </div>
                       </div>
 
-                      <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning">
-                        <% if (user && user.cart && product._id && user.cart.some(item => item.product && item.product._id && item.product._id.toString() === product._id.toString())) { %>
-                            Go to Cart
-                        <% } else { %>
-                            Add to Cart
-                        <% } %>
-                    </a>
-                  
+                     <!-- Existing "Add to Cart" and "Buy Now" buttons -->
+<div class="d-flex justify-content-between">
+    <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning mr-2">
+        <% if (user && user.cart && product._id && user.cart.some(item => item.product && item.product._id && item.product._id.toString() === product._id.toString())) { %>
+            Go to Cart
+        <% } else { %>
+            Add to Cart
+        <% } %>
+    </a>
+ 
+    <a href="/product/<%= product._id %>" class="btn btn-info ">
+        Buy Now
+    </a>
+ </div>
                 </div>
               </div>
             </div>

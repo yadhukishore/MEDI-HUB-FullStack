@@ -4,6 +4,8 @@
 <head>
   <title><%= product.name %> Details</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -216,9 +218,23 @@
       </div>
     </div>
 
-    <!-- Product Details -->
-    <div class="product-details">
-      <h1 class="display-4"><%= product.name %> </h1>
+   <!-- Product Details -->
+<div class="product-details">
+  <div class="d-flex justify-content-between">
+    <h1 class="display-4"><%= product.name %> </h1>
+<!-- Add to Wishlist Form -->
+<form action="/add-to-wishlist/<%= product._id %>" method="post">
+  <button type="submit" class="btn btn-outline-secondary btn-lg">
+   <% if (user && user.wishlist && user.wishlist.some(item => item.product._id.toString() === product._id.toString())) { %>
+     <i class="bi bi-heart-fill" style="color: red;" data-toggle="tooltip" data-placement="top" title="Go to wishlist page"></i>
+   <% } else { %>
+     <i class="bi bi-heart"></i>
+   <% } %>
+  </button>
+ </form>
+ 
+ 
+  </div>
       <p class="lead">Details: <%= product.description %></p>
       <p class="text-muted">Category: <%= product.category.categoryName %> </p>
       <p class="h4">Price: <span class="text-success"><strong><%= product.price %> rs</strong></span></p>
@@ -243,7 +259,8 @@
         <% } else { %>
           Add to Cart
         <% } %></a>
-        <button class="btn btn-outline-secondary btn-lg">Add to Wishlist</button>
+
+
       </div>
     </div>
   </div>
@@ -300,5 +317,14 @@ $('.reviewup').on('click', () => {
 });
 
 </script>
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+ </script>
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>
