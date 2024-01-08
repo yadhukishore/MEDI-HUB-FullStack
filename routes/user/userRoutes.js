@@ -19,13 +19,10 @@ router.post('/login', userAuthController.postUserLogin);
 
 // Signup route
 router.get('/signup', userAuthController.getSignup);
-// Signup route with OTP generation and verification
 router.post('/signup', userAuthController.postSignup );
 
 // Route for displaying the forgot password form
 router.get('/forgot_password', userAuthController.getForgotPassword);
-
-// Route for handling the forgot password form submission
 router.post('/forgot_password', userAuthController.postForgotPassword);
 
 router.get('/verify_otp', userAuthController.getVerifyOTP);
@@ -47,15 +44,15 @@ router.get('/get-updated-prices', userCartController.getUpdatedPrices);
 router.post('/removeFromCart/:productId', userCartController.removeFromCart);
 
 // User account routes
-router.get('/userAccount', userAccController.getAccountDetails);
-router.post('/userAccount', userAccController.postAccountDetails);
-router.post('/changePassword', userAccController.postChangePassword);
-router.get('/userAddress', userAccController.getUserAddress);
-router.get('/add_address', userAccController.getAddAddress);
-router.post('/add_address', userAccController.postAddAddress);
-router.post('/userAddress/deleteAddress/:addressId', userAccController.deleteAddress);
+router.get('/userAccount', userAccController.verifyLoginAcc,userAccController.getAccountDetails);
+router.post('/userAccount',userAccController.verifyLoginAcc, userAccController.postAccountDetails);
+router.post('/changePassword', userAccController.verifyLoginAcc,userAccController.postChangePassword);
+router.get('/userAddress',userAccController.verifyLoginAcc ,userAccController.getUserAddress);
+router.get('/add_address',userAccController.verifyLoginAcc ,userAccController.getAddAddress);
+router.post('/add_address', userAccController.verifyLoginAcc,userAccController.postAddAddress);
+router.post('/userAddress/deleteAddress/:addressId',userAccController.verifyLoginAcc, userAccController.verifyLoginAcc,userAccController.deleteAddress);
 router.get('/userAddress/editAddress/:addressId', userAccController.getEditAddress);
-router.post('/userAddress/editAddress/:addressId', userAccController.postEditAddress);
+router.post('/userAddress/editAddress/:addressId', userAccController.verifyLoginAcc,userAccController.postEditAddress);
 
 // User checkout route
 router.get('/userCheckout', userCheckoutController.verifyLogin ,userCheckoutController.getCheckoutPage);

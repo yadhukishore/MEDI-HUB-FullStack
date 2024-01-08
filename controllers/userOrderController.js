@@ -22,7 +22,7 @@ const createRazOrder = (orderId, totalAmount) => {
       amount: totalAmount * 100, // Convert amount to paise
       currency: "INR",
       receipt: orderId.toString(),
-      payment_capture: 1, // Auto-capture the payment when order is created
+      payment_capture: 1,
     };
 
     razorpay.orders.create(options, (err, order) => {

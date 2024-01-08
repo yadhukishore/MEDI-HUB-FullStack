@@ -124,6 +124,23 @@
         .card :hover {
             background-color: #dfede0;
         }
+        img {
+    width: 80%;
+    height: 100px; 
+    object-fit: cover;
+    border-radius: 8px; 
+    transition: transform 0.3s ease-in-out;
+}
+.product-container img:hover {
+    transform: scale(1.2); 
+}
+a{
+    color: black;
+}
+a :hover{
+    color: green;
+}
+
     </style>
 
     <script>
@@ -169,17 +186,23 @@
                                 </p>
 
                                 <h4>Products:</h4>
-                                <% order.products.forEach(product=> { %>
+                                <% order.products.forEach(product => { %>
                                     <div class="product-container">
-                                        <p>Product Name: <%= product.product.name %>
-                                        </p>
-                                        <p>Product Price: ₹ <%= product.price %>
-                                        </p>
-                                        <p>Quantity: <%= product.quantity %>
-                                        </p>
+                                        <a href="/product/<%= product.product._id %>" style="text-decoration: none; color: black;">
+                                            <% if (product.product.images && product.product.images.length > 0) { %>
+                                                <img src="/public/uploads/<%= product.product.images[0] %>" alt="<%= product.product.name %>" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px;">
+                                            <% } else { %>
+                                        
+                                                <img src="/path/to/placeholder-image.jpg" alt="Placeholder Image" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px;">
+                                            <% } %>
+                                            <p style="margin-top: 5px; text-align: center;"><strong><%= product.product.name %></strong></p>
+                                        </a>
+                                        <p>Product Price: ₹ <%= product.price %></p>
+                                        <p>Quantity: <%= product.quantity %></p>
                                     </div>
-                                    <% }); %>
-
+                                <% }); %>
+                                
+                                
                                         <hr>
 
 

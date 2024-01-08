@@ -54,7 +54,6 @@ exports.create_coupon = async (req, res) => {
         res.redirect(`/admin/coupon?coupon=${JSON.stringify(createCoupen)}`);
 
     } catch (error) {
-        // Handle validation error or other database-related errors
         console.error(error);
 
         res.json({ success: false, error: error.message });
@@ -66,10 +65,8 @@ exports.post_edit_coupon = async (req, res) => {
     const couponId = req.params.couponId;
 
     try {
-        // Fetch the existing coupon
         const existingCoupon = await Coupen.findById(couponId).exec();
 
-        // Update coupon details with data from the request body
         existingCoupon.coupon_code = req.body.coupon_code;
         existingCoupon.discount = req.body.discount;
         existingCoupon.start_date = req.body.start_date;
@@ -79,7 +76,6 @@ exports.post_edit_coupon = async (req, res) => {
         existingCoupon.used_count = req.body.used_count;
         existingCoupon.description = req.body.description;
 
-        // Save the updated coupon
         const updatedCoupon = await existingCoupon.save();
 
         res.redirect(`/admin/coupon?coupon=${JSON.stringify(updatedCoupon)}`);
@@ -93,21 +89,19 @@ exports.deleteCoupon = async(req, res) => {
     const couponId = req.params.couponId;
     
     try {
-        // Find the coupon by ID and update is_delete to true
+        
         const updatedCoupon = await Coupen.findByIdAndUpdate(
             couponId,
             { is_delete: true },
             { new: true } // To return the updated document
         );
 
-        // Check if the coupon was found and updated
         if (!updatedCoupon) {
             console.log("Coupon not found");
             return res.status(404).send('Coupon not found');
             
         }
 
-        // Redirect or respond as needed
         res.redirect('/admin/coupon');
     } catch (error) {
         console.error(error);

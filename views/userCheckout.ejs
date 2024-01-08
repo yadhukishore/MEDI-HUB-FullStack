@@ -265,7 +265,6 @@
                             }
                         },
                         error: function (error) {
-                            // Handle AJAX errors
                             console.error("AJAX Error:", error);
                             alert("An error occurred. Please try again.");
                         }
@@ -276,9 +275,9 @@
                         "key": "rzp_test_7K80q0FIlpgZWv", // Enter the Key ID generated from the Dashboard
                         "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
                         "currency": "INR",
-                        "name": "medi hub",
+                        "name": "Medi Hub",
                         "description": "Test Transaction",
-                        "image": "",
+                        "image": "/public/images/logoMedi.jpg",
                         "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
                         "handler": function (response) {
                             verifyPayment(response)
@@ -299,7 +298,6 @@
                     var rzp1 = new Razorpay(options);
                     rzp1.open();
                     rzp1.on('payment.failed', function (response) {
-                                  // Redirect to checkout page on payment failure
                        location.assign('/userCheckout');
                     });
                 }
@@ -319,7 +317,7 @@
                             }
                         },
                         error: function (error) {
-                            // Handle AJAX errors
+                           
                             console.error("AJAX Error:", error);
                             alert("An error occurred. Please try again.");
                         }
@@ -337,7 +335,7 @@
                     });
 
                     razorpayObject.on('payment.success', function (response) {
-                        // Handle successful payment, potentially including redirection
+                       
                         alert("Payment Succeeded!");
                         // window.open("/order-confirmation", "_self"); // Example redirection
                     });

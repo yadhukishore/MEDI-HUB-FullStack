@@ -6,16 +6,15 @@ const Category = require('../models/category');
 
 exports.getHome = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; // Get the page parameter from the query string
-    const perPage = 6; // Set the number of products to display per page
-    const searchQuery = req.query.search || ''; // Extract the search query from the request
+    const page = parseInt(req.query.page) || 1; 
+    const perPage = 6; 
+    const searchQuery = req.query.search || ''; 
     let user = null;
     
     if (req.session.user) {
       user = await User.findById(req.session.user._id).populate('cart.product');
     }
 
-    // Use the aggregate pipeline to fetch paginated results
     const products = await Product.aggregate([
       { $match: { deleted: false } },
       {
@@ -44,8 +43,7 @@ exports.getHome = async (req, res) => {
       { $skip: (page - 1) * perPage },
       { $limit: perPage },
     ]);
-   
-    // Calculate totalProducts and totalPages
+
     const totalProducts = await Product.countDocuments({ deleted: false });
     const totalPages = Math.ceil(totalProducts / perPage);
 
@@ -84,7 +82,6 @@ exports.searchProducts = async (req, res) => {
   try {
     const { query } = req.query;
 
-    // Search for products matching the query
     const productResults = await Product.aggregate([
       {
         $match: {
@@ -115,12 +112,10 @@ exports.searchProducts = async (req, res) => {
       },
     ]);
 
-    // Search for categories matching the query
     const categoryResults = await Category.find({
       categoryName: { $regex: new RegExp(query, 'i') },
     });
 
-    // Fetch products associated with the matching categories
     const categoryProductResults = await Product.aggregate([
       {
         $match: {
@@ -167,7 +162,7 @@ exports.getAllMedicines = async (req, res) => {
     const searchQuery = req.query.search || '';
     let user = null;
 
-    const filterCategories = req.query.categories; // Add this line to get selected categories from query parameters
+    const filterCategories = req.query.categories; 
     const sortOrder = req.query.sort;
 
     if (req.session.user) {
@@ -210,7 +205,7 @@ exports.getAllMedicines = async (req, res) => {
           categoryName: '$categoryDetails.categoryName',
         },
       },
-      ...filterPipeline, // Include the filter pipeline
+      ...filterPipeline,
       {
         $match: {
           $or: [
@@ -254,8 +249,7 @@ exports.add_wishlist = async(req,res)=>{
       }
     }
 
-    // If user is not found or not logged in, redirect to login or handle accordingly
-    res.redirect('/login'); // Update this based on your login route
+    res.redirect('/login'); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -268,7 +262,6 @@ exports.add_wishlist = async(req,res)=>{
     const productId = req.params.productId;
     const userId = req.session.user._id;
 
-    // Check if the product is already in the wishlist
     const user = await User.findById(userId);
     if (user.wishlist.some(item => item.product._id.toString() === productId)) {
       console.log("Product already in the wishlist");
@@ -276,7 +269,6 @@ exports.add_wishlist = async(req,res)=>{
       return res.redirect(`/product/${productId}`);
     }
 
-    // Add the product to the wishlist
     user.wishlist.push({ product: productId });
     await user.save();
     console.log("Product added to the wishlist DB!");

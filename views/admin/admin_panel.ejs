@@ -58,10 +58,16 @@
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+   font-size: 18px;
+   letter-spacing: 1px;
+   text-align: center;
+}
+tr:hover {
+   background-color: #9d9d9d;
+}
+.btn:hover {
+   background-color: #45a049;
+}
 
         th {
             background-color: #4CAF50;
@@ -121,7 +127,9 @@
                 
 
                 <h2>Product List</h2>
-                <table class="table">
+                <div class="table-responsive">
+                <table class="table table-striped table-hover">
+
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -157,6 +165,7 @@
                         <% }); %>
                     </tbody>
                 </table>
+            </div>
             </div>
         </div>
     </div>

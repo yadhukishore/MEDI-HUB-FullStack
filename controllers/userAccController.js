@@ -3,7 +3,7 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
 // Middleware
-const verifyLogin = (req, res, next) => {
+const verifyLoginAcc = (req, res, next) => {
     if (req.session.user) {
         next();
     } else {
@@ -11,8 +11,9 @@ const verifyLogin = (req, res, next) => {
         res.redirect('/login');
     }
 };
+exports.verifyLoginAcc = verifyLoginAcc;
 
-exports.getAccountDetails = [verifyLogin,async (req, res) => {
+exports.getAccountDetails = async (req, res) => {
     try {
         if (req.session.user) {
             const user = await User.findById(req.session.user._id).populate('cart.product');
@@ -25,9 +26,9 @@ exports.getAccountDetails = [verifyLogin,async (req, res) => {
         console.error('Error fetching user details:', error);
         res.redirect('/login');
     }
-}];
+};
 
-exports.postAccountDetails = [verifyLogin, async (req, res) => {
+exports.postAccountDetails =  async (req, res) => {
     try {
         const userId = req.session.user._id;
 
@@ -48,9 +49,9 @@ exports.postAccountDetails = [verifyLogin, async (req, res) => {
         req.flash('error', 'Error updating account details.');
         res.redirect('/userAccount');
     }
-}];
+};
 
-exports.postChangePassword = [verifyLogin,async(req,res)=>{
+exports.postChangePassword = async(req,res)=>{
     try {
         const userId = req.session.user._id;
         const user = await User.findById(userId);
@@ -74,10 +75,10 @@ exports.postChangePassword = [verifyLogin,async(req,res)=>{
         req.flash('error', 'Error changing password.');
         res.redirect('/userAccount');
     }
-}];
+};
 
 
-exports.getUserAddress = [verifyLogin,async (req, res) => {
+exports.getUserAddress = async (req, res) => {
     try {
         if (req.session.user) {
             const user = await User.findById(req.session.user._id).populate('cart.product');
@@ -92,9 +93,9 @@ exports.getUserAddress = [verifyLogin,async (req, res) => {
     }
    
 
-}];
+};
 
-exports.getAddAddress = [verifyLogin, async (req, res) => {
+exports.getAddAddress =  async (req, res) => {
     try {
         if (req.session.user) {
             const user = await User.findById(req.session.user._id).populate('cart.product');
@@ -107,9 +108,9 @@ exports.getAddAddress = [verifyLogin, async (req, res) => {
         console.error('Error fetching user details:', error);
         res.redirect('/login');
     }
-}];
+};
 
-exports.postAddAddress = [verifyLogin, async (req, res) => {
+exports.postAddAddress =  async (req, res) => {
 try {
     
     if (req.session.user) {
@@ -150,9 +151,9 @@ try {
     res.redirect('/login');
 }
 
-}];
+};
 
-exports.deleteAddress = [verifyLogin, async (req, res) => {
+exports.deleteAddress =  async (req, res) => {
     try {
         const userId = req.session.user._id;
         const addressId = req.params.addressId;
@@ -169,10 +170,10 @@ exports.deleteAddress = [verifyLogin, async (req, res) => {
         console.error('Error deleting address:', error);
         res.redirect('/userAccount');
     }
-}];
+};
 
 
-exports.getEditAddress = [verifyLogin, async (req, res) => {
+exports.getEditAddress =  async (req, res) => {
     try {
         const userId = req.session.user._id;
         const addressId = req.params.addressId;
@@ -185,9 +186,9 @@ exports.getEditAddress = [verifyLogin, async (req, res) => {
         console.error('Error fetching address for edit:', error);
         res.redirect('/userAccount');
     }
-}];
+};
 
-exports.postEditAddress  = [verifyLogin, async (req, res) => {
+exports.postEditAddress  =  async (req, res) => {
     try {
         const userId = req.session.user._id;
         const addressId = req.params.addressId;
@@ -210,4 +211,4 @@ exports.postEditAddress  = [verifyLogin, async (req, res) => {
         res.redirect('/userAccount');
     }
 
-}];
+};

@@ -173,10 +173,8 @@
 const labels = Array.from(labelsSet);
 const sales = salesData.map(entry => entry.totalSales);
 
-  // Calculate total revenue
   const totalRevenue = sales.reduce((acc, cur) => acc + cur, 0);
 
-       // Update the HTML element with total revenue
        document.getElementById('totalRevenue').innerText = totalRevenue.toFixed(2); // Assuming you want to display it with 2 decimal places
      
                 // If the chart exists, destroy it
