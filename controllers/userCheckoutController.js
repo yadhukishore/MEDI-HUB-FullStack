@@ -2,6 +2,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Coupon = require('../models/coupenSchema');
+const Order = require("../models/order");
 // Middleware
 const verifyLogin = (req, res, next) => {
     if (req.session.user) {
@@ -47,7 +48,7 @@ function isValidCoupon(cart, totalPrice, coupon) {
         return false;
     }
 
-    if (coupon.used_count > coupon.max_count) {
+    if (coupon.used_count >=1) {
         console.log("User exceeded the maximum usage count of the coupon");
         return false;
     }
@@ -64,7 +65,7 @@ async function applyCouponToCoupon(coupon, userId) {
     coupon.used_count += 1;
 
    
-    if (coupon.used_count > coupon.max_count) {
+    if (coupon.used_count >2) {
         coupon.is_delete = true;
     }
 
@@ -113,30 +114,40 @@ exports.applyCoupon =  async (req, res) => {
         }
     }
  };
-
-
-exports.getCheckoutPage =  async (req, res) => {
+ exports.getCheckoutPage = async (req, res) => {
     try {
         if (req.session.user) {
-            
             const user = await User.findById(req.session.user._id).populate('cart.product');
+            const updatedCoupon = await Coupon.findById(req.session.appliedCoupon);
+            req.session.appliedCoupon = updatedCoupon;
             console.log("Applied coupon:", req.session.appliedCoupon);
-        
+
             let totalPrice;
+
             if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
-              totalPrice = calculateTotalPrice(user.cart, req.session.appliedCoupon);
+              console.log("cOUPEN OND");
+                // If there is an applied coupon, calculate the total price based on the cart
+                totalPrice = calculateTotalPrice(user.cart, req.session.appliedCoupon);
             } else {
-              totalPrice = calculateTotalPrice(user.cart);
+                console.log("COUPON ILLA");
+                // Calculate the total price without the coupon
+                totalPrice = calculateTotalPrice(user.cart);
             }
-             console.log("main total price:",totalPrice);
-             const productDetails = user.cart.map(item => ({
+
+            console.log("main total price:", totalPrice);
+            const productDetails = user.cart.map(item => ({
                 name: item.product.name,
                 price: item.product.price,
                 quantity: item.quantity
             }));
             const availableCoupons = await Coupon.find({});
-            // console.log("Coupens:\n",availableCoupons);
-            res.render('./userCheckout.ejs', { user, totalPrice,productDetails,availableCoupons });
+            
+            // Check if the applied coupon is deleted, and reset the session
+            if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete === true) {
+                req.session.appliedCoupon = null;
+            }
+
+            res.render('./userCheckout.ejs', { user, totalPrice, productDetails, availableCoupons });
         } else {
             req.flash('error', 'Please log in to view your account details.');
             res.redirect('/login');
@@ -146,6 +157,9 @@ exports.getCheckoutPage =  async (req, res) => {
         res.redirect('/login');
     }
 };
+
+
+
 
 
 exports.saveDefaultAddress =  async (req, res) => {

@@ -1,7 +1,7 @@
 //routes/admin/adminRoutes.js
 const express = require('express');
 const router = express.Router();
-const adminController = require('../../controllers/adminController'); // adjust the path based on your project structure
+const adminController = require('../../controllers/adminController'); 
 const salesReportController = require('../../controllers/salesReportController');
 const coupenController = require('../../controllers/coupenController');
 const upload = require('../../middleware/multer');
@@ -46,8 +46,8 @@ router.get('/admin/delete_coupon/:couponId',coupenController.deleteCoupon);
 
 
 //sales report
-router.get('/admin/salesReport', adminAuthMiddleware, salesReportController.getSalesReport);
-router.get('/api/sales-report', adminAuthMiddleware, salesReportController.getSalesData);
+router.get('/admin/adminDash', adminAuthMiddleware, salesReportController.getAdminDash);
+router.get('/api/admin-dash', adminAuthMiddleware, salesReportController.getSalesData);
 // Order management routes
 router.get('/list-all-orders', adminController.getListAllOrders);
 router.post('/update-order-status', adminController.updateOrderStatus);

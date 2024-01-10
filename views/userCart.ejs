@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Link to Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -310,8 +312,12 @@
                     });
                 },
                 error: function (error) {
-                    console.error('Error updating quantity:', error);
-                }
+       if (error.status === 409) {
+        swal("Oops...", "Maximum quantity reached!", "error");
+       } else {
+           console.error('Error updating quantity:', error);
+       }
+   }
             });
         }
     </script>

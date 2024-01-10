@@ -51,7 +51,7 @@ router.get('/userAddress',userAccController.verifyLoginAcc ,userAccController.ge
 router.get('/add_address',userAccController.verifyLoginAcc ,userAccController.getAddAddress);
 router.post('/add_address', userAccController.verifyLoginAcc,userAccController.postAddAddress);
 router.post('/userAddress/deleteAddress/:addressId',userAccController.verifyLoginAcc, userAccController.verifyLoginAcc,userAccController.deleteAddress);
-router.get('/userAddress/editAddress/:addressId', userAccController.getEditAddress);
+router.get('/userAddress/editAddress/:addressId',userAccController.verifyLoginAcc, userAccController.getEditAddress);
 router.post('/userAddress/editAddress/:addressId', userAccController.verifyLoginAcc,userAccController.postEditAddress);
 
 // User checkout route

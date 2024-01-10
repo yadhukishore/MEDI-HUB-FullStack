@@ -64,10 +64,10 @@
                 <label for="minAmount">Min Amount:</label>
                 <input type="number" class="form-control" id="minAmount" name="min_amount" value="<%= coupon.min_amount %>" required>
             </div>
-            <div>
+            <!-- <div>
                 <label for="maxCount">Max Count:</label>
                 <input type="number" class="form-control" id="maxCount" name="max_count" value="<%= coupon.max_count %>" required>
-            </div>
+            </div> -->
             <div class="mt-4">
                 <button type="submit" id="saveChanges" class="btn btn-success">Save Changes</button>
             </div>
@@ -117,7 +117,7 @@
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
         const minAmount = document.getElementById('minAmount').value;
-        const maxCount = document.getElementById('maxCount').value;
+        // const maxCount = document.getElementById('maxCount').value;
 
         // Example: Check if fields are not empty
         if (
@@ -126,8 +126,7 @@
             discount.trim() === '' ||
             startDate.trim() === '' ||
             endDate.trim() === '' ||
-            minAmount.trim() === '' ||
-            maxCount.trim() === ''
+            minAmount.trim() === '' 
         ) {
             Swal.fire({
                 icon: 'error',

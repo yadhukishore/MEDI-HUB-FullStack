@@ -3,6 +3,7 @@
 const User = require("../models/user");
 const Order = require("../models/order");
 const Product = require("../models/product");
+const Coupon = require('../models/coupenSchema');
 const { calculateTotalPrice } = require("./userCheckoutController");
 const cron = require("node-cron");
 const { v4: uuidv4 } = require("uuid");
@@ -155,6 +156,7 @@ exports.postProcessOrder =
 
         const orderCreadted = await order.save();
         console.log("orderCreadted: ", orderCreadted);
+       
 
         if (orderCreadted.status === "Confirmed") {
           res.json({
@@ -182,6 +184,17 @@ console.log("PAIYMENTZ:\n",payments);
             });
           }
         }
+
+       // Update coupon logic
+if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
+  // Set is_delete field of the applied coupon to true
+  await Coupon.findByIdAndUpdate(req.session.appliedCoupon._id, { is_delete: true });
+
+  // Change discounted value of total price to normal
+  console.log(">>>>>dISCOUNT>>>>>>",req.session.appliedCoupon.discount);
+  order.totalAmount += req.session.appliedCoupon.discount;
+}
+
 // cart clearing logic for COD orders
 if (selectedPaymentMethod === "COD") {
   await reduceStockForProducts(user.cart);
@@ -194,35 +207,7 @@ if (selectedPaymentMethod === "COD") {
 
 }
        
-        // await reduceStockForProducts(user.cart);
 
-        // // cron job
-        // cron.schedule(
-        //   `* * * * *`,
-        //   async () => {
-        //     const currentDate = new Date();
-        //     if (
-        //       order.deliveryDate &&
-        //       order.deliveryDate <= currentDate &&
-        //       order.status === "Confirmed"
-        //     ) {
-        //       await Order.findByIdAndUpdate(order._id, { status: "Delivered" });
-
-        //       const updatedOrder = await Order.findById(order._id);
-
-        //       res.render("./userOrderSuccess.ejs", { order: updatedOrder });
-        //     }
-        //   },
-          
-        //   {
-        //     scheduled: true,
-        //   }
-        // );
-
-        // user.cart = [];
-        // console.log("\nCleared cart!!!\n");
-        // await user.save();
-         // Check if there's an active coupon and reset it
          if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
           req.session.appliedCoupon = null;
           console.log("coupenDESTTTTTTTTTTTTTTTYT");

@@ -170,7 +170,7 @@ exports.postResetPassword = async (req, res) => {
 
     console.log('Password updated successfully:', hashedPassword); 
     console.log('User after update:', user);
-
+    req.flash('error', 'Saved User Data!');
     res.redirect('/login');
   } catch (error) {
     console.error('Error in resetting password:', error);
@@ -202,14 +202,11 @@ exports.postSignup = [
       return res.redirect('/signup');
     }
 
-    // Check for validation errors
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      // Extract the error message from the validation error
       const errorMessage = errors.array()[0].msg;
 
-      // Flash an error message and redirect to the signup page
       req.flash('error', errorMessage);
       return res.redirect('/signup');
     }
@@ -223,7 +220,7 @@ exports.postSignup = [
         return res.redirect('/signup');
       }
 
-      // Remove the password-related logic since it's not part of the form anymore
+    
 
       const otp = Math.floor(100000 + Math.random() * 900000);
       const otpExpiration = Date.now() + 300000;
@@ -237,7 +234,7 @@ exports.postSignup = [
 
       await newUser.save();
 
-      // Send the OTP to the user's email (similar to forgot password logic)
+     
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,

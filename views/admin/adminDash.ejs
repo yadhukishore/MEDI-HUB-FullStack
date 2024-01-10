@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Report</title>
+    <title>Admin Dashboard</title>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Include Bootstrap CSS -->
@@ -121,7 +121,7 @@
                 <tr>
                     <td align="center" valign="middle">
                        
-                        <h1  style="font-size: 35px; color: #333; text-align: center;">Sales Report</h1><hr>
+                        <h1  style="font-size: 35px; color: #333; text-align: center;">Admin Dashboard</h1><hr>
                         <div style="width: 80%; margin: auto; text-align: center;">
                             <div>
                                 <label for="year">Select Year:</label>
@@ -159,7 +159,7 @@
                 const selectedMonth = monthInput.value;
                 console.log("Selected query: ",selectedYear,selectedMonth);
      
-                const response = await fetch(`/api/sales-report?year=${selectedYear}&month=${selectedMonth}`);
+                const response = await fetch(`/api/admin-dash?year=${selectedYear}&month=${selectedMonth}`);
                 const responseData = await response.json();
                 const salesData = Array.isArray(responseData) ? responseData : [responseData];
                 console.log("Sales Data:\n", salesData);

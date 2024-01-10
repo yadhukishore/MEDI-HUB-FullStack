@@ -39,7 +39,7 @@ exports.create_coupon = async (req, res) => {
         discount: req.body.discount,
         start_date: req.body.start_date,
         exp_date: req.body.exp_date,
-        max_count: req.body.max_count,
+       
         min_amount: req.body.min_amount,
         used_count: req.body.used_count,
         description: req.body.description,
@@ -49,7 +49,7 @@ exports.create_coupon = async (req, res) => {
     try {
         // Creating coupon in the database
         const createCoupen = await coupen.save();
-        console.log(createCoupen);
+        console.log("Saved coupon:-",createCoupen);
 
         res.redirect(`/admin/coupon?coupon=${JSON.stringify(createCoupen)}`);
 
@@ -71,7 +71,7 @@ exports.post_edit_coupon = async (req, res) => {
         existingCoupon.discount = req.body.discount;
         existingCoupon.start_date = req.body.start_date;
         existingCoupon.exp_date = req.body.exp_date;
-        existingCoupon.max_count = req.body.max_count;
+
         existingCoupon.min_amount = req.body.min_amount;
         existingCoupon.used_count = req.body.used_count;
         existingCoupon.description = req.body.description;

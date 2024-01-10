@@ -156,10 +156,13 @@ exports.updateProductQuantity = [verifyLogin, async (req, res) => {
 
             await user.save();
            
+            console.log("Quantity ++");
 
             res.status(200).json({ message: 'Quantity updated successfully', updatedStock: product.stock });
         } else {
-            res.status(400).json({ message: 'Insufficient userStock limit' });
+          
+            console.log("Quantity no change");
+            res.status(409).json({ message: 'Maximum quantity reached!' });
         }
 
     } catch (error) {

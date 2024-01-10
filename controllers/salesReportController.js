@@ -71,7 +71,7 @@ const sales_report = async (selectedYear, selectedMonth) => {
 
 
 
-exports.getSalesReport = async (req, res) => {
+exports.getAdminDash = async (req, res) => {
     try {
         const { year, month } = req.query;
         const salesReport = await sales_report(year, month);
@@ -83,7 +83,7 @@ exports.getSalesReport = async (req, res) => {
             }
         });
         let admin = res.locals.admin;
-        res.render('admin/salesReport', { footer: true, admin: true, Admin: admin, salesReport });
+        res.render('admin/adminDash', { footer: true, admin: true, Admin: admin, salesReport });
     } catch (error) {
         console.error('Error rendering sales report:', error);
         res.status(500).send('Internal Server Error');
