@@ -150,7 +150,7 @@ exports.postProcessOrder =
           products: orderProducts,
           totalAmount: totalPrice,
           paymentMethod: selectedPaymentMethod,
-          deliveryDate: new Date(new Date().getTime() + 2 * 60 * 1000),
+          deliveryDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
           status: status,
         });
 
@@ -314,7 +314,7 @@ exports.getMyOrders =
           return order;
         });
 
-        console.log("modifiedOrders:", modifiedOrders);
+       
         res.render("./myOrders.ejs", { user, orders: modifiedOrders });
       } else {
         req.flash("error", "Please log in to view your account details.");

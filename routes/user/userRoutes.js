@@ -7,7 +7,7 @@ const userOrderController = require('../../controllers/userOrderController');
 const productController = require('../../controllers/productController');
 const userCheckoutController =require('../../controllers/userCheckoutController');
 const userAuthController = require('../../controllers/userAuthController');
-
+const invoiceController = require('../../controllers/invoiceController');
 
 //getHome
 router.get('/',productController.getHome);
@@ -70,6 +70,10 @@ router.post('/submit-return-request/:orderId', userOrderController.submitReturnR
 router.get('/add_wishlist',userCheckoutController.verifyLogin,productController.add_wishlist);
 router.post('/add-to-wishlist/:productId',productController.postToWishlist);
 router.get('/remove-from-wishlist/:productId',productController.removeFromWishlist);
+
+//invoice
+router.get('/get-invoice-data/:orderId',invoiceController.getInvoiceData);
+
 // User authentication routes
 router.post('/logout', userAuthController.postUserLogout);
 
