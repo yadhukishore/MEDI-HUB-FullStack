@@ -2,8 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../../controllers/adminController'); 
-const salesReportController = require('../../controllers/salesReportController');
+const adminDashbord = require('../../controllers/adminDashbord');
 const coupenController = require('../../controllers/coupenController');
+const salesRepoortController=require('../../controllers/salesRepoortController')
 const upload = require('../../middleware/multer');
 const adminAuthMiddleware =require('../../middleware/adminAuthMiddleware');
 
@@ -45,9 +46,13 @@ router.get('/admin/delete_coupon/:couponId',coupenController.deleteCoupon);
 
 
 
+//Admin dashbord 
+router.get('/admin/adminDash', adminAuthMiddleware, adminDashbord.getAdminDash);
+router.get('/api/admin-dash', adminAuthMiddleware, adminDashbord.getSalesData);
+
 //sales report
-router.get('/admin/adminDash', adminAuthMiddleware, salesReportController.getAdminDash);
-router.get('/api/admin-dash', adminAuthMiddleware, salesReportController.getSalesData);
+router.get('/admin/salesReport',salesRepoortController.getSalesReport);
+
 // Order management routes
 router.get('/list-all-orders', adminController.getListAllOrders);
 router.post('/update-order-status', adminController.updateOrderStatus);

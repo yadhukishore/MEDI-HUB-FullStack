@@ -27,10 +27,13 @@ exports.getInvoiceData = async (req, res) => {
             throw new Error('User address not found');
         }
 
-        const userAddress = user.addresses[0]; // Assuming you want the first address
+       // Find the default address if set, otherwise use the first address
+const userAddress = user.addresses.find(address => address.isDefault) || user.addresses[0];
 
         console.log("userAddress;>",userAddress);
-     
+        if (!userAddress) {
+            throw new Error('No user address found');
+        }
      
 
         // Set a default tax rate or calculate it based on your business logic
@@ -78,9 +81,9 @@ exports.getInvoiceData = async (req, res) => {
         // Invoice number
         "number": `IN${order._id}`,
         // Invoice data
-        "date": new Date().toLocaleDateString(),
+        "date": order.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         // Invoice due date
-        "due-date": order.deliveryDate.toLocaleDateString(),
+        "due-date": order.deliveryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
     },
     // The products you would like to see on your invoice
     // Total values are being calculated automatically
@@ -109,7 +112,7 @@ exports.getInvoiceData = async (req, res) => {
     "translate": {
         // "invoice": "FACTUUR",  // Default to 'INVOICE'
         "number": "Invoice Id", // Defaults to 'Number'
-        "date": "Date", // Default to 'Date'
+        "date": "Order date", // Default to 'Date'
         "due-date": "Delivary date", // Defaults to 'Due Date'
         // "subtotal": "Subtotaal", // Defaults to 'Subtotal'
         // "products": "Producten", // Defaults to 'Products'
