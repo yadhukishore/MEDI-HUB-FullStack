@@ -1,0 +1,250 @@
+<!-- views/admin/offers.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Offers</title>
+     <!-- Include Bootstrap CSS -->
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+     <!-- Include Font Awesome -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-BebzA/xpClMCa5g+Z5ZMAZFYiDOwrHXi1TKPZk/ZvhQjFYDpp7A3aHsUn9g59eO+e4/mphI9ogL+2z/j0V+0tQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #dfede0;
+        }
+        .wrapper {
+            display: flex;
+        }
+
+        #sidebar {
+            min-width: 250px;
+            background-color: #333;
+            padding: 20px;
+            color: white;
+        }
+
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        nav img {
+            height: 50px; /* Set the desired height for your logo */
+        }
+
+        nav button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            width: 300px;
+            margin: 10px;
+            box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+            transition: transform .2s;
+        }
+
+        .card img {
+            object-fit: cover;
+            width: 100%;
+            height: 200px;
+        }
+
+        .card-body {
+            background-color: #e4fae4;
+        }
+
+       
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            margin-bottom: 5px;
+        }
+
+        input {
+            margin-bottom: 15px;
+        }
+        .navbar-brand {
+            margin-right: 0; /* Remove default margin for the brand */
+        }
+   
+   
+     #sidebar {
+         min-width: 250px;
+         background-color: #333;
+         padding: 20px;
+         color: white;
+     }
+
+     #content {
+         flex-grow: 1;
+         padding: 20px;
+     }
+
+     nav img {
+         height: 50px; /* Set the desired height for your logo */
+     }
+
+     nav button {
+         background-color: #4CAF50;
+         color: white;
+         padding: 10px 20px;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+     }
+
+     .container {
+         margin-top: 20px; /* Add space between the navigation bar and content */
+     }
+
+   
+    
+     .navbar {
+         position: sticky;
+         top: 1;
+         z-index: 1000;
+         margin-left: -20px;
+         margin-right: -20px;
+         margin-top: -20px;
+     }
+
+     .navbar-brand {
+         margin-right: 0; /* Remove default margin for the brand */
+     }
+
+     .sidebar-link {
+         font-size: 18px; /* Adjust the font size as needed */
+         font-weight: bold; /* Optional: Add bold styling */
+         /* Add any additional styling properties as needed */
+     }
+     #sidebar {
+         min-width: 250px;
+         background-color: #333;
+         padding: 20px;
+         color: white;
+         position: sticky;
+         top: 0;
+         height: 100vh; /* Set a fixed height for the sidebar */
+         overflow-y: auto; /* Add scroll if content exceeds the height */
+     }
+     
+     .delete-offer-btn {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Style for delete icon */
+        .delete-offer-btn i {
+            margin-right: 5px; /* Add some spacing between icon and text */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <%- include('../partials/adminSidebar.ejs', { activePage: 'offer' }) %>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Navbar -->
+            <%- include('../partials/adminNavbar.ejs') %>
+
+            <div class="container">
+                <h1>Product Offers</h1>
+                <div class="row">
+                    <% products.forEach(product => { %>
+                        <div class="col-md-4 mb-4">
+                          <div class="card">
+                            <img src="/public/uploads/<%= product.images[0] %>" alt="<%= product.name %>"
+                                style="max-width: 100%;">
+                            <div class="card-body">
+                              <h5 class="card-title"><%= product.name %></h5>
+                       
+                              <p class="card-text">Current Price: ₹<%= product.price.toFixed(2) %></p>
+                              <form action="/admin/offer" method="post">
+                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                <label for="offerAmount">Offer Amount:</label>
+                                <input type="number" name="offerAmount" id="offerAmount" class="form-control"
+                                    value="<%= product.offer.amount %>" required>
+                                    <button type="submit" class="btn btn-primary apply-offer-btn">Apply Offer</button>
+                              </form>
+                              <div class="mt-3">
+                                <% if (product.offer.isActive) { %>
+                                    <!-- Delete offer button  -->
+                                    <form action="/admin/deleteOffer" method="post" id="deleteOfferForm_<%= product._id %>" class="delete-offer-btn">
+                                        <input type="hidden" name="productId" value="<%= product._id %>">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Delete Offer
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </div>
+                            </div>
+                          </div>
+                        </div>
+                       <% }) %>
+                       
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $("#sidebar-toggle").click(function() {
+            $("#sidebar").toggle();
+        });
+    </script>
+  
+<script>
+    document.querySelectorAll('.apply-offer-btn').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the form from submitting immediately
+
+            Swal.fire({
+                title: 'Are you sure to apply offer?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user clicks "Yes", submit the form
+                    event.target.closest('form').submit();
+                }
+            });
+        });
+    });
+</script>
+</body>
+
+</html>

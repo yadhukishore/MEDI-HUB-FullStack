@@ -218,51 +218,59 @@
       </div>
     </div>
 
-   <!-- Product Details -->
+<!-- Product Details -->
 <div class="product-details">
   <div class="d-flex justify-content-between">
     <h1 class="display-4"><%= product.name %> </h1>
-<!-- Add to Wishlist Form -->
-<form action="/add-to-wishlist/<%= product._id %>" method="post">
-  <button type="submit" class="btn btn-outline-secondary btn-lg">
-   <% if (user && user.wishlist && user.wishlist.some(item => item.product._id.toString() === product._id.toString())) { %>
-     <i class="bi bi-heart-fill" style="color: red;" data-toggle="tooltip" data-placement="top" title="Go to wishlist page"></i>
-   <% } else { %>
-     <i class="bi bi-heart"></i>
-   <% } %>
-  </button>
- </form>
- 
- 
-  </div>
-      <p class="lead">Details: <%= product.description %></p>
-      <p class="text-muted">Category: <%= product.category.categoryName %> </p>
-      <p class="h4">Price: <span class="text-success"><strong><%= product.price %> rs</strong></span></p>
-      <div class="col-md-6 text-right">
-        <!-- Display a message if stock is less than or equal to 5 -->
-        <% if (product.stock <= 5 && product.stock > 1) { %>
-          <p class="card-text text-danger">Only <%= product.stock %> left!</p>
-        <% } else if (product.stock === 1) { %>
-          <p class="card-text text-danger">Last in stock!</p>
-        <% } else if (product.stock === 0) { %>
-          <p class="card-text text-danger">Out of Stock!</p>
-        <% } %>
-      </div>
-      <!-- Additional details or features -->
-
-      <!-- Action buttons -->
-      <div class="action-buttons mt-4">
-        <button class="btn btn-primary btn-lg">Buy Now</button>
-       
-        <a href="/add-to-cart/<%= product._id %>" class="btn btn-outline-danger btn-lg"> <% if (user && user.cart && user.cart.some(item => item.product._id.toString() === product._id.toString())) { %>
-          Go to Cart
+    <!-- Add to Wishlist Form -->
+    <form action="/add-to-wishlist/<%= product._id %>" method="post">
+      <button type="submit" class="btn btn-outline-secondary btn-lg">
+        <% if (user && user.wishlist && user.wishlist.some(item => item.product._id.toString() === product._id.toString())) { %>
+          <i class="bi bi-heart-fill" style="color: red;" data-toggle="tooltip" data-placement="top" title="Go to wishlist page"></i>
         <% } else { %>
-          Add to Cart
-        <% } %></a>
+          <i class="bi bi-heart"></i>
+        <% } %>
+      </button>
+    </form>
+  </div>
+  <p class="lead">Details: <%= product.description %></p>
+  <p class="text-muted">Category: <%= product.category.categoryName %> </p>
+  <% if (product.offer.isActive) { %>
+    <!-- Display discounted price with original price in strikethrough -->
+    <p class="h4">
+      Price:
+      <span class="text-success">₹<%= product.price %>   </span>
+      <span class="text"><s>  ₹<%= product.price + product.offer.amount %></s></span>
+    </p>
+  <% } else { %>
+    <!-- Display the original price if no offer applied -->
+    <p class="h4">Price: <span class="text-success"><strong>₹ <%= product.price %> </strong></span></p>
+  <% } %>
+  <div class="col-md-6 text-right">
+    <!-- Display a message if stock is less than or equal to 5 -->
+    <% if (product.stock <= 5 && product.stock > 1) { %>
+      <p class="card-text text-danger">Only <%= product.stock %> left!</p>
+    <% } else if (product.stock === 1) { %>
+      <p class="card-text text-danger">Last in stock!</p>
+    <% } else if (product.stock === 0) { %>
+      <p class="card-text text-danger">Out of Stock!</p>
+    <% } %>
+  </div>
+  <!-- Additional details or features -->
 
+  <!-- Action buttons -->
+  <div class="action-buttons mt-4">
+    <button class="btn btn-primary btn-lg">Buy Now</button>
+    <a href="/add-to-cart/<%= product._id %>" class="btn btn-outline-danger btn-lg">
+      <% if (user && user.cart && user.cart.some(item => item.product._id.toString() === product._id.toString())) { %>
+        Go to Cart
+      <% } else { %>
+        Add to Cart
+      <% } %>
+    </a>
+  </div>
+</div>
 
-      </div>
-    </div>
   </div>
 
   <!-- Optional: Add Bootstrap JS and Popper.js for Bootstrap functionality -->

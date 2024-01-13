@@ -197,7 +197,13 @@ width: 20px;
                     <!-- row for price and stock message -->
                     <div class="row">
                         <div class="col-md-6">
-                          <p class="card-text">₹<strong><%= product.price %> </strong></p>
+                            <% if (product.offer && product.offer.isActive) { %>
+                                <p class="card-text">₹<strong><%= product.price %></strong></p>
+                                <!-- <p class="card-text">₹<s><%= product.price + product.offer.amount %></s></p> -->
+                               <% } else { %>
+                                <p class="card-text">₹<strong><%= product.price %></strong></p>
+                               <% } %>
+                               
                         </div>
                         <div class="col-md-6 text-right">
                           <!-- Display a message if stock is less than or equal to 5 -->

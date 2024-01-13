@@ -4,7 +4,8 @@ const router = express.Router();
 const adminController = require('../../controllers/adminController'); 
 const adminDashbord = require('../../controllers/adminDashbord');
 const coupenController = require('../../controllers/coupenController');
-const salesRepoortController=require('../../controllers/salesRepoortController')
+const salesRepoortController=require('../../controllers/salesRepoortController');
+const adminOfferController=require('../../controllers/adminOfferController');
 const upload = require('../../middleware/multer');
 const adminAuthMiddleware =require('../../middleware/adminAuthMiddleware');
 
@@ -52,6 +53,11 @@ router.get('/api/admin-dash', adminAuthMiddleware, adminDashbord.getSalesData);
 
 //sales report
 router.get('/admin/salesReport',salesRepoortController.getSalesReport);
+
+//Offer Manage
+router.get('/admin/offer',adminOfferController.getOffersPage);
+router.post('/admin/offer',adminOfferController.addOffer);
+router.post('/admin/deleteOffer',adminOfferController.deleteOffer);
 
 // Order management routes
 router.get('/list-all-orders', adminController.getListAllOrders);

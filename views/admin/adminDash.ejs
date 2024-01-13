@@ -89,20 +89,77 @@
             /* Add any additional styling properties as needed */
         }
 
+       
+        #additionalInfoContainer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
         #additionalInfo {
-            background-color: rgb(121, 223, 223);
-            padding: 10px;
-            width: 100px;
+            background-color: #007bff;
+            padding: 15px;
+            width: 48%; /* Adjust the width as needed */
             border-radius: 10px;
-            box-shadow: 10px 10px 20px rgb(68, 81, 85);
-            margin: 40px 
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        #adminPanelHeading{
-            color:rgb(248, 220, 7);
-            background-color: #1d1d1d;
-            padding-left: 8px;
+
+        #additionalInfo2 {
+            background-color: #6c757d;
+            padding: 15px;
+            width: 48%; /* Adjust the width as needed */
             border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
+
+        #additionalInfo p,
+        #additionalInfo2 p {
+            color: white;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        #additionalInfo span,
+        #additionalInfo2 span {
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        #additionalInfoContainer2 {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            background-color: #28a745; /* Green background color */
+            padding: 1px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-left: 300px;
+            margin-right: 300px;
+        }
+
+        #additionalInfo3 {
+            background-color: #28a745; /* Green background color */
+            padding: 15px;
+            width: 80%; /* Adjust the width as needed */
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #additionalInfo3 p {
+            color: white;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        #additionalInfo3 span {
+            font-weight: bold;
+            font-size: 24px;
+        }
+
     </style>
 </head>
 
@@ -122,25 +179,38 @@
                     <td align="center" valign="middle">
                        
                         <h1  style="font-size: 35px; color: #333; text-align: center;">Admin Dashboard</h1><hr>
-                        <div style="width: 80%; margin: auto; text-align: center;">
-                            <div>
-                                <label for="year">Select Year:</label>
-                                <input type="number" id="year" min="2021" max="2024" value="2023" />
-                                <label for="month">Select Month:</label>
-                                <input type="number" id="month" min="1" max="12" value="12" />
-                                <button onclick="fetchAndDrawChart()">Update Chart</button>
+                        <div style="width: 80%; margin: auto; text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                            <div style="margin-bottom: 20px;">
+                                <label for="year" style="font-weight: bold; margin-right: 10px;">Select Year:</label>
+                                <input type="number" id="year" min="2021" max="2024" value="2023" style="padding: 8px; border: 1px solid #ced4da; border-radius: 5px;" />
+                                <label for="month" style="font-weight: bold; margin-left: 20px; margin-right: 10px;">Select Month:</label>
+                                <input type="number" id="month" min="1" max="12" value="12" style="padding: 8px; border: 1px solid #ced4da; border-radius: 5px;" />
+                                <button onclick="fetchAndDrawChart()" style="background-color: #007bff; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer;">Update Chart</button>
                             </div>
-                            <canvas id="salesChart" style="max-width: 100%; min-height: 300px;"></canvas>
-
-                            <div id="additionalInfo">
-
-                                <p>Total Revenue:₹<span id="totalRevenue"></span></p>
-
-                            </div>
+                            <canvas id="salesChart" style="max-width: 100%; min-height: 300px; border: 1px solid #ced4da; border-radius: 10px;"></canvas>
                         </div>
+                        
                     </td>
+                    
                 </tr>
             </table>
+          
+<div id="additionalInfoContainer">
+    <div id="additionalInfo">
+        <p>Total Revenue:₹<span id="totalRevenue"></span></p>
+    </div>
+    <div id="additionalInfo2">
+        <p>Total Users: <span id="totalUsers"><%= totalUsers %></span></p>
+    </div>
+    
+    
+</div>
+<div id="additionalInfoContainer2">
+    <div id="additionalInfo3">
+        <p>Total Orders Made:<span id="totalRevenue"><%= totalOrders %></span></p>
+    </div>
+  
+    </div>
         </div>
     </div>
 

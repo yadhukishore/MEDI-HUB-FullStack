@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.css"
         integrity="sha384-vQzlfxhMj8NOQJUYUJZ7c5MKu7f4sJq/mh65aDwa5NA0MLGYnWxZ3ZtIovdmO61s"
         crossorigin="anonymous">
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Add your CSS styles for the form here -->
     <style>
         body {
@@ -232,7 +235,7 @@
                         <input type="number" class="form-control" id="stock" name="stock" placeholder="Enter stock"
                             aria-label="stock">
                     </div>
-                    <button type="submit" class="btn btn-primary">Add Product</button>
+                    <button type="submit" class="btn btn-primary add-pro-btn">Add Product</button>
                 </form>
                 <script>
                     document.getElementById('coverImage').addEventListener('change', handleFileSelect.bind(null,
@@ -272,6 +275,27 @@
             $("#sidebar").toggle();
         });
     </script>
+     
+<script>
+    document.querySelectorAll('.add-pro-btn').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the form from submitting immediately
+
+            Swal.fire({
+                title: 'Are you sure to Add a New Product?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user clicks "Yes", submit the form
+                    event.target.closest('form').submit();
+                }
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

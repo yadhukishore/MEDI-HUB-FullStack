@@ -34,6 +34,7 @@ exports.getHome = async (req, res) => {
           price: 1,
           stock: 1,
           categoryName: '$categoryDetails.categoryName',
+          offer: 1,
         },
       },
       { $match: { $or: [

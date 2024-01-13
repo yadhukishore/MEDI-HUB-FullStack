@@ -8,6 +8,8 @@
     <title>Admin Panel</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -159,8 +161,10 @@ tr:hover {
                                     <img src="/public/uploads/<%= image %>" alt="<%= product.name %>" style="max-width: 100px;">
                                 <% }); %></td>
                                 <!-- Add Edit button with a link to the edit_product route -->
-                                <td><a href="/admin/edit_product/<%= product._id %>" class="btn btn-warning">✎</a>
-                                    <a href="/admin/delete_product/<%= product._id %>" class="btn btn-danger" onclick=" return confirm('Are you want to delete <%=product.name%> ?')">🗑</a></td>
+                                <td>
+                                    <a href="/admin/edit_product/<%= product._id %>" class="btn btn-warning">✎</a>
+                                    <a href="#" class="btn btn-danger apply-delete-btn" data-product-id="<%= product._id %>" data-product-name="<%= product.name %>">🗑</a>
+                                </td>
                             </tr>
                         <% }); %>
                     </tbody>
@@ -180,5 +184,54 @@ tr:hover {
             $("#sidebar").toggle();
         });
     </script>
+    
+    <script>
+        $("#sidebar-toggle").click(function () {
+            $("#sidebar").toggle();
+        });
+
+    
+        document.querySelectorAll('.apply-delete-btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent the default behavior of the link
+
+                const productId = event.target.getAttribute('data-product-id');
+                const productName = event.target.getAttribute('data-product-name');
+
+                Swal.fire({
+                    title: `Are you sure to delete ${productName}?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No',
+                    showLoaderOnConfirm: true, // Show loader during async operation
+                    preConfirm: () => {
+                        // Perform the asynchronous delete operation
+                        return fetch(`/admin/delete_product/${productId}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(response.statusText);
+                                }
+                            })
+                            .catch(error => {
+                                Swal.showValidationMessage(`Error: ${error}`);
+                            });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: `${productName} deleted successfully!`,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Reload the current page after displaying the success message
+                            location.reload();
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

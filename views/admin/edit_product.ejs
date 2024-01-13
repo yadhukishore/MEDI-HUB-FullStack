@@ -8,6 +8,8 @@
     <title>Edit Product</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -234,7 +236,7 @@
     <button class="btn btn-danger delete-image" onclick="deleteImage('/delete-in-editProduct/<%= product._id %>/<%= product.images[3] %>')">Delete</button>
 </div>
     
-                <button type="submit" class="btn btn-primary">Update Product</button>
+                <button type="submit" class="btn btn-primary apply-edit-btn">Update Product</button>
             </form>
         </div>
         </div>
@@ -276,6 +278,26 @@
         <script>
             $("#sidebar-toggle").click(function() {
                 $("#sidebar").toggle();
+            });
+        </script>
+        <script>
+            document.querySelectorAll('.apply-edit-btn').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault(); // Prevent the form from submitting immediately
+        
+                    Swal.fire({
+                        title: 'Are you sure to Edit product?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // If the user clicks "Yes", submit the form
+                            event.target.closest('form').submit();
+                        }
+                    });
+                });
             });
         </script>
     </body>

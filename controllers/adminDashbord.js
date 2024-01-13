@@ -1,6 +1,7 @@
-// controllers/salesReport.js
+// controllers/adminDashbord.js
 const Order = require("../models/order");
 const adminAuthMiddleware = require("../middleware/adminAuthMiddleware");
+const User = require("../models/user");
 
 // Function to fetch sales data from the database
 const sales_report = async (selectedYear, selectedMonth) => {
@@ -67,8 +68,28 @@ const sales_report = async (selectedYear, selectedMonth) => {
 };
 
 
+// Function to fetch the total number of users
+const getTotalUsers = async () => {
+    try {
+        const totalUsers = await User.countDocuments();
+        return totalUsers;
+    } catch (error) {
+        console.error('Error fetching total users:', error);
+        throw error;
+    }
+};
 
 
+// Function to fetch the total number of orders
+const getTotalOrders = async () => {
+    try {
+        const totalOrders = await Order.countDocuments();
+        return totalOrders;
+    } catch (error) {
+        console.error('Error fetching total orders:', error);
+        throw error;
+    }
+};
 
 
 exports.getAdminDash = async (req, res) => {
@@ -82,8 +103,14 @@ exports.getAdminDash = async (req, res) => {
                 sales.createdAt = sales.createdAt.toLocaleDateString();
             }
         });
+        const totalUsers = await getTotalUsers();
+        console.log("TOTUsers:>",totalUsers);
+
+        const totalOrders = await getTotalOrders();
+        console.log("TotOrders:",totalOrders);
+
         let admin = res.locals.admin;
-        res.render('admin/adminDash', { footer: true, admin: true, Admin: admin, salesReport });
+        res.render('admin/adminDash', { footer: true, admin: true, Admin: admin, salesReport, totalUsers, totalOrders });
     } catch (error) {
         console.error('Error rendering sales report:', error);
         res.status(500).send('Internal Server Error');
