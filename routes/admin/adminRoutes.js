@@ -6,6 +6,7 @@ const adminDashbord = require('../../controllers/adminDashbord');
 const coupenController = require('../../controllers/coupenController');
 const salesRepoortController=require('../../controllers/salesRepoortController');
 const adminOfferController=require('../../controllers/adminOfferController');
+const bannerController = require('../../controllers/bannerController');
 const upload = require('../../middleware/multer');
 const adminAuthMiddleware =require('../../middleware/adminAuthMiddleware');
 
@@ -58,6 +59,12 @@ router.get('/admin/salesReport',salesRepoortController.getSalesReport);
 router.get('/admin/offer',adminOfferController.getOffersPage);
 router.post('/admin/offer',adminOfferController.addOffer);
 router.post('/admin/deleteOffer',adminOfferController.deleteOffer);
+
+//banner management
+router.get('/admin/banner/',bannerController.renderBannerManagementPage);
+router.post('/admin/banner', upload, bannerController.createBanner);
+router.post('/admin/banner/:id', bannerController.deleteBanner);
+router.post('/admin/banner/:id/status',bannerController.bannerFetchFunction);
 
 // Order management routes
 router.get('/list-all-orders', adminController.getListAllOrders);

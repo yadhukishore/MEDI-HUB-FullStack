@@ -176,6 +176,7 @@ exports.postProcessOrder =
           });
 console.log("PAIYMENTZ:\n",payments);
           await payments.save();
+          console.log("Saved to payments");
           if (razorOrder) {
             res.json({
               success: true,
@@ -185,7 +186,7 @@ console.log("PAIYMENTZ:\n",payments);
           }
         }
 
-       // Update coupon logic
+      
 if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
   // Set is_delete field of the applied coupon to true
   await Coupon.findByIdAndUpdate(req.session.appliedCoupon._id, { is_delete: true });
@@ -327,26 +328,50 @@ exports.getMyOrders =
   };
 
 
-exports.cancelOrder = async (req, res) => {
-  const orderId = req.params.orderId;
+  exports.cancelOrder = async (req, res) => {
+    const orderId = req.params.orderId;
+  
+    try {
+      const order = await Order.findById(orderId);
+  
+      if (!order) {
+        req.flash("error", "Order not found");
+        return res.status(404).json({ message: "Order not found" });
+      }
+  
+      // Check if the order was paid online and is confirmed
+      if (order.paymentMethod === "razorpay" && order.status === "Confirmed") {
+        const user = await User.findById(order.user);
+        console.log("order was paid online and is confirmed, so we can update wallet!");
+        // Add the order amount to the user's wallet
+        user.user_wallet += order.totalAmount;
+  
+        // Record the transaction in the wallet history
+        user.wallet_history.push({
+          amount: order.totalAmount,
+          status: "Credit",
+          time: new Date()
+        });
+  
+        // Save the updated user document
+       const checkWallet = await user.save();
+        console.log("Updated wallet\n",checkWallet);
+      }
 
-  try {
-    const order = await Order.findByIdAndUpdate(orderId, {
-      status: "Cancelled",
-    });
-
-    if (!order) {
-      req.flash("error", "Order not found");
-      return res.status(404).json({ message: "Order not found" });
+      console.log("order was paid COD SO WE CAN CANCEL IT!!");
+  
+      // Update the order status to 'Cancelled'
+      order.status = "Cancelled";
+      await order.save();
+  
+      req.flash("success", "Order cancelled successfully and Check your wallet?");
+      res.status(200).json({ message: "Order cancelled successfully and amount credited to wallet", order });
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      req.flash("error", "Internal Server Error");
+      res.status(500).json({ message: "Internal Server Error" });
     }
-    req.flash("success", "Order cancelled successfully");
-    res.status(200).json({ message: "Order cancelled successfully", order });
-  } catch (error) {
-    console.error("Error cancelling order:", error);
-    req.flash("error", "Internal Server Error");
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
+  };
 
 exports.submitReturnRequest = async (req, res) => {
   try {
@@ -381,3 +406,10 @@ exports.submitReturnRequest = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+
+
+
+exports.getPaymentFailed=async(req,res)=>{
+  res.render('./paymentFailed.ejs');
+}

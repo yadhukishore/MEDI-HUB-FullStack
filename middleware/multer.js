@@ -17,9 +17,14 @@ const upload = (req, res, next) => {
 
   // Check the route to determine the appropriate field name
   if (req.route.path === '/admin/add_product') {
+    console.log("Middleware for add images>>>>>>>");
     fieldName = 'productImages';
   } else if (req.route.path === '/admin/edit_product/:id') {
+    console.log("Middleware for edit images>>>>>>>");
     fieldName = 'updateImages';
+  } else if (req.route.path === '/admin/banner') {
+    console.log("Middleware for banners>>>>>>>");
+    fieldName = 'images'; // Add this case for the "/admin/banners" route
   }
 
   // Use the correct middleware function with the request object

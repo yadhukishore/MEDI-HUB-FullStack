@@ -8,6 +8,7 @@ const productController = require('../../controllers/productController');
 const userCheckoutController =require('../../controllers/userCheckoutController');
 const userAuthController = require('../../controllers/userAuthController');
 const invoiceController = require('../../controllers/invoiceController');
+const walletController = require('../../controllers/walletController');
 
 //getHome
 router.get('/',productController.getHome);
@@ -62,6 +63,8 @@ router.get('/myOrders', userOrderController.verifyLoginOrderController,userOrder
 router.post('/saveDefaultAddress',userCheckoutController.verifyLogin,userCheckoutController.saveDefaultAddress);
 router.post('/verifyPayment',userOrderController.verifyPayment);
 router.post('/applyCoupon',userCheckoutController.verifyLogin,userCheckoutController.applyCoupon);
+router.get('/paymentFailed',userOrderController.getPaymentFailed);
+
 // Product routes
 router.get('/product/:productId', productController.getProduct);
 router.get('/allMedicines',productController.getAllMedicines)
@@ -70,6 +73,9 @@ router.post('/submit-return-request/:orderId', userOrderController.submitReturnR
 router.get('/add_wishlist',userCheckoutController.verifyLogin,productController.add_wishlist);
 router.post('/add-to-wishlist/:productId',productController.postToWishlist);
 router.get('/remove-from-wishlist/:productId',productController.removeFromWishlist);
+
+//wallet
+router.get('/userWallet',walletController.getUserWalletBalance);
 
 //invoice
 router.get('/get-invoice-data/:orderId',invoiceController.getInvoiceData);

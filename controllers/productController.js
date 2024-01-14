@@ -3,6 +3,7 @@ const Product = require('../models/product');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const Category = require('../models/category');
+const Banner = require('../models/banner');
 
 exports.getHome = async (req, res) => {
   try {
@@ -45,10 +46,11 @@ exports.getHome = async (req, res) => {
       { $limit: perPage },
     ]);
 
+    const banners = await Banner.find({ banner_status: true });
     const totalProducts = await Product.countDocuments({ deleted: false });
     const totalPages = Math.ceil(totalProducts / perPage);
 
-    res.render('index', {user, products, page, totalPages, messages: req.flash() });
+    res.render('index', { user, products, banners, page, totalPages, messages: req.flash() });
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).send('Internal Server Error');
@@ -245,7 +247,7 @@ exports.add_wishlist = async(req,res)=>{
         });
 
       if (user) {
-        res.render('wishlist', { wishlist: user.wishlist, cart: user.cart, categories: user.categories });
+        res.render('wishlist', {user, wishlist: user.wishlist, cart: user.cart, categories: user.categories });
         return;
       }
     }

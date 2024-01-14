@@ -20,6 +20,21 @@ const wishlistItemSchema = new mongoose.Schema({
 });
 
 
+const walletHistorySchema = new mongoose.Schema({
+  amount: {
+    type: Number
+  },
+  status: {
+    type: String,
+    enum: ["Debit", "Credit"]
+  },
+  time: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -71,6 +86,12 @@ const userSchema = new mongoose.Schema({
   ],
   addresses: [addressSchema],
   wishlist: [wishlistItemSchema],
+  user_wallet: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  wallet_history: [walletHistorySchema],
 });
 
 userSchema.methods.toJSON = function () {

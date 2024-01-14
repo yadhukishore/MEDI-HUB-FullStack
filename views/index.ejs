@@ -79,7 +79,7 @@ width: 20px;
             background-color: #f9f9f9;
             min-width: 160px;
             box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
+            z-index: 1000;
         }
 
         #dropdown-content button {
@@ -124,17 +124,90 @@ width: 20px;
        justify-content: center;
        
    }
+   
         .jumbotron {
        background-color: #adc9b2;
        color: #333;
        margin-right: 30px;
        box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
-       height: 200px;
+       height: 100px;
    }
+   .jumbotron h1{
+      margin-top: -45px;
+   }
+
    .btn-info:hover {
     color: black !important;
   
 }
+
+
+.carousel-item {
+  height: 80vh; /* Adjust the height as needed */
+}
+
+.carousel-item img {
+  width: 100%; /* Full width of the carousel */
+  height: 100%; /* Full height of the carousel item */
+  object-fit: cover; /* Cover the container without stretching */
+  object-position: center; /* Center the image within the element */
+}
+
+.carousel-caption {
+  position: absolute;
+  right: 15%;
+  bottom: 20px;
+  left: 15%;
+  z-index: 10;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: #fff;
+  text-align: center;
+  background-color: rgba(0,0,0,0.5); /* Caption background */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #000000;
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.carousel-indicators li {
+  background-color: #555; /* Active indicator color */
+}
+
+.carousel-indicators .active {
+  background-color: #fff; /* Inactive indicator color */
+}
+
+.carousel-fade .carousel-item {
+  opacity: 0;
+  transition-duration: .6s;
+  transition-property: opacity;
+}
+
+.carousel-fade .carousel-item.active,
+.carousel-fade .carousel-item-next.carousel-item-left,
+.carousel-fade .carousel-item-prev.carousel-item-right {
+  opacity: 1;
+}
+
+.carousel-fade .active.carousel-item-left,
+.carousel-fade .active.carousel-item-right {
+  opacity: 0;
+}
+
+.carousel-fade .carousel-item-next,
+.carousel-fade .carousel-item-prev,
+.carousel-fade .carousel-item.active,
+.carousel-fade .active.carousel-item-left,
+.carousel-fade .active.carousel-item-prev {
+  transform: translateX(0);
+  transition: opacity .6s ease;
+}
+
+
    
     </style>
  
@@ -148,7 +221,42 @@ width: 20px;
 <body>
     <!-- nav bar -->
    <%- include("../views/partials/userNavbar.ejs") %>
-   <div class="container-fluid">
+ 
+
+   
+    <!-- Carousel -->
+    <div id="myCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+        <ol class="carousel-indicators">
+          <% for (let i = 0; i < banners.length; i++) { %>
+            <li data-target="#myCarousel" data-slide-to="<%= i %>" class="<%= i === 0 ? 'active' : '' %>"></li>
+          <% } %>
+        </ol>
+        
+        <div class="carousel-inner">
+          <% banners.forEach((banner, index) => { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+              <% banner.images.forEach(image => { %>
+                <img src="<%= image.path %>" alt="<%= banner.banner_name %>" class="d-block w-100">
+                <div class="carousel-caption d-none d-md-block">
+                  <h5><%= banner.banner_name %></h5>
+                  <p><%= banner.reference %></p>
+                </div>
+              <% }) %>
+            </div>
+          <% }) %>
+        </div>
+        
+        <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+      <div class="container-fluid">
+
 
 
     <div class="container">
@@ -158,11 +266,10 @@ width: 20px;
 
   
       <div class="jumbotron">
-        <h1 class="display-4"><strong>Welcome to MediHub</strong></h1>
-        <p class="lead">Quality makes perfect</p>
+        <h1 class="display-4 text-center"><strong> MEDI HUB </strong></h1>
     </div>
-    
-
+  
+  
 
       <% if (messages.success) { %>
         <div class="alert alert-success">

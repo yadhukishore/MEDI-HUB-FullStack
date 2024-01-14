@@ -4,15 +4,53 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <title>Return Requests</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
+        }
+        .wrapper {
+            display: flex;
+        }
+
+        #sidebar {
+            min-width: 250px;
+            background-color: #333;
+            padding: 20px;
+            color: white;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        #conti {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        nav img {
+            height: 50px;
+        }
+
+        nav button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin-top: 20px;
         }
 
         h1 {
@@ -55,10 +93,34 @@
         button:hover {
             background-color: #45a049;
         }
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-top: -20px;
+        }
+
+        .navbar-brand {
+            margin-right: 0;
+        }
+
+        .sidebar-link {
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <%- include('../partials/adminSidebar.ejs', { activePage: 'returnRequest' }) %>
+
+        <div id="conti">
+ <!-- Navbar -->
+ <%- include('../partials/adminNavbar.ejs') %>
     <div class="container">
         <h1>Return Requests</h1>
         <table class="table">
@@ -93,6 +155,8 @@
                 <% }); %>
             </tbody>
         </table>
+    </div>
+    </div>
     </div>
 
     <!-- Include Bootstrap JS and Popper.js -->

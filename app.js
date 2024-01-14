@@ -48,6 +48,7 @@ app.use('/public', express.static('public'));
 
 // Parse request bodies
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Custom middleware to check if the user is logged in
 const checkLoggedIn = (req, res, next) => {
