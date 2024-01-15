@@ -69,11 +69,47 @@ exports.getProduct= async(req,res)=>{
         if (!product) {
           return res.status(404).send('Product not found');
         }
+        const page = parseInt(req.query.page) || 1; 
+    const perPage = 6; 
+    const searchQuery = req.query.search || ''; 
+    
+         // Fetch related products or any other products needed for the product details page
+         const relatedProducts = await Product.aggregate([
+          { $match: { deleted: false } },
+          {
+            $lookup: {
+              from: 'categorynames',
+              localField: 'category',
+              foreignField: '_id',
+              as: 'categoryDetails',
+            },
+          },
+          { $unwind: '$categoryDetails' },
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              images: 1,
+              price: 1,
+              stock: 1,
+              categoryName: '$categoryDetails.categoryName',
+              offer: 1,
+            },
+          },
+          { $match: { $or: [
+            { name: { $regex: searchQuery, $options: 'i' } },
+            { categoryName: { $regex: searchQuery, $options: 'i' } },
+          ]}},
+          { $skip: (page - 1) * perPage },
+          { $limit: perPage },  // Limit to perPage number of products
+          { $limit: 4 }  // Additional limit to a maximum of 4 products
+        ]);
+        
          //user variable lek userinfo um with cart-le productinfo um ketti
          const user = await User.findById(req.session.user._id).populate('cart.product');
 
     
-        res.render('product_details', { product,user });
+        res.render('product_details', {  product, user, products: relatedProducts });
       } catch (error) {
         console.error('Error fetching product details:', error);
         req.flash('error', 'Please log in to view your cart.');

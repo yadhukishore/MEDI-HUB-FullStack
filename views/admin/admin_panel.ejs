@@ -10,107 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .wrapper {
-            display: flex;
-        }
-
-        #sidebar {
-            min-width: 250px;
-            background-color: #333;
-            padding: 20px;
-            color: white;
-        }
-
-        #content {
-            flex-grow: 1;
-            padding: 20px;
-        }
-
-        nav img {
-            height: 50px; /* Set the desired height for your logo */
-        }
-
-        nav button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .container {
-            margin-top: 20px; /* Add space between the navigation bar and content */
-        }
-
-        .add-product-button {
-            margin-bottom: 20px; /* Add space below the "Add Product" button */
-        }
-
-        table {
-            width: 100%;
-            margin-bottom: 20px; /* Add space below the table */
-        }
-
-        th, td {
-   font-size: 18px;
-   letter-spacing: 1px;
-   text-align: center;
-}
-tr:hover {
-   background-color: #9d9d9d;
-}
-.btn:hover {
-   background-color: #45a049;
-}
-
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .navbar {
-            position: sticky;
-            top: 1;
-            z-index: 1000;
-            margin-left: -20px;
-            margin-right: -20px;
-            margin-top: -20px;
-        }
-        .btn-danger {
-            color: #fff;
-            background-color: #dc3545;
-            border-color: #dc3545;
-            margin-top: 20px;
-                    }
-
-        .navbar-brand {
-            margin-right: 0; /* Remove default margin for the brand */
-        }
-
-        .sidebar-link {
-            font-size: 18px; /* Adjust the font size as needed */
-            font-weight: bold; /* Optional: Add bold styling */
-            /* Add any additional styling properties as needed */
-        }
-        #sidebar {
-            min-width: 250px;
-            background-color: #333;
-            padding: 20px;
-            color: white;
-            position: sticky;
-            top: 0;
-            height: 100vh; /* Set a fixed height for the sidebar */
-            overflow-y: auto; /* Add scroll if content exceeds the height */
-        }
-    </style>
+   <link rel="stylesheet" href="/public/stylesheets/admin/admin_panel.css">
 </head>
 <body>
     <div class="wrapper">
@@ -162,13 +62,24 @@ tr:hover {
                                 <% }); %></td>
                                 <!-- Add Edit button with a link to the edit_product route -->
                                 <td>
-                                    <a href="/admin/edit_product/<%= product._id %>" class="btn btn-warning">✎</a>
+                                    <a href="/admin/edit_product/<%= product._id %>" class="btn btn-warning">✎</a><br>
                                     <a href="#" class="btn btn-danger apply-delete-btn" data-product-id="<%= product._id %>" data-product-name="<%= product.name %>">🗑</a>
                                 </td>
                             </tr>
                         <% }); %>
                     </tbody>
                 </table>
+                <!-- Pagination -->
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <% if (i === page) { %>active<% } %>">
+                                <a class="page-link" href="/admin?page=<%= i %>&pageSize=<%= pageSize %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+               
             </div>
             </div>
         </div>
@@ -179,11 +90,7 @@ tr:hover {
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
-        $("#sidebar-toggle").click(function() {
-            $("#sidebar").toggle();
-        });
-    </script>
+  
     
     <script>
         $("#sidebar-toggle").click(function () {

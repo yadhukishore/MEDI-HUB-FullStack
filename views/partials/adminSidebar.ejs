@@ -1,6 +1,13 @@
 <!-- sidebar_partial.ejs -->
+<style>
+    .yellow-text {
+        color: yellow;
+    }
+
+
+ </style>
 <div id="sidebar">
-    <h2 id="adminPanelHeading">Admin Panel</h2>
+    <h2 id="adminPanelHeading" class="<%= activePage === 'adminDash' ? 'yellow-text' : '' %>" title=" Admin Dashbord Page">Admin Panel</h2>
     <a href="/admin/adminDash" id="adminPanelLink" style="display: none;">Admin Panel Link</a>
     <hr style="border-top: 1px solid white; width: 100%;">
 

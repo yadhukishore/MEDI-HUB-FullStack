@@ -1,0 +1,238 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #dfede0;
+}
+
+nav {
+    background-color: #333;
+    padding: 10px;
+    color: white;
+}
+
+nav img {
+    height: 50px;
+    width: 80px; 
+}
+/* Styling for screens with width greater than 1110px */
+@media screen and (max-width: 1110px) {
+/* Hide the logo image */
+nav img {
+display: none;
+}
+.jumbotron{
+display: none;
+}
+/* Show a small search bar */
+nav form {
+width: 100px;
+}
+#searchBB{
+margin-left: 10px;
+width: 20px;
+}
+
+}
+
+.login-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-button-not-logged-in {
+    border: 2px solid #4CAF50;
+    background-color: white;
+    color: #4CAF50;
+}
+
+.user-dropdown button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+#dropdown-content button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    background-color: #f9f9f9;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 20px;
+}
+
+.card {
+    width: 300px;
+    margin: 10px;
+    box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+    transition: transform .2s;
+}
+
+.card img {
+    object-fit: cover;
+    width: 100%;
+    height: 200px;
+}
+.card-body{
+    background-color: #e4fae4;
+}
+.card :hover{
+    background-color: #dfede0;
+ 
+}
+.pagination {
+margin-top: 20px;
+justify-content: center;
+
+}
+
+.jumbotron {
+background-color: #adc9b2;
+color: #333;
+margin-right: 30px;
+box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+height: 100px;
+}
+.jumbotron h1{
+margin-top: -45px;
+}
+
+.btn-info:hover {
+color: black !important;
+
+}
+
+
+.carousel-item {
+height: 80vh; /* Adjust the height as needed */
+}
+
+.carousel-item img {
+width: 100%; /* Full width of the carousel */
+height: 100%; /* Full height of the carousel item */
+object-fit: cover; /* Cover the container without stretching */
+object-position: center; /* Center the image within the element */
+}
+
+.carousel-caption {
+position: absolute;
+right: 15%;
+bottom: 20px;
+left: 15%;
+z-index: 10;
+padding-top: 20px;
+padding-bottom: 20px;
+color: #fff;
+text-align: center;
+background-color: rgba(0,0,0,0.5); /* Caption background */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+background-color: #000000;
+border-radius: 50%;
+padding: 10px;
+}
+
+.carousel-indicators li {
+background-color: #555; /* Active indicator color */
+}
+
+.carousel-indicators .active {
+background-color: #fff; /* Inactive indicator color */
+}
+
+.carousel-fade .carousel-item {
+opacity: 0;
+transition-duration: .6s;
+transition-property: opacity;
+}
+
+.carousel-fade .carousel-item.active,
+.carousel-fade .carousel-item-next.carousel-item-left,
+.carousel-fade .carousel-item-prev.carousel-item-right {
+opacity: 1;
+}
+
+.carousel-fade .active.carousel-item-left,
+.carousel-fade .active.carousel-item-right {
+opacity: 0;
+}
+
+.carousel-fade .carousel-item-next,
+.carousel-fade .carousel-item-prev,
+.carousel-fade .carousel-item.active,
+.carousel-fade .active.carousel-item-left,
+.carousel-fade .active.carousel-item-prev {
+transform: translateX(0);
+transition: opacity .6s ease;
+}
+
+
+
+@media only screen and (max-width: 980px) {
+    .carousel-item {
+        height: 65vh; /* Adjust the height as needed */
+        }
+        
+        .carousel-item img {
+        width: 50%; /* Full width of the carousel */
+        height: 50%; /* Full height of the carousel item */
+        object-fit: cover; /* Cover the container without stretching */
+        object-position: center; /* Center the image within the element */
+        }
+        
+        .carousel-caption {
+        position: absolute;
+        right: 15%;
+        bottom: 20px;
+        left: 15%;
+        z-index: 10;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        margin-bottom: 500px;
+        color: #fff;
+        text-align: center;
+        background-color: rgba(0,0,0,0.5); /* Caption background */
+        }
+        
+
+    .card {
+        width: 12rem !important;
+        max-width: 100%;
+    }
+  
+}
+
+@media only screen and (max-width: 575px) {
+    .newArrivals_sectn {
+        display: none;
+    }
+}
+
+
+

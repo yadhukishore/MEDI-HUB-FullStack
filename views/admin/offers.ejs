@@ -245,6 +245,27 @@
         });
     });
 </script>
+
+<script>
+    document.querySelectorAll('.delete-offer-btn').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the form from submitting immediately
+
+            Swal.fire({
+                title: 'Are you sure to Delete offer?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user clicks "Yes", submit the form
+                    event.target.closest('form').submit();
+                }
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

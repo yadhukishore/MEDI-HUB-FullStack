@@ -106,18 +106,27 @@ exports.postAdminLogin = [
 exports.getAdminRoute = [
   adminAuthMiddleware,
   async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 6; 
+    const skip = (page - 1) * pageSize;
+
     try {
+      const totalProducts = await Product.countDocuments({ deleted: false });
       const products = await Product.find({ deleted: false })
         .populate("category", "categoryName")
-        .select("-__v");
+        .select("-__v").skip(skip)
+        .limit(pageSize);
 
-      res.render("admin/admin_panel", { products });
+      const totalPages = Math.ceil(totalProducts / pageSize);
+
+      res.render("admin/admin_panel", { products, page, totalPages ,pageSize});
     } catch (error) {
       console.error("Error fetching products:", error);
       res.redirect("/admin/admin_login");
     }
   },
 ];
+
 
 exports.getAdminAddProduct = [
   adminAuthMiddleware,
