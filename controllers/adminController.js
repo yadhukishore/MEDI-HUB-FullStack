@@ -357,18 +357,6 @@ exports.getAdminDelete = [
   },
 ];
 
-exports.postAdminLogout = [
-  adminAuthMiddleware,
-  (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Error logging out:", err);
-      } else {
-        res.redirect("/admin/admin_login");
-      }
-    });
-  },
-];
 
 exports.getUserList = [
   adminAuthMiddleware,
@@ -727,5 +715,22 @@ exports.processReturnRequest = [
       console.error("Error processing return request:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
+  },
+];
+// Logout controller for admin
+// Logout controller for admin
+exports.postAdminLogout = [
+  adminAuthMiddleware,
+  (req, res) => {
+    // Set admin-related session properties to null
+    req.session.adminUser = null;
+    // Save the session after changes
+    req.session.save((err) => {
+      if (err) {
+        console.error("Error saving session:", err);
+        return res.status(500).send('Internal Server Error');
+      }
+      res.redirect("/admin/admin_login");
+    });
   },
 ];
