@@ -180,7 +180,20 @@
                        
                         <h1  style="font-size: 35px; color: #333; text-align: center;">Admin Dashboard</h1><hr>
                         <div style="width: 80%; margin: auto; text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                           <!-- Dropdown container -->
+                           <div style="text-align: center; margin: 20px;">
+                            <label for="chart-select">Choose a chart:</label>
+                            <select id="chart-select" onchange="goToChart(this.value)">
+                                <option value="">Select...</option>
+                                <option value="lineChart">Revenue Per Month</option>
+                                <option value="pieChart">Category Chart</option>
+                                <option value="barChart">Bar Chart</option>
+                                <!-- Add more options as needed -->
+                            </select>
+                        </div>
+                        
                             <div style="margin-bottom: 20px;">
+                                <h1>Revenue Per Month</h1>
                                 <label for="year" style="font-weight: bold; margin-right: 10px;">Select Year:</label>
                                 <input type="number" id="year" min="2021" max="2024" value="2023" style="padding: 8px; border: 1px solid #ced4da; border-radius: 5px;" />
                                 <label for="month" style="font-weight: bold; margin-left: 20px; margin-right: 10px;">Select Month:</label>
@@ -188,6 +201,7 @@
                                 <button onclick="fetchAndDrawChart()" style="background-color: #007bff; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer;">Update Chart</button>
                             </div>
                             <canvas id="salesChart" style="max-width: 100%; min-height: 300px; border: 1px solid #ced4da; border-radius: 10px;"></canvas>
+                       
                         </div>
                         
                     </td>
@@ -211,7 +225,10 @@
     </div>
   
     </div>
+    
         </div>
+
+        
     </div>
 
 
@@ -306,6 +323,20 @@ const sales = salesData.map(entry => entry.totalSales);
             $("#sidebar").toggle();
         });
     </script>
+<script>
+        function goToChart(chartName) {
+                    if (chartName === "pieChart") {
+                        // Redirect to the URL of the Pie Chart
+                        window.location.href = '/admin/pieChart';
+                    } else if (chartName === "lineChart") {
+                        // Redirect to the URL of the Bar Chart
+                        window.location.href = '/admin/adminDash';
+                    }else if(chartName === "barChart"){
+                        window.location.href = '/admin/barChart';
+                    }
+                }
+ </script>
+    
      
 </body>
 

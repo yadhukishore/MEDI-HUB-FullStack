@@ -16,6 +16,9 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Razorpay Checkout Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     
 <link rel="stylesheet" href="/public/stylesheets/users/userCheckout.css">
     <script>
@@ -150,7 +153,14 @@
                                 <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod"
                                     id="razorpay" value="razorpay">
                                 <label class="form-check-label" for="razorpay">
-                                    Razorpay
+                                    Pay Online
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input payment-method-radio" type="radio" name="paymentMethod"
+                                    id="wallet" value="wallet">
+                                <label class="form-check-label" for="wallet">
+                                    Wallet
                                 </label>
                             </div>
                             <div class="form-check">
@@ -195,10 +205,22 @@
                                 location.assign(`/success?order_id=${response.order_id}`)
                             }
                         },
-                        error: function (error) {
-                            console.error("AJAX Error:", error);
-                            alert("An error occurred. Please try again.");
-                        }
+                        error: function (xhr) {
+    if (xhr.status === 400 && xhr.responseJSON && xhr.responseJSON.error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Insufficient Balance',
+          text: xhr.responseJSON.error,
+        });
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'AJAX Error',
+            text: 'An error occurred. Please try again.',
+        });
+    }
+}
+
                     })
                 })
                 showRazorePay = (order, user) => {

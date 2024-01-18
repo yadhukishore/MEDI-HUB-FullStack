@@ -3,7 +3,6 @@ const upload = require('../middleware/multer');
 
 exports.renderBannerManagementPage = async (req, res) => {
     try {
-        // Fetch all banners
         const banners = await Banner.find();
         res.render('admin/banner', { banners });
     } catch (error) {
@@ -15,7 +14,6 @@ exports.renderBannerManagementPage = async (req, res) => {
 exports.createBanner = async (req, res) => {
     try {
         console.log("Going to create banner");
-         // Extract banner data from the request body
          const { banner_name, reference } = req.body;
          const banner_status = req.body.banner_status === 'on';
 
@@ -45,7 +43,6 @@ exports.createBanner = async (req, res) => {
 
 exports.deleteBanner = async (req, res) => {
     try {
-        // Delete the banner with the specified ID
         await Banner.findByIdAndDelete(req.params.id);
 
         res.redirect('/admin/banner');

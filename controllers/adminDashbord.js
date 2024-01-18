@@ -3,6 +3,30 @@ const Order = require("../models/order");
 const adminAuthMiddleware = require("../middleware/adminAuthMiddleware");
 const User = require("../models/user");
 
+
+async function getUsersCount(period) {
+ const now = new Date();
+ let startDate;
+
+ switch (period) {
+     case 'week':
+         startDate = new Date(now.setDate(now.getDate() - 7));
+         break;
+     case 'month':
+         startDate = new Date(now.setMonth(now.getMonth() - 1));
+         break;
+     case 'year':
+         startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+         break;
+     default:
+         throw new Error(`Invalid period: ${period}`);
+ }
+
+ return await User.countDocuments({ createdAt: { $gte: startDate } });
+}
+ 
+
+
 // Function to fetch sales data from the database
 const sales_report = async (selectedYear, selectedMonth) => {
     console.log('Fetching sales report...');
@@ -128,3 +152,51 @@ exports.getSalesData = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+exports.renderPieChartPage = async (req, res) => {
+    try {
+        const categoriesDelivered = await Order.aggregate([
+            { $match: { status: 'Delivered' } },
+            { $unwind: '$products' },
+            { $group: { _id: '$products.name', count: { $sum: 1 } } }
+        ]);
+
+        // Now you have a list of categories with their respective counts
+        const labels = categoriesDelivered.map(c => c._id);
+        const data = categoriesDelivered.map(c => c.count);
+        console.log("labels: ",labels);
+        console.log("data: ",data);
+
+        res.render('admin/adminDashPie', { labels, data }); // Pass labels and data to your EJS template
+    } catch (error) {
+        console.error('Error fetching delivered orders by category:', error);
+        res.status(500).send('Server error');
+    }
+};
+
+
+exports.renderBarChart = async (req, res) => {
+    try {
+        const usersPerMonth = await User.aggregate([
+            {
+                $group: {
+                 _id: { $month: "$createdAt" },
+                 count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { "_id": 1 }
+            }
+        ]);
+        
+        // Convert the result to the format required by Chart.js
+        const labels = usersPerMonth.map(u => new Date(0, u._id - 1).toLocaleString('default', { month: 'long' }));
+        const data = usersPerMonth.map(u => u.count);
+  
+        res.render('admin/barChartDash', { labels, data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+ };
+ 

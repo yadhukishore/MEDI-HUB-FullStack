@@ -15,13 +15,9 @@ exports.addOffer = async (req, res) => {
     const { productId, offerAmount } = req.body;
    
     try {
-      // Find the product by ID
       const product = await Product.findById(productId);
-   
-      // Calculate the new price
       const newPrice = product.price - offerAmount;
-   
-      // Update the product's price and offer fields
+
       product.price = newPrice;
       product.offer = {
         amount: offerAmount,
@@ -31,8 +27,7 @@ exports.addOffer = async (req, res) => {
       // Save the updated product
       const savedValue = await product.save();
       console.log("SavedVal", savedValue);
-   
-      // Redirect to the offers page or handle response as needed
+
       res.redirect('/admin/offer');
     } catch (error) {
       console.error('Error adding offer:', error);
@@ -46,11 +41,9 @@ exports.addOffer = async (req, res) => {
     const { productId } = req.body;
    
     try {
-      // Find the product by ID
       const product = await Product.findById(productId);
       console.log("Offer Product>>>",product);
    
-      // Set the offer amount to 0 and make the offer inactive
       product.offer = {
          isActive: false,
       };
@@ -59,7 +52,6 @@ exports.addOffer = async (req, res) => {
       const savedValue = await product.save();
       console.log("SavedVal", savedValue);
    
-      // Redirect to the offers page or handle response as needed
       res.redirect('/admin/offer');
     } catch (error) {
       console.error('Error deleting offer:', error);

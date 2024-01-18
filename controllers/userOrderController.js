@@ -111,10 +111,18 @@ exports.postProcessOrder =
         const selectedPaymentMethod = req.body.paymentMethod;
         console.log("Selected Payment Method:", selectedPaymentMethod);
         let status;
-        if (selectedPaymentMethod === "COD") {
+        if (selectedPaymentMethod === "COD" || selectedPaymentMethod==="wallet") {
           status = "Confirmed";
         } else {
           status = "Pending";
+        }
+
+        if (selectedPaymentMethod === "wallet") {
+          const walletBalance = user.user_wallet;
+          if (walletBalance < totalPrice) {
+            console.log("Insufficient wallet balance");
+            return res.status(400).json({ error: "Take other payment methods or credit the wallet" });
+          }
         }
 
         if (!user.addresses || user.addresses.length === 0) {
@@ -199,12 +207,24 @@ if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
 // cart clearing logic for COD orders
 if (selectedPaymentMethod === "COD") {
   await reduceStockForProducts(user.cart);
-  console.log("rEDUCED STOCK!");
+  console.log("REEEEDUCED STOCK!");
   
   user.cart = [];
   console.log("\nCleared cart!!!\n");
   await user.save();
   console.log("sAVED COD");
+
+}else if(selectedPaymentMethod === "wallet"){
+  await reduceStockForProducts(user.cart);
+  console.log("REEEEDUCED STOCK!");
+  
+  user.cart = [];
+  console.log("\nCleared cart!!!\n");
+   // If wallet balance is sufficient, deduct the amount from the wallet
+   user.user_wallet -= totalPrice;
+   console.log("Reduced wallet amount!");
+  await user.save();
+  console.log("sAVED Wallet");
 
 }
        
@@ -353,14 +373,14 @@ exports.getMyOrders =
           time: new Date()
         });
   
-        // Save the updated user document
+
        const checkWallet = await user.save();
         console.log("Updated wallet\n",checkWallet);
       }
 
       console.log("order was paid COD SO WE CAN CANCEL IT!!");
   
-      // Update the order status to 'Cancelled'
+
       order.status = "Cancelled";
       await order.save();
   

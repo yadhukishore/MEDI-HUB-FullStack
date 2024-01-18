@@ -51,6 +51,10 @@ router.get('/admin/delete_coupon/:couponId',coupenController.deleteCoupon);
 //Admin dashbord 
 router.get('/admin/adminDash', adminAuthMiddleware, adminDashbord.getAdminDash);
 router.get('/api/admin-dash', adminAuthMiddleware, adminDashbord.getSalesData);
+router.get('/admin/pieChart',adminDashbord.renderPieChartPage);
+router.get('/admin/barChart',adminDashbord.renderBarChart);
+
+
 
 //sales report
 router.get('/admin/salesReport',salesRepoortController.getSalesReport);
