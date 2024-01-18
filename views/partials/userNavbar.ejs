@@ -1,5 +1,5 @@
 <!-- userNavbar.ejs -->
-
+<link rel="stylesheet" href="/public/stylesheets/users/navbar.css">
 <nav class="navbar navbar-dark bg-dark">
     <!-- Logo on the left -->
     <a href="/">
@@ -33,7 +33,7 @@
     <!-- Login button or user name on the right -->
     <% if (user) { %>
         <div class="user-dropdown">
-            <button class="btn btn-success" onclick="toggleDropdown()">Welcome, <%= user.username %>!</button>
+            <button class="btn btn-success" onclick="toggleDropdown('dropdown-content')">Welcome, <%= user.username %>!</button>
             <div id="dropdown-content">
                 <a href="/userCart" class="btn">Cart</a> <br>
                 <a href="/myOrders" class="btn">My Orders</a><br>
@@ -56,3 +56,60 @@
         }
     </script>
 </nav>
+
+
+
+<!-- New navigation bar for smaller screens -->
+<nav id="small-screen-navbar" class="navbar navbar-dark bg-dark">
+    <div class="hamburger-menu">
+        <div id="searchBB" class="mx-auto">
+            <form action="/" method="GET" class="form-inline my-2 my-lg-0 ml-auto" style="width: 200px;">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search.." aria-label="Search" name="search" style="width: 50%;">
+                <button class=" btn-success " type="submit">
+                    <i class="material-icons">search</i>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+      <!-- Cart icon on the right -->
+      <div class="ml-auto">
+        <a href="/userCart" class="btn btn-dark">
+            <i class="material-icons">shopping_cart</i>
+            <!-- Display the number of items in the cart using a badge -->
+        <% if (user && user.cart && user.cart.length > 0) { %>
+          
+            <span class="badge badge-info"><%= user.cart.length %></span>
+        <% } %>
+        </a>
+    </div>
+     <!-- Login button or user name on the right -->
+     <% if (user) { %>
+        <div class="user-dropdown">
+            <button class="btn btn-success" onclick="toggleDropdown('dropdown-content2')"> <i class="large material-icons">accessibility</i>Medi Hub</button>
+            <div id="dropdown-content2">
+                <a href="/allMedicines" class="btn">Medicines</a> <br>
+                <a href="/userCart" class="btn">Cart</a> <br>
+                <a href="/myOrders" class="btn">My Orders</a><br>
+                <a href="/add_wishlist" class="btn">Wishlist</a><br>
+                <a href="/userAccount" class="btn">Your Profile</a><br>
+                <a href="/userWallet" class="btn">Check Wallet</a>
+                <form action="/logout" method="POST">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
+        </div>
+    <% } else { %>
+        <button class="btn btn-outline-success" onclick="window.location.href='/login'">Login/Register</button>
+    <% } %>
+<script>
+    function toggleDropdown(dropdownId) {
+   const dropdownContent = document.getElementById(dropdownId);
+   dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+}
+
+
+</script>
+
+   </nav>
+   
