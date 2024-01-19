@@ -32,9 +32,24 @@
     </div>
 </div>
 
+
+<!-- Wallet History Section -->
+<div class="container">
+<div class="wallet-history">
+    <h2>Wallet History</h2>
+    <% walletHistory.forEach((transaction) => { %>
+      <div class="transaction">
+        <p>Amount: ₹<%= transaction.amount %></p>
+        <p>Status: <%= transaction.status %></p>
+        <p>Time: <%= new Date(transaction.time).getDate() %>/<%= new Date(transaction.time).getMonth() + 1 %>/<%= new Date(transaction.time).getFullYear() %> (<%= new Date(transaction.time).getHours() %>:<%= new Date(transaction.time).getMinutes() %>:<%= new Date(transaction.time).getSeconds() %>)</p> 
+   </div>
+   <% }); %>
+   </div>
+   </div>
+   
+
  
     <script>
-       // Function to generate a random dark color
    function getRandomDarkColor() {
        var r = Math.floor(Math.random() * 129); // Red component, 0-128
        var g = Math.floor(Math.random() * 129); // Green component, 0-128
@@ -48,7 +63,6 @@
        containerBox.style.backgroundColor = getRandomDarkColor();
    }
 
-   // Change color every seconds
    setInterval(changeContainerColor, 300);
     </script>
 </body>

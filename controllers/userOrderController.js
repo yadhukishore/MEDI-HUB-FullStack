@@ -222,6 +222,15 @@ if (selectedPaymentMethod === "COD") {
   console.log("\nCleared cart!!!\n");
    // If wallet balance is sufficient, deduct the amount from the wallet
    user.user_wallet -= totalPrice;
+
+    // Record the transaction in the wallet history
+    user.wallet_history.push({
+      amount: order.totalAmount,
+      status: "Debit",
+      time: new Date()
+    });
+
+
    console.log("Reduced wallet amount!");
   await user.save();
   console.log("sAVED Wallet");

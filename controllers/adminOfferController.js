@@ -7,7 +7,7 @@ exports.getOffersPage = async (req, res) => {
     res.render('admin/offers', { products });
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
   }
 };
 
@@ -24,14 +24,12 @@ exports.addOffer = async (req, res) => {
         isActive: true,
       };
    
-      // Save the updated product
       const savedValue = await product.save();
-      console.log("SavedVal", savedValue);
 
       res.redirect('/admin/offer');
     } catch (error) {
       console.error('Error adding offer:', error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
     }
    };
    
@@ -42,20 +40,18 @@ exports.addOffer = async (req, res) => {
    
     try {
       const product = await Product.findById(productId);
-      console.log("Offer Product>>>",product);
-   
+
       product.offer = {
          isActive: false,
       };
-   
-      // Save the updated product
+
       const savedValue = await product.save();
       console.log("SavedVal", savedValue);
    
       res.redirect('/admin/offer');
     } catch (error) {
       console.error('Error deleting offer:', error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
     }
    };
    

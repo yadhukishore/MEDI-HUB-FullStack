@@ -63,7 +63,7 @@ nav img {
     background-color: #4CAF50;
     
     padding: 40px;
-    margin-top: 20vh;
+    margin-top: 7vh;
     border-radius: 10px;
     transition: background-color 1s; /* Transition for smooth color change */
 }
@@ -120,4 +120,42 @@ background-color: #FF9800;
 
 .action-button.btn4 {
 background-color: #f44336;
+}
+
+
+
+/* Add this code to your userWallet.css file */
+
+.wallet-history {
+    margin-top: 20px;
+    border-top: 2px solid #4CAF50;
+    padding-top: 20px;
+}
+
+.transaction {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction p {
+    margin: 5px 0;
+}
+
+.transaction p:first-child {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.transaction p:last-child {
+    color: #555;
+}
+
+/* Optional: Add hover effect */
+.transaction:hover {
+    background-color: #e4fae4;
+    transition: background-color 0.3s;
 }
