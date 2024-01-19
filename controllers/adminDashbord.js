@@ -4,32 +4,11 @@ const adminAuthMiddleware = require("../middleware/adminAuthMiddleware");
 const User = require("../models/user");
 
 
-async function getUsersCount(period) {
- const now = new Date();
- let startDate;
 
- switch (period) {
-     case 'week':
-         startDate = new Date(now.setDate(now.getDate() - 7));
-         break;
-     case 'month':
-         startDate = new Date(now.setMonth(now.getMonth() - 1));
-         break;
-     case 'year':
-         startDate = new Date(now.setFullYear(now.getFullYear() - 1));
-         break;
-     default:
-         throw new Error(`Invalid period: ${period}`);
- }
-
- return await User.countDocuments({ createdAt: { $gte: startDate } });
-}
- 
 
 
 // Function to fetch sales data from the database
 const sales_report = async (selectedYear, selectedMonth) => {
-    console.log('Fetching sales report...');
     try {
 
         const salesReport = await Order.aggregate([
@@ -83,7 +62,6 @@ const sales_report = async (selectedYear, selectedMonth) => {
                 }
             }
         ]);
-        console.log("SalesReporttt:", salesReport);
         return salesReport;
     } catch (error) {
         console.error('Error fetching sales report:', error);
@@ -128,10 +106,8 @@ exports.getAdminDash = async (req, res) => {
             }
         });
         const totalUsers = await getTotalUsers();
-        console.log("TOTUsers:>",totalUsers);
-
         const totalOrders = await getTotalOrders();
-        console.log("TotOrders:",totalOrders);
+        
 
         let admin = res.locals.admin;
         res.render('admin/adminDash', { footer: true, admin: true, Admin: admin, salesReport, totalUsers, totalOrders });
@@ -161,13 +137,12 @@ exports.renderPieChartPage = async (req, res) => {
             { $group: { _id: '$products.name', count: { $sum: 1 } } }
         ]);
 
-        // Now you have a list of categories with their respective counts
         const labels = categoriesDelivered.map(c => c._id);
         const data = categoriesDelivered.map(c => c.count);
         console.log("labels: ",labels);
         console.log("data: ",data);
 
-        res.render('admin/adminDashPie', { labels, data }); // Pass labels and data to your EJS template
+        res.render('admin/adminDashPie', { labels, data }); 
     } catch (error) {
         console.error('Error fetching delivered orders by category:', error);
         res.status(500).send('Server error');

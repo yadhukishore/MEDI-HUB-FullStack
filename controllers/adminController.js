@@ -10,98 +10,82 @@ const fs = require("fs").promises;
 const { check, validationResult } = require("express-validator");
 const adminAuthMiddleware = require("../middleware/adminAuthMiddleware");
 
-//admin signup
-exports.getAdminSignup = (req, res) => {
-  const error = req.flash("error");
-  const success = req.flash("success");
-  res.render("admin/adminSignup", { error, success });
+
+
+// Helper functions
+const handleValidationErrors = (req, res, redirectPath) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    req.flash("error", errors.array().map(e => e.msg).join(", "));
+    return res.redirect(redirectPath);
+  }
 };
 
-exports.postAdminSignup = [
-  check("username", "This username must be 3+ characters long")
-    .exists()
-    .isLength({ min: 3 }),
-  check("email", "Email is not valid").isEmail().normalizeEmail(),
-  async (req, res) => {
-    try {
-      const { username, email, password } = req.body;
-      if (!email || !password || !username) {
-        req.flash("error", "Fill in all the details!");
-        return res.redirect("/admin/adminSignup");
-      }
+// Admin Signup
+exports.getAdminSignup = (req, res) => {
+  res.render("admin/adminSignup", {
+    error: req.flash("error"),
+    success: req.flash("success")
+  });
+};
 
-      const existingAdmin = await Admin.findOne({ username });
-      if (existingAdmin) {
-        req.flash("error", "Admin with this username already exists");
-        return res.redirect("/admin/adminSignup");
-      }
+exports.postAdminSignup = async (req, res) => {
+  handleValidationErrors(req, res, "/admin/adminSignup");
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-      const newAdmin = new Admin({ username, email, password: hashedPassword });
-      await newAdmin.save();
-      console.log("Saved to admin!");
-
-      req.flash("success", "Admin signup successful. Please log in.");
-      res.redirect("/admin/admin_login"); // Redirect to admin login after successful signup
-    } catch (error) {
-      console.error("Error in admin signup:", error);
-      req.flash("error", "Internal Server Error");
-      res.redirect("/admin/adminSignup");
+  const { username, email, password } = req.body;
+  try {
+    const existingAdmin = await Admin.findOne({ username });
+    if (existingAdmin) {
+      req.flash("error", "Admin with this username already exists");
+      return res.redirect("/admin/adminSignup");
     }
-  },
-];
 
-//Admin Login
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const newAdmin = new Admin({ username, email, password: hashedPassword });
+    await newAdmin.save();
+
+    req.flash("success", "Admin signup successful. Please log in.");
+    res.redirect("/admin/admin_login");
+  } catch (error) {
+    req.flash("error", "Internal Server Error");
+    res.redirect("/admin/adminSignup");
+  }
+};
+
+// Admin Login
 exports.showAdminLogin = (req, res) => {
   if (req.session.adminUser) {
     res.redirect("/admin");
   } else {
-    const error = req.flash("error");
-    res.render("admin/admin_login", { error });
+    res.render("admin/admin_login", { error: req.flash("error") });
   }
 };
 
-exports.postAdminLogin = [
-  check("username", "This username must be 3+ characters long")
-    .exists()
-    .isLength({ min: 3 }),
-  check("email", "Email is not valid").isEmail().normalizeEmail(),
-  async (req, res) => {
-    const { username, password } = req.body;
-    if (!password || !username) {
-      req.flash("error", "Fill in all the details!");
+exports.postAdminLogin = async (req, res) => {
+  handleValidationErrors(req, res, "/admin/admin_login");
+
+  const { username, password } = req.body;
+  try {
+    const adminUser = await Admin.findOne({ username }).select("+password");
+    if (!adminUser) {
+      req.flash("error", "Invalid username or password");
       return res.redirect("/admin/admin_login");
     }
 
-    try {
-      const adminUser = await Admin.findOne({ username });
-      console.log("adminuser:" + adminUser);
-
-      if (adminUser && adminUser.isAdmin) {
-        const passwordMatch = await bcrypt.compare(
-          password,
-          adminUser.password
-        );
-        console.log("passwordMatch");
-
-        if (passwordMatch) {
-          req.session.adminUser = { isAdmin: true };
-          res.redirect("/admin/adminDash");
-          return;
-        }
-      }
-
+    const passwordMatch = await bcrypt.compare(password, adminUser.password);
+    if (!passwordMatch) {
       req.flash("error", "Invalid username or password");
-      res.redirect("/admin/admin_login");
-    } catch (error) {
-      console.error("Error during admin login:", error);
-      req.flash("error", "Internal Server Error");
-      res.redirect("/admin/admin_login");
+      return res.redirect("/admin/admin_login");
     }
-  },
-];
+
+    req.session.adminUser = { isAdmin: true };
+    res.redirect("/admin/adminDash");
+  } catch (error) {
+    req.flash("error", "Internal Server Error");
+    res.redirect("/admin/admin_login");
+  }
+};
+
 
 exports.getAdminRoute = [
   adminAuthMiddleware,
