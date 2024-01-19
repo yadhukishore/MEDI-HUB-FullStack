@@ -147,6 +147,69 @@
             </div>
           <% }); %>
         </div>
+        <div class="row-smallerScreen">
+          <!-- Loop through products and create Bootstrap cards -->
+          <% products.forEach(product => { %>
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <a href="/product/<%= product._id %>"> <!-- Add a link to each product -->
+                    <% if (product.images.length > 0) { %>
+                        <!-- Display only the first image -->
+                        <img src="/public/uploads/<%= product.images[0] %>" alt="<%= product.name %>" style="max-width: 100%;">
+                    <% } else { %>
+                        <!-- Provide a default image or message if there are no images -->
+                        <img src="/public/default-image.jpg" alt="No Image" style="max-width: 100%;">
+                    <% } %>
+                </a>
+                <div class="card-body">
+                  <h5 class="card-title"><%= product.name %></h5>
+                  <!-- <p class="card-text"><%= product.description %></p> -->
+                  Category: <%= product.categoryName ? product.categoryName : 'N/A' %>
+
+                 
+          
+                    <!-- row for price and stock message -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <% if (product.offer && product.offer.isActive) { %>
+                                <p class="card-text">₹<strong><%= product.price %></strong></p>
+                                <!-- <p class="card-text">₹<s><%= product.price + product.offer.amount %></s></p> -->
+                               <% } else { %>
+                                <p class="card-text">₹<strong><%= product.price %></strong></p>
+                               <% } %>
+                               
+                        </div>
+                        <div class="col-md-6 text-right">
+                          <!-- Display a message if stock is less than or equal to 5 -->
+                          <% if (product.stock <= 5 && product.stock > 1) { %>
+                            <p class="card-text text-danger">Only <%= product.stock %> left!</p>
+                          <% } else if (product.stock === 1) { %>
+                            <p class="card-text text-danger">Last in stock!</p>
+                          <% } else if (product.stock === 0) { %>
+                            <p class="card-text text-danger">Out of Stock!</p>
+                          <% } %>
+                        </div>
+                      </div>
+
+                     <!-- Existing "Add to Cart" and "Buy Now" buttons -->
+<div class="d-flex justify-content-between">
+    <a href="/add-to-cart/<%= product._id %>" class="btn btn-warning mr-2">
+        <% if (user && user.cart && product._id && user.cart.some(item => item.product && item.product._id && item.product._id.toString() === product._id.toString())) { %>
+            Go to Cart
+        <% } else { %>
+            Add to Cart
+        <% } %>
+    </a>
+ 
+    <a href="/product/<%= product._id %>" class="btn btn-info ">
+        Buy Now
+    </a>
+ </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
         
        <!-- Pagination HTML with Previous and Next buttons -->
 <div aria-label="Page navigation">

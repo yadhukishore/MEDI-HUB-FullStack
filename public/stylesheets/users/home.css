@@ -16,25 +16,7 @@ nav img {
     height: 50px;
     width: 80px; 
 }
-/* Styling for screens with width greater than 1110px */
-@media screen and (max-width: 1110px) {
-/* Hide the logo image */
-nav img {
-display: none;
-}
-.jumbotron{
-display: none;
-}
-/* Show a small search bar */
-nav form {
-width: 100px;
-}
-#searchBB{
-margin-left: 10px;
-width: 20px;
-}
 
-}
 
 .login-button {
     background-color: #4CAF50;
@@ -125,6 +107,9 @@ margin-top: -45px;
 color: black !important;
 
 }
+.row-smallerScreen{
+    display: none;
+}
 
 
 .carousel-item {
@@ -193,15 +178,14 @@ transition: opacity .6s ease;
 }
 
 
-
-@media only screen and (max-width: 980px) {
+  /* Show the new navigation bar when screen width is less than 1129px */
+  @media (max-width: 1129px) {
     .carousel-item {
-        height: 65vh; /* Adjust the height as needed */
+        height: 50vh; /* Adjust the height as needed */
         }
         
         .carousel-item img {
-        width: 50%; /* Full width of the carousel */
-        height: 50%; /* Full height of the carousel item */
+            height: 50vh;/* Full height of the carousel item */
         object-fit: cover; /* Cover the container without stretching */
         object-position: center; /* Center the image within the element */
         }
@@ -209,30 +193,166 @@ transition: opacity .6s ease;
         .carousel-caption {
         position: absolute;
         right: 15%;
-        bottom: 20px;
+        bottom: 10px;
         left: 15%;
         z-index: 10;
         padding-top: 20px;
         padding-bottom: 20px;
-        margin-bottom: 500px;
         color: #fff;
         text-align: center;
         background-color: rgba(0,0,0,0.5); /* Caption background */
         }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+       display: none;
+        }
+        .row-smallerScreen{
+            display: none;
+        }
         
-
-    .card {
-        width: 12rem !important;
-        max-width: 100%;
-    }
-  
+       
+.product-container {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 10px;
 }
 
-@media only screen and (max-width: 575px) {
-    .newArrivals_sectn {
-        display: none;
-    }
+.card {
+    flex: 0 0 50%;
+    width: 300px;
+    margin: 10px;
+    box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+    transition: transform .2s;
 }
+
+.card img {
+    object-fit: cover;
+    width: 100%;
+    height: 200px;
+}
+.card-body{
+    background-color: #e4fae4;
+}
+.card :hover{
+    background-color: #dfede0;
+ 
+}
+.pagination {
+margin-top: 20px;
+justify-content: center;
+
+}
+
+.jumbotron {
+background-color: #adc9b2;
+color: #333;
+margin-right: 30px;
+box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+height: 100px;
+}
+.jumbotron h1{
+margin-top: -45px;
+}
+
+.btn-info:hover {
+color: black !important;
+
+}
+        
+       }
+
+
+       @media (max-width: 999px) {
+        .jumbotron {
+            display: none;
+        }
+        .carousel-item {
+            height: 40vh;
+        }
+        .carousel-item img {
+            height: 40vh;
+            object-fit: cover;
+            object-position: center;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            display: none;
+        }
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .product-container .card,
+        .row-smallerScreen .card {
+            flex: 0 0 calc(50% - 20px);
+            margin: 10px;
+            box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+            transition: transform .2s;
+        }
+        .product-container .card img,
+        .row-smallerScreen .card img {
+            width: 100%;
+            height: 250px;
+        }
+        .row-smallerScreen {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .row{
+            display: none;
+        }
+    }
+    
+    @media (max-width: 760px) {
+        .jumbotron {
+            display: none;
+        }
+        .carousel-item {
+            height: 20vh;
+        }
+        .carousel-item img {
+            height: 20vh;
+            object-fit: cover;
+            object-position: center;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            display: none;
+        }
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .product-container .card,
+        .row-smallerScreen .card {
+            flex: 0 0 calc(50% - 20px);
+            margin: 10px;
+            box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.1);
+            transition: transform .2s;
+        }
+        .product-container .card img,
+        .row-smallerScreen .card img {
+            width: 100%;
+            height: 250px;
+        }
+        .row-smallerScreen {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .row{
+            display: none;
+        }
+    }
+    
+    
+
+
 
 
 

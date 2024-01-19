@@ -88,7 +88,7 @@ exports.postAdminLogin = [
 
         if (passwordMatch) {
           req.session.adminUser = { isAdmin: true };
-          res.redirect("/admin");
+          res.redirect("/admin/adminDash");
           return;
         }
       }
