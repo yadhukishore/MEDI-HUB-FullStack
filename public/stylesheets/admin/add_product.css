@@ -1,0 +1,142 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #d7ecda; /* Light gray background color */
+}
+
+.wrapper {
+    display: flex;
+}
+
+#sidebar {
+    min-width: 250px;
+    background-color: #333;
+    padding: 20px;
+    color: white;
+}
+
+#content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+nav img {
+    height: 50px;
+}
+
+nav button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.container {
+    margin-top: 20px;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(6, 6, 6, 0.5);
+}
+
+.add-product-button {
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-top: -20px;
+    background-color: #333;
+    padding: 10px 20px;
+}
+
+.navbar-brand {
+    margin-right: 0;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.sidebar-link {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#sidebar {
+    min-width: 250px;
+    background-color: #333;
+    padding: 20px;
+    color: white;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+label {
+    font-weight: bold;
+}
+
+hr {
+    border-color: #ddd;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background-color: #4CAF50;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
+}
+
+.form-control {
+    font-size: 16px;
+}
+
+/* Add styles for the image preview */
+.image-preview {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.image-preview img {
+    max-width: 100px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
