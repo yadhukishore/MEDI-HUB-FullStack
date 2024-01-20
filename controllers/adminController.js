@@ -593,8 +593,12 @@ exports.getListAllOrders = [
   adminAuthMiddleware,
   async (req, res) => {
     try {
-      // Fetch all orders with relevant information
+      const pageSize = 10; // Or any other number you prefer
+      const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+
       const orders = await Order.find()
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
         .populate({
           path: "products.product",
           select: "name category price",
@@ -602,8 +606,11 @@ exports.getListAllOrders = [
         .populate("user", "username")
         .exec();
 
+        const totalOrders = await Order.countDocuments(); // Count the total documents
+        const totalPages = Math.ceil(totalOrders / pageSize); // Calculate the total pages
+
       // Render the EJS template for the list of all orders with the orders data
-      res.render("./admin/list-all-orders.ejs", { orders });
+      res.render("./admin/list-all-orders.ejs", { orders,current: page, pages: totalPages });
     } catch (error) {
       console.error("Error fetching all orders:", error);
       res.status(500).json({ message: "Internal Server Error" });
