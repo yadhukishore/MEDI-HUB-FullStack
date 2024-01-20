@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     
    <link rel="stylesheet" href="/public/stylesheets/users/medicines.css">
+   <style>
+    #pag-nation{
+        background-color: aliceblue;
+    }
+   </style>
     <script>
         function toggleDropdown() {
             const dropdownContent = document.getElementById('dropdown-content');
@@ -125,6 +130,16 @@
                                 </div>
                             </li>
                         <% }); %>
+                             <!-- Pagination -->
+                <nav aria-label="Page navigation example" id="pag-nation" >
+                    <ul class="pagination">
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <% if (i === page) { %>active<% } %>">
+                                <a class="page-link" href="/allMedicines?page=<%= i %>&pageSize=<%= pageSize %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
                     </ul>
                 </div>
 

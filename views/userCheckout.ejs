@@ -111,16 +111,18 @@
                         <h4>Order Summary</h4>
                         <hr>
                         <P>Shipping Fee: <strong>Free</strong></P>
-                        <p>Total Price: <strong> ₹<%= totalPrice %></strong></p>
+                        <p>Amount to Pay: <strong> ₹<%= totalPrice %></strong></p>
+                        <% let total = 0; %>
                         <% productDetails.forEach(product=> { %>
                             <hr>
                             <p style="color: green;">Product: <%= product.name %>
                             </p>
                             <p>Price: ₹ <%= product.price %>
                             </p>
-                            <p>Quantity: <%= product.quantity %>
-                            </p>
+                            <p>Quantity: <%= product.quantity %></p>
+                            <% total += product.price * product.quantity; %>
                             <% }); %>
+                           <hr> <p style="color: rgb(64, 71, 71);" ><strong> Total:- ₹ <%= total %> </strong></p> 
                     </div>
 
                     <div class="container-box">

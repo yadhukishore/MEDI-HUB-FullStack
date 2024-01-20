@@ -197,6 +197,9 @@ exports.searchProducts = async (req, res) => {
 
 
 exports.getAllMedicines = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 9; 
+  const skip = (page - 1) * pageSize;
   try {
     const searchQuery = req.query.search || '';
     let user = null;
@@ -207,6 +210,9 @@ exports.getAllMedicines = async (req, res) => {
     if (req.session.user) {
       user = await User.findById(req.session.user._id).populate('cart.product');
     }
+        // Calculate the total number of products to determine the number of pages
+        const totalProducts = await Product.countDocuments({ deleted: false });
+    const totalPages = Math.ceil(totalProducts / pageSize);
 
     const categories = await Category.aggregate([
       {
@@ -254,12 +260,20 @@ exports.getAllMedicines = async (req, res) => {
         },
       },
       { $sort: { price: sortOrder === 'lowToHigh' ? 1 : -1 } },
+      { $skip: skip },
+      { $limit: pageSize },
     ]);
+    
 
     res.render('medicines', {
       products,
       categories,
       user,
+      totalPages,
+       page,
+       pageSize,
+       filterCategories,
+       searchQuery,
       messages: req.flash(),
     });
   } catch (error) {

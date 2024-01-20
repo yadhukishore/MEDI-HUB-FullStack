@@ -73,7 +73,7 @@
         <h1 class="display-4 text-center"><strong> MEDI HUB </strong></h1>
     </div>
   
-  
+
 
       <% if (messages.success) { %>
         <div class="alert alert-success">
@@ -85,11 +85,14 @@
         </div>
     <% } %>
         <div class="row">
+          <div class="container">
+            <h4 style="color: rgb(116, 44, 44);" >New arrivals</h4>
+          </div>
           <!-- Loop through products and create Bootstrap cards -->
           <% products.forEach(product => { %>
             <div class="col-md-4 mb-4">
               <div class="card">
-                <a href="/product/<%= product._id %>"> <!-- Add a link to each product -->
+                <a href="/product/<%= product._id %>"> 
                     <% if (product.images.length > 0) { %>
                         <!-- Display only the first image -->
                         <img src="/public/uploads/<%= product.images[0] %>" alt="<%= product.name %>" style="max-width: 100%;">
@@ -100,7 +103,7 @@
                 </a>
                 <div class="card-body">
                   <h5 class="card-title"><%= product.name %></h5>
-                  <!-- <p class="card-text"><%= product.description %></p> -->
+               
                   Category: <%= product.categoryName ? product.categoryName : 'N/A' %>
 
                  

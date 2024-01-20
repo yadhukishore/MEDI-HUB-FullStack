@@ -7,10 +7,7 @@
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            padding: 20px; /* Add some padding for better styling */
-        }
-
+      
         h1 {
             margin-bottom: 20px; /* Add space below the heading */
         }
@@ -36,10 +33,35 @@
         .btn-success {
             border-radius: 10px;
         }
+        body {
+            background-color: #d8eace; /* Add a light background color */
+        }
+
+        .container-box {
+            background-color: #ffffff; /* White background */
+            border: 1px solid green; /* Add a border */
+            border-radius: 8px; /* Rounded corners */
+            padding: 30px; /* Add padding inside the container */
+            box-shadow: 0 4px 8px rgba(1.5, 1.5, 1, 2); /* Add a subtle shadow */
+            margin-top: 20px; /* Adjust margin-top for spacing from the top */
+            max-width: 600px; /* Set a maximum width for the container */
+            margin-left: auto; /* Center the container horizontally */
+            margin-right: auto; /* Center the container horizontally */
+        }
+        
     </style>
+    <link rel="stylesheet" href="/public/stylesheets/admin/navNsidebar.css">
 </head>
 <body>
+    <div class="wrapper">
+      
+        <!-- Sidebar -->
+        <%- include('../partials/adminSidebar.ejs', { activePage: 'userList' }) %>
+      <!-- Page Content -->
+      <div id="content">
+     
     <h1 class="text-center">Add User</h1>
+    <div class="container mt-4 container-box">
 
     <form action="/admin/add_user" method="post">
         <div class="form-group">
@@ -64,6 +86,9 @@
     
         <button type="submit" class="btn btn-success btn-block">Add User</button>
     </form>
+    </div>
+    </div>
+    </div>
 
     <!-- Include Bootstrap JS and Popper.js (required for Bootstrap dropdowns) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
