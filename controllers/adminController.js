@@ -593,7 +593,7 @@ exports.getListAllOrders = [
   adminAuthMiddleware,
   async (req, res) => {
     try {
-      const pageSize = 10; // Or any other number you prefer
+      const pageSize = 10; 
       const page = req.query.page ? parseInt(req.query.page, 10) : 1;
 
       const orders = await Order.find()
@@ -606,10 +606,9 @@ exports.getListAllOrders = [
         .populate("user", "username")
         .exec();
 
-        const totalOrders = await Order.countDocuments(); // Count the total documents
-        const totalPages = Math.ceil(totalOrders / pageSize); // Calculate the total pages
+        const totalOrders = await Order.countDocuments(); 
+        const totalPages = Math.ceil(totalOrders / pageSize); 
 
-      // Render the EJS template for the list of all orders with the orders data
       res.render("./admin/list-all-orders.ejs", { orders,current: page, pages: totalPages });
     } catch (error) {
       console.error("Error fetching all orders:", error);
@@ -708,14 +707,11 @@ exports.processReturnRequest = [
     }
   },
 ];
-// Logout controller for admin
-// Logout controller for admin
+
 exports.postAdminLogout = [
   adminAuthMiddleware,
   (req, res) => {
-    // Set admin-related session properties to null
     req.session.adminUser = null;
-    // Save the session after changes
     req.session.save((err) => {
       if (err) {
         console.error("Error saving session:", err);

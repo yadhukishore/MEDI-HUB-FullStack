@@ -7,7 +7,7 @@ exports.getOffersPage = async (req, res) => {
     res.render('admin/offers', { products });
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
+    res.status(500).render('error', { statusCode: 500, message: 'offerPage Server Error' });
   }
 };
 
@@ -29,7 +29,7 @@ exports.addOffer = async (req, res) => {
       res.redirect('/admin/offer');
     } catch (error) {
       console.error('Error adding offer:', error);
-      res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
+      res.status(500).render('error', { statusCode: 500, message: 'addoffer Server Error' });
     }
    };
    
@@ -51,7 +51,7 @@ exports.addOffer = async (req, res) => {
       res.redirect('/admin/offer');
     } catch (error) {
       console.error('Error deleting offer:', error);
-      res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
+      res.status(500).render('error', { statusCode: 500, message: 'DeleteOffer Server Error' });
     }
    };
    

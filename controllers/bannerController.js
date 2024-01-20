@@ -6,7 +6,7 @@ exports.renderBannerManagementPage = async (req, res) => {
        const banners = await Banner.find().select('banner_name reference banner_status images');
        res.render('admin/banner', { banners });
    } catch (error) {
-       res.status(500).send('Internal Server Error');
+    res.status(500).render('error', { statusCode: 500, message: 'Banner Server Error' });
    }
 };
 
@@ -29,7 +29,7 @@ exports.createBanner = async (req, res) => {
        await banner.save();
        res.redirect('/admin/banner');
    } catch (error) {
-       res.status(500).send('Internal Server Error');
+    res.status(500).render('error', { statusCode: 500, message: 'Create Banner Server Error' });
    }
 };
 
@@ -38,7 +38,7 @@ exports.deleteBanner = async (req, res) => {
        await Banner.findByIdAndDelete(req.params.id);
        res.redirect('/admin/banner');
    } catch (error) {
-       res.status(500).send('Internal Server Error');
+    res.status(500).render('error', { statusCode: 500, message: 'DeleteBanner Server Error' });
    }
 };
 
@@ -49,6 +49,6 @@ exports.bannerFetchFunction = async(req, res) => {
        await banner.save();
        res.json(banner);
    } catch (error) {
-       res.status(500).send(error);
+    res.status(500).render('error', { statusCode: 500, message: 'BannerFetchFun Server Error' });
    }
 }

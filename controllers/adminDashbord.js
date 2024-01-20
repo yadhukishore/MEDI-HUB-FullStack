@@ -113,7 +113,7 @@ exports.getAdminDash = async (req, res) => {
         res.render('admin/adminDash', { footer: true, admin: true, Admin: admin, salesReport, totalUsers, totalOrders });
     } catch (error) {
         console.error('Error rendering sales report:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
     }
 };
 
@@ -125,7 +125,7 @@ exports.getSalesData = async (req, res) => {
         res.json(salesReport);
     } catch (error) {
         console.error('Error fetching sales data:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
     }
 };
 
@@ -145,13 +145,14 @@ exports.renderPieChartPage = async (req, res) => {
         res.render('admin/adminDashPie', { labels, data }); 
     } catch (error) {
         console.error('Error fetching delivered orders by category:', error);
-        res.status(500).send('Server error');
+        res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
     }
 };
 
 
 exports.renderBarChart = async (req, res) => {
     try {
+      
         const usersPerMonth = await User.aggregate([
             {
                 $group: {
@@ -171,7 +172,7 @@ exports.renderBarChart = async (req, res) => {
         res.render('admin/barChartDash', { labels, data });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        res.status(500).render('error', { statusCode: 500, message: 'Server Error' });
     }
  };
  

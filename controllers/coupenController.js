@@ -8,7 +8,7 @@ exports.render_coupen_page = async (req, res) => {
         res.render('admin/adminCoupen', { coupons });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).render('error', { statusCode: 500, message: 'Coupon Server Error' });
     }
 };
 exports.getCreate_coupon = async (req, res) => {
@@ -17,7 +17,7 @@ exports.getCreate_coupon = async (req, res) => {
         res.render('admin/adminAddcoupen', { coupons });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).render('error', { statusCode: 500, message: 'createCoupon Server Error' });
     }
 };
 
@@ -28,7 +28,7 @@ exports.render_edit_coupon_page = async (req, res) => {
         res.render('admin/adminEditCoupon', { coupon });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).render('error', { statusCode: 500, message: 'Edit Coupon Server Error' });
     }
 };
 
@@ -105,6 +105,6 @@ exports.deleteCoupon = async(req, res) => {
         res.redirect('/admin/coupon');
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).render('error', { statusCode: 500, message: 'Delete Coupon Server Error' });
     }
 };
