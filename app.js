@@ -1,7 +1,7 @@
 const express = require('express');
 const flash = require('express-flash');
 const session = require('express-session');
-const mongoose = require('mongoose');
+const mongooseeeese = require('mongoose');
 const MongoStore = require('connect-mongodb-session')(session);
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -17,7 +17,7 @@ dbConnect();
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-///testing
+
 const store = new MongoStore({
   uri:process.env.MONGO_ATLAS_URL,
   collection: 'sessions'
