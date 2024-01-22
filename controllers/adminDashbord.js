@@ -3,11 +3,13 @@ const Order = require("../models/order");
 const adminAuthMiddleware = require("../middleware/adminAuthMiddleware");
 const User = require("../models/user");
 
+const handleError = (err, res) => {
+    console.error('Error:', err);
+    res.status(500).render('error', { statusCode: 500, message: err.message });
+   };
+  
 
 
-
-
-// Function to fetch sales data from the database
 const sales_report = async (selectedYear, selectedMonth) => {
     try {
 
@@ -70,8 +72,7 @@ const sales_report = async (selectedYear, selectedMonth) => {
 };
 
 
-// Function to fetch the total number of users
-const getTotalUsers = async () => {
+const getTotalUsers =async () => {
     try {
         const totalUsers = await User.countDocuments();
         return totalUsers;
@@ -82,7 +83,6 @@ const getTotalUsers = async () => {
 };
 
 
-// Function to fetch the total number of orders
 const getTotalOrders = async () => {
     try {
         const totalOrders = await Order.countDocuments();
@@ -94,7 +94,9 @@ const getTotalOrders = async () => {
 };
 
 
-exports.getAdminDash = async (req, res) => {
+exports.getAdminDash =[
+    adminAuthMiddleware,
+    async(req, res) => {
     try {
         const { year, month } = req.query;
         const salesReport = await sales_report(year, month);
@@ -113,23 +115,25 @@ exports.getAdminDash = async (req, res) => {
         res.render('admin/adminDash', { footer: true, admin: true, Admin: admin, salesReport, totalUsers, totalOrders });
     } catch (error) {
         console.error('Error rendering sales report:', error);
-        res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
-    }
-};
+        handleError(error, res);    }
+}];
 
-// API endpoint to fetch sales data in JSON format
-exports.getSalesData = async (req, res) => {
+exports.getSalesData = [
+    adminAuthMiddleware,
+    async(req, res) => {
     try {
         const { year, month } = req.query;
         const salesReport = await sales_report(year, month);
         res.json(salesReport);
     } catch (error) {
         console.error('Error fetching sales data:', error);
-        res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
-    }
-};
+        handleError(error, res);
+        }
+}];
 
-exports.renderPieChartPage = async (req, res) => {
+exports.renderPieChartPage = [
+    adminAuthMiddleware,
+    async (req, res) => {
     try {
         const categoriesDelivered = await Order.aggregate([
             { $match: { status: 'Delivered' } },
@@ -145,12 +149,14 @@ exports.renderPieChartPage = async (req, res) => {
         res.render('admin/adminDashPie', { labels, data }); 
     } catch (error) {
         console.error('Error fetching delivered orders by category:', error);
-        res.status(500).render('error', { statusCode: 500, message: 'Internal Server Error' });
-    }
-};
+        handleError(error, res);
+        }
+}];
 
 
-exports.renderBarChart = async (req, res) => {
+exports.renderBarChart =[
+    adminAuthMiddleware,
+    async(req, res) => {
     try {
       
         const usersPerMonth = await User.aggregate([
@@ -172,7 +178,7 @@ exports.renderBarChart = async (req, res) => {
         res.render('admin/barChartDash', { labels, data });
     } catch (err) {
         console.error(err);
-        res.status(500).render('error', { statusCode: 500, message: 'Server Error' });
-    }
- };
+        handleError(err, res);
+        }
+ }];
  

@@ -5,8 +5,6 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const  isValidPassword  = require('../middleware/passwordValid');
 const { check, validationResult } = require('express-validator');
-//for otp////
-// Nodemailer configuration
 require('dotenv').config();
 
 // Nodemailer configuration
@@ -314,9 +312,7 @@ exports.postUserLogin = [
 
 // Logout controller for user
 exports.postUserLogout = (req, res) => {
-  // Delete user-related session properties
   delete req.session.user;
-  // Save the session after changes
   req.session.save((err) => {
     if (err) {
       console.error('Error saving session:', err);

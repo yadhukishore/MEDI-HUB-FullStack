@@ -12,7 +12,7 @@ const adminAuthMiddleware = require("../middleware/adminAuthMiddleware");
 
 
 
-// Helper functions
+// Helper function
 const handleValidationErrors = (req, res, redirectPath) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

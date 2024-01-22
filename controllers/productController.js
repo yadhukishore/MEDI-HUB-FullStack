@@ -101,8 +101,8 @@ exports.getProduct= async(req,res)=>{
             { categoryName: { $regex: searchQuery, $options: 'i' } },
           ]}},
           { $skip: (page - 1) * perPage },
-          { $limit: perPage },  // Limit to perPage number of products
-          { $limit: 4 }  // Additional limit to a maximum of 4 products
+          { $limit: perPage }, 
+          { $limit: 4 }  
         ]);
         
          //user variable lek userinfo um with cart-le productinfo um ketti
@@ -112,7 +112,7 @@ exports.getProduct= async(req,res)=>{
         res.render('product_details', {  product, user, products: relatedProducts });
       } catch (error) {
         console.error('Error fetching product details:', error);
-        req.flash('error', 'Please log in to view your cart.');
+        req.flash('error', 'Please Login Or Register!');
         res.redirect('/login');
 
       }

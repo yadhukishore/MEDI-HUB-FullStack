@@ -1,14 +1,18 @@
 // controllers/adminOfferController.js
 const Product = require('../models/product');
 
+const handleError = (err, res) => {
+  console.error('Error:', err);
+  res.status(500).render('error', { statusCode: 500, message: err.message });
+ };
+
 exports.getOffersPage = async (req, res) => {
   try {
     const products = await Product.find({ deleted: false }).populate('category');
     res.render('admin/offers', { products });
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).render('error', { statusCode: 500, message: 'offerPage Server Error' });
-  }
+    handleError(error, res);  }
 };
 
 exports.addOffer = async (req, res) => {
@@ -29,8 +33,7 @@ exports.addOffer = async (req, res) => {
       res.redirect('/admin/offer');
     } catch (error) {
       console.error('Error adding offer:', error);
-      res.status(500).render('error', { statusCode: 500, message: 'addoffer Server Error' });
-    }
+      handleError(error, res);    }
    };
    
 
@@ -46,12 +49,9 @@ exports.addOffer = async (req, res) => {
       };
 
       const savedValue = await product.save();
-      console.log("SavedVal", savedValue);
-   
       res.redirect('/admin/offer');
     } catch (error) {
       console.error('Error deleting offer:', error);
-      res.status(500).render('error', { statusCode: 500, message: 'DeleteOffer Server Error' });
-    }
+      handleError(error, res);    }
    };
    
