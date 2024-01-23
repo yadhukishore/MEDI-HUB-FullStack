@@ -10,7 +10,6 @@ exports. getUserWalletBalance = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        console.log("TotWallet amount  : ",user.user_wallet);
         res.render('userWallet', { user,walletBalance: user.user_wallet ,userName:user.username,walletHistory: user.wallet_history});
     } catch (error) {
         console.error("Error fetching wallet balance:", error);

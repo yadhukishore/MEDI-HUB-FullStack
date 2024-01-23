@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const PORT = process.env.PORT || 3009;
 
-const dbConnect= require("./config/dbConnect")
+const dbConnect= require("./config/dbConnect");
 
 const errorHandlerMiddleware = require('./middleware/errorHandler');
 const adminRoutes = require('./routes/admin/adminRoutes');
@@ -73,5 +73,5 @@ app.use(errorHandlerMiddleware.notFound);
 app.use(errorHandlerMiddleware.errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server started on port 3009 ${PORT}`);
+  console.log(`Server started on port -> ${PORT}`);
 });

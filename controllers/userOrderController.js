@@ -48,7 +48,6 @@ const verifyLoginOrderController = (req, res, next) => {
 };
 exports.verifyLoginOrderController = verifyLoginOrderController;
 
-// Function to reduce stock for each product in the cart
 const reduceStockForProducts = async (cart) => {
   const stockReductionPromises = cart.map(async (item) => {
     const product = await Product.findById(item.product._id);
@@ -97,7 +96,6 @@ exports.postProcessOrder =
         const user = await User.findById(userId).populate("cart.product");
         const appliedCoupon = req.session.appliedCoupon || null;
         const totalPrice = calculateTotalPrice(user.cart, appliedCoupon);
-        console.log("Process order totalPrice: ",totalPrice);
 
         for (const item of user.cart) {
           const product = await Product.findById(item.product._id);
@@ -107,9 +105,7 @@ exports.postProcessOrder =
               .json({ message: `Product ${product.name} is out of stock` });
           }
         }
-        console.log("body ", req.body);
         const selectedPaymentMethod = req.body.paymentMethod;
-        console.log("Selected Payment Method:", selectedPaymentMethod);
         let status;
         if (selectedPaymentMethod === "COD" || selectedPaymentMethod==="wallet") {
           status = "Confirmed";
@@ -140,8 +136,7 @@ exports.postProcessOrder =
             .status(400)
             .json({ message: "Default address is missing or invalid" });
         }
-        console.log("Default Address:", defaultAddress);
-        console.log("Address gottt!");
+       
 
         // await reduceStockForProducts(user.cart);
 
@@ -163,7 +158,6 @@ exports.postProcessOrder =
         });
 
         const orderCreadted = await order.save();
-        console.log("orderCreadted: ", orderCreadted);
        
 
         if (orderCreadted.status === "Confirmed") {
@@ -182,9 +176,8 @@ exports.postProcessOrder =
             order_id: orderCreadted._id,
             status: razorOrder.status,
           });
-console.log("PAIYMENTZ:\n",payments);
           await payments.save();
-          console.log("Saved to payments");
+          
           if (razorOrder) {
             res.json({
               success: true,
@@ -196,7 +189,7 @@ console.log("PAIYMENTZ:\n",payments);
 
       
 if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
-  // Set is_delete field of the applied coupon to true
+
   await Coupon.findByIdAndUpdate(req.session.appliedCoupon._id, { is_delete: true });
 
   // Change discounted value of total price to normal
@@ -207,12 +200,12 @@ if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
 // cart clearing logic for COD orders
 if (selectedPaymentMethod === "COD") {
   await reduceStockForProducts(user.cart);
-  console.log("REEEEDUCED STOCK!");
+  console.log("Reduced STOCK!");
   
   user.cart = [];
   console.log("\nCleared cart!!!\n");
   await user.save();
-  console.log("sAVED COD");
+  console.log("SAVED COD");
 
 }else if(selectedPaymentMethod === "wallet"){
   await reduceStockForProducts(user.cart);
@@ -220,18 +213,14 @@ if (selectedPaymentMethod === "COD") {
   
   user.cart = [];
   console.log("\nCleared cart!!!\n");
-   // If wallet balance is sufficient, deduct the amount from the wallet
    user.user_wallet -= totalPrice;
 
-    // Record the transaction in the wallet history
     user.wallet_history.push({
       amount: order.totalAmount,
       status: "Debit",
       time: new Date()
     });
-
-
-   console.log("Reduced wallet amount!");
+console.log("Reduced wallet amount!");
   await user.save();
   console.log("sAVED Wallet");
 
@@ -240,7 +229,6 @@ if (selectedPaymentMethod === "COD") {
 
          if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
           req.session.appliedCoupon = null;
-          console.log("coupenDESTTTTTTTTTTTTTTTYT");
       }
         res.render("./userOrderSuccess.ejs", { order });
       } else {
@@ -368,14 +356,12 @@ exports.getMyOrders =
         return res.status(404).json({ message: "Order not found" });
       }
   
-      // Check if the order was paid online and is confirmed
       if (order.paymentMethod === "razorpay" && order.status === "Confirmed") {
         const user = await User.findById(order.user);
         console.log("order was paid online and is confirmed, so we can update wallet!");
-        // Add the order amount to the user's wallet
+  
         user.user_wallet += order.totalAmount;
   
-        // Record the transaction in the wallet history
         user.wallet_history.push({
           amount: order.totalAmount,
           status: "Credit",

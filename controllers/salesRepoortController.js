@@ -4,7 +4,6 @@ const adminAuthMiddleware = require("../middleware/adminAuthMiddleware");
 
 exports.getSalesReport = async (req, res) => {
     try {
-        // Get the selected time interval from the request
         const selectedInterval = req.query.interval || 'all';
         let endDate = new Date();
 
@@ -27,7 +26,7 @@ exports.getSalesReport = async (req, res) => {
             startDate.setDate(1); // Set the start day to the first day of January
         }
 
-        // Fetch the sales data based on the date range
+       
         const salesData = await Order.find({
             status: 'Delivered',
             createdAt: { $gte: startDate, $lte: endDate },
@@ -38,7 +37,7 @@ exports.getSalesReport = async (req, res) => {
 
         res.render('admin/salesReport', {
             orders: salesData,
-            selectedInterval, // Pass the selected interval to the template
+            selectedInterval, 
         });
     } catch (error) {
         console.error("Error fetching sales data:", error);

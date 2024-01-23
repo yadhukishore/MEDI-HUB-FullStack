@@ -11,4 +11,4 @@ mongoose.connect(process.env.MONGO_ATLAS_URL).then(() => {
 
 }
 
-module.exports = dbConnect
+module.exports = dbConnect;

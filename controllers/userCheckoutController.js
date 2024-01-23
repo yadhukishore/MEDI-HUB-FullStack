@@ -70,7 +70,6 @@ async function applyCouponToCoupon(coupon, userId) {
     }
 
     await coupon.save();
-    console.log("Saved updated coupon!");
 
     return coupon;
 }
@@ -80,13 +79,11 @@ exports.applyCoupon =  async (req, res) => {
         const userId = req.session.user._id;
         const couponCode = req.body.couponCode;
         
-        console.log("SelecedCoupen:  ",couponCode);
 
         const user = await User.findById(userId).populate('cart.product');
         const selectedCoupon = await Coupon.findOne({ coupon_code: couponCode });
 
         const totalPrice = calculateTotalPrice(user.cart);
-        console.log("TOTTTELP;",totalPrice);
 
         if (selectedCoupon && isValidCoupon(user.cart, totalPrice, selectedCoupon)) {
             const updatedCoupon = await applyCouponToCoupon(selectedCoupon, userId);
@@ -126,11 +123,9 @@ exports.applyCoupon =  async (req, res) => {
 
             if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete !== true) {
               console.log("cOUPEN OND");
-                // If there is an applied coupon, calculate the total price based on the cart
                 totalPrice = calculateTotalPrice(user.cart, req.session.appliedCoupon);
             } else {
                 console.log("COUPON ILLA");
-                // Calculate the total price without the coupon
                 totalPrice = calculateTotalPrice(user.cart);
             }
 
@@ -142,7 +137,6 @@ exports.applyCoupon =  async (req, res) => {
             }));
             const availableCoupons = await Coupon.find({});
             
-            // Check if the applied coupon is deleted, and reset the session
             if (req.session.appliedCoupon && req.session.appliedCoupon.is_delete === true) {
                 req.session.appliedCoupon = null;
             }
@@ -166,14 +160,11 @@ exports.saveDefaultAddress =  async (req, res) => {
     try {
         const userId = req.session.user._id;
         const addressId = req.body.defaultAddress;
-console.log("addressId: ",addressId);
-        // Update all other addresses to mark them as non-default
         await User.updateMany(
             { _id: userId },
             { $set: { 'addresses.$[].isDefault': false } }
         );
 
-        // Update the selected address as default
         await User.updateOne(
             { _id: userId, 'addresses._id': addressId },
             { $set: { 'addresses.$.isDefault': true } }

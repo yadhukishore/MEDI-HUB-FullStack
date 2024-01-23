@@ -64,7 +64,7 @@ exports.addToCart = [verifyLogin, async (req, res) => {
         const userCartItem = user.cart.find(item => item.product._id.toString() === productId);
 
         console.log("User cart item: ",userCartItem);
-        // Check if stock is greater than 0 and userStock is less than or equal to global stock
+      
         if (product.stock > 0 && (!userCartItem || userCartItem.userStock < product.stock)) {
             if (userCartItem) {
                 userCartItem.quantity += 1;
@@ -73,11 +73,11 @@ exports.addToCart = [verifyLogin, async (req, res) => {
                 user.cart.push({
                     product: productId,
                     quantity: 1,
-                    userStock: Math.min(1, product.stock), // Initialize userStock with the minimum of 1 and the current global stock
+                    userStock: Math.min(1, product.stock), 
                 });
             }
 
-            // Temporarily reduce the global stock
+            
             product.stock -= 1;
             req.flash('success', 'Product added to cart successfully.');
 
@@ -142,16 +142,13 @@ exports.updateProductQuantity = [verifyLogin, async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        // Calculate the difference in quantity
         const quantityDiff = newQuantity - cartItem.quantity;
 
-        // Check if userStock limit is sufficient for the update
         if (cartItem.userStock + quantityDiff <= product.stock) {
-            // Update user's cart quantity
+            
             cartItem.quantity = newQuantity;
             cartItem.userStock += quantityDiff;
 
-            // Update product stock
             product.stock -= quantityDiff;
 
             await user.save();

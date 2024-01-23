@@ -73,7 +73,6 @@ exports.getProduct= async(req,res)=>{
     const perPage = 6; 
     const searchQuery = req.query.search || ''; 
     
-         // Fetch related products or any other products needed for the product details page
          const relatedProducts = await Product.aggregate([
           { $match: { deleted: false } },
           {
@@ -343,7 +342,7 @@ exports.add_wishlist = async(req,res)=>{
     const user = await User.findById(userId);
     user.wishlist = user.wishlist.filter(item => item.product.toString() !== productId);
     await user.save();
-    console.log("Removed Product from wishList");
+   
     req.flash('success', 'Product is removed!');
     res.redirect('/add_wishlist');
   } catch (error) {
