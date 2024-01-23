@@ -1,12 +1,6 @@
 <!-- adminEditCoupon.ejs -->
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%- include("../../views/partials/header.ejs") %>
     <title>Edit Coupon</title>
-    <!-- Include Bootstrap CSS or any other styling framework -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
@@ -14,19 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.1/sweetalert2.min.css" />
     <style>
         body {
-            background-color: #bee6a5; /* Add a light background color */
+            background-color: #bee6a5; 
         }
 
         .container-box {
-            background-color: #ffffff; /* White background */
-            border: 1px solid green; /* Add a border */
-            border-radius: 8px; /* Rounded corners */
-            padding: 30px; /* Add padding inside the container */
-            box-shadow: 0 4px 8px rgba(1.5, 1.5, 1, 2); /* Add a subtle shadow */
-            margin-top: 20px; /* Adjust margin-top for spacing from the top */
-            max-width: 600px; /* Set a maximum width for the container */
-            margin-left: auto; /* Center the container horizontally */
-            margin-right: auto; /* Center the container horizontally */
+            background-color: #ffffff; 
+            border: 1px solid green; 
+            border-radius: 8px; 
+            padding: 30px; 
+            box-shadow: 0 4px 8px rgba(1.5, 1.5, 1, 2); 
+            margin-top: 20px;
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto; 
         }
     </style>
 </head>
@@ -35,7 +29,7 @@
     <div class="container mt-4 container-box">
         <h2 class="mb-4 text-center text-danger">Edit Coupon🏷️</h2>
         <form action="/admin/edit_coupon/<%= coupon._id %>" method="post">
-            <!-- Your form fields with pre-filled values from the "coupon" object -->
+            
             <div class="form-group">
                 <label for="couponCode">Coupon Code:</label>
                 <input type="text" class="form-control" id="couponCode" name="coupon_code" value="<%= coupon.coupon_code %>" required>
@@ -83,14 +77,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.1/sweetalert2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Attach an event listener to the "Save Changes" button
+        
         document.getElementById('saveChanges').addEventListener('click', function (event) {
-            // Prevent the default form submission
             event.preventDefault();
             
-            // Call the validateForm() function
             if (validateForm()) {
-                // Show the SweetAlert2 alert
                 Swal.fire({
                     title: 'Save Changes?',
                     text: "Make sure everything is Done!",
@@ -110,7 +101,6 @@
     });
 
     function validateForm() {
-        // Add your custom validation logic here
         const couponCode = document.getElementById('couponCode').value;
         const description = document.getElementById('description').value;
         const discount = document.getElementById('discount').value;
@@ -119,7 +109,7 @@
         const minAmount = document.getElementById('minAmount').value;
         // const maxCount = document.getElementById('maxCount').value;
 
-        // Example: Check if fields are not empty
+        
         if (
             couponCode.trim() === '' ||
             description.trim() === '' ||
@@ -136,7 +126,7 @@
             return false;
         }
 
-        // Add more custom validation as needed
+       
 
         return true;
     }

@@ -1,10 +1,5 @@
 <!-- views/admin/userList.ejs -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%- include("../../views/partials/header.ejs") %>
     <title>UserList</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -26,8 +21,8 @@
             color: white;
             position: sticky;
             top: 0;
-            height: 100vh; /* Set a fixed height for the sidebar */
-            overflow-y: auto; /* Add scroll if content exceeds the height */
+            height: 100vh; 
+            overflow-y: auto; 
         }
 
         #content {
@@ -36,7 +31,7 @@
         }
 
         nav img {
-            height: 50px; /* Set the desired height for your logo */
+            height: 50px; 
         }
 
         nav button {
@@ -49,16 +44,16 @@
         }
 
         .container {
-            margin-top: 20px; /* Add space between the navigation bar and content */
+            margin-top: 20px; 
         }
 
         .add-product-button {
-            margin-bottom: 20px; /* Add space below the "Add Product" button */
+            margin-bottom: 20px; 
         }
 
         table {
             width: 100%;
-            margin-bottom: 20px; /* Add space below the table */
+            margin-bottom: 20px; 
         }
 
         th, td {
@@ -82,13 +77,12 @@
         }
 
         .navbar-brand {
-            margin-right: 0; /* Remove default margin for the brand */
+            margin-right: 0; 
         }
 
         .sidebar-link {
-            font-size: 18px; /* Adjust the font size as needed */
-            font-weight: bold; /* Optional: Add bold styling */
-            /* Add any additional styling properties as needed */
+            font-size: 18px; 
+            font-weight: bold; 
         }
     </style>
 </head>

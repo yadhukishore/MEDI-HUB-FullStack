@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%- include("../../views/partials/header.ejs") %>
     <title>Admin Dashboard</title>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Include Bootstrap CSS -->
+    <!--  Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/public/stylesheets/admin/barChartDash.css">
 </head>
@@ -75,10 +71,8 @@ new Chart(document.getElementById('bar-chart'), {
             <script>
                 function goToChart(chartName) {
                     if (chartName === "pieChart") {
-                        // Redirect to the URL of the Pie Chart
                         window.location.href = '/admin/pieChart';
                     } else if (chartName === "lineChart") {
-                        // Redirect to the URL of the Bar Chart
                         window.location.href = '/admin/adminDash';
                     }else if(chartName === "barChart"){
                         window.location.href = '/admin/barChart';

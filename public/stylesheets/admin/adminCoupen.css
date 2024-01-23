@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    display: flex;
+}
+
+#sidebar {
+    min-width: 250px;
+    background-color: #333;
+    padding: 20px;
+    color: white;
+}
+
+#content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+nav img {
+    height: 50px; /* Set the desired height for your logo */
+}
+
+nav button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.container {
+    margin-top: 20px; /* Add space between the navigation bar and content */
+}
+
+.add-product-button {
+    margin-bottom: 20px; /* Add space below the "Add Product" button */
+}
+
+table {
+    width: 100%;
+    margin-bottom: 20px; /* Add space below the table */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.navbar {
+    position: sticky;
+    top: 1;
+    z-index: 1000;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-top: -20px;
+}
+
+.navbar-brand {
+    margin-right: 0; /* Remove default margin for the brand */
+}
+
+.sidebar-link {
+    font-size: 18px; /* Adjust the font size as needed */
+    font-weight: bold; /* Optional: Add bold styling */
+    /* Add any additional styling properties as needed */
+}
+#sidebar {
+    min-width: 250px;
+    background-color: #333;
+    padding: 20px;
+    color: white;
+    position: sticky;
+    top: 0;
+    height: 100vh; /* Set a fixed height for the sidebar */
+    overflow-y: auto; /* Add scroll if content exceeds the height */
+}

@@ -1,50 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%- include("../../views/partials/header.ejs") %>
     <title>Add User</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
       
         h1 {
-            margin-bottom: 20px; /* Add space below the heading */
+            margin-bottom: 20px; 
         }
 
         form {
-            max-width: 400px; /* Limit the form width for better readability */
-            margin: 0 auto; /* Center the form on the page */
+            max-width: 400px; 
+            margin: 0 auto; 
         }
 
         label {
-            margin-top: 10px; /* Add space between labels and inputs */
+            margin-top: 10px; 
         }
 
         input {
-            margin-bottom: 10px; /* Add space below each input */
+            margin-bottom: 10px; 
         }
 
         .error-message {
             color: red;
-            margin-top: 10px; /* Add space above the error message */
+            margin-top: 10px; 
         }
 
         .btn-success {
             border-radius: 10px;
         }
         body {
-            background-color: #d8eace; /* Add a light background color */
+            background-color: #d8eace; 
         }
 
         .container-box {
-            background-color: #ffffff; /* White background */
-            border: 1px solid green; /* Add a border */
-            border-radius: 8px; /* Rounded corners */
-            padding: 30px; /* Add padding inside the container */
-            box-shadow: 0 4px 8px rgba(1.5, 1.5, 1, 2); /* Add a subtle shadow */
-            margin-top: 20px; /* Adjust margin-top for spacing from the top */
-            max-width: 600px; /* Set a maximum width for the container */
+            background-color: #ffffff; 
+            border: 1px solid green; 
+            border-radius: 8px; 
+            padding: 30px; 
+            box-shadow: 0 4px 8px rgba(1.5, 1.5, 1, 2); 
+            margin-top: 20px; 
+            max-width: 600px; 
             margin-left: auto; /* Center the container horizontally */
             margin-right: auto; /* Center the container horizontally */
         }

@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%- include("../../views/partials/header.ejs") %>
     <title>Admin Dashboard</title>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -46,16 +41,16 @@
         }
 
         .container {
-            margin-top: 20px; /* Add space between the navigation bar and content */
+            margin-top: 20px; 
         }
 
         .add-product-button {
-            margin-bottom: 20px; /* Add space below the "Add Product" button */
+            margin-bottom: 20px;
         }
 
         table {
             width: 100%;
-            margin-bottom: 20px; /* Add space below the table */
+            margin-bottom: 20px;
         }
 
         th,
@@ -80,13 +75,13 @@
         }
 
         .navbar-brand {
-            margin-right: 0; /* Remove default margin for the brand */
+            margin-right: 0; 
         }
 
         .sidebar-link {
-            font-size: 18px; /* Adjust the font size as needed */
-            font-weight: bold; /* Optional: Add bold styling */
-            /* Add any additional styling properties as needed */
+            font-size: 18px; 
+            font-weight: bold; 
+           
         }
 
        
@@ -99,7 +94,7 @@
         #additionalInfo {
             background-color: #007bff;
             padding: 15px;
-            width: 48%; /* Adjust the width as needed */
+            width: 48%;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -108,7 +103,7 @@
         #additionalInfo2 {
             background-color: #6c757d;
             padding: 15px;
-            width: 48%; /* Adjust the width as needed */
+            width: 48%; 
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -143,7 +138,7 @@
         #additionalInfo3 {
             background-color: #28a745; /* Green background color */
             padding: 15px;
-            width: 80%; /* Adjust the width as needed */
+            width: 80%; 
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -199,7 +194,7 @@
                                 <option value="lineChart">Revenue Per Month</option>
                                 <option value="pieChart">Category Chart</option>
                                 <option value="barChart">Bar Chart</option>
-                                <!-- Add more options as needed -->
+                                
                             </select>
                         </div>
                         
@@ -273,7 +268,7 @@ const sales = salesData.map(entry => entry.totalSales);
 
   const totalRevenue = sales.reduce((acc, cur) => acc + cur, 0);
 
-       document.getElementById('totalRevenue').innerText = totalRevenue.toFixed(2); // Assuming you want to display it with 2 decimal places
+       document.getElementById('totalRevenue').innerText = totalRevenue.toFixed(2); 
      
                 // If the chart exists, destroy it
                 if (salesChart) {

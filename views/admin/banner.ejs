@@ -1,13 +1,8 @@
 <!-- views/admin/banner.ejs -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%- include("../../views/partials/header.ejs") %>
     <title>Banner Management</title>
-    <!-- Add your other head content here (similar to other views) -->
-    <!-- Add links to Bootstrap CSS and other CSS files -->
+   
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!--for Sweet alert  -->
@@ -200,8 +195,6 @@ function toggleStatus(bannerId) {
          status: !document.querySelector(`[onclick="toggleStatus('${bannerId}')"]`).dataset.status,
      }),
      success: function(data) {
-        console.log("Noku",data); 
-         // Get the button element
          const button = document.querySelector(`[onclick="toggleStatus('${bannerId}')"]`);
          // Update the button text based on the new status
          button.textContent = data.banner_status ? 'Deactivate' : 'Activate';
@@ -226,7 +219,7 @@ statusDisplay.style.color = data.banner_status ? 'red' : 'black';
 <script>
     document.querySelectorAll('.apply-deletion-btn').forEach(button => {
         button.addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent the form from submitting immediately
+            event.preventDefault(); 
 
             Swal.fire({
                 title: 'Want to Delete This Bannner?',
