@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 exports.render_coupen_page = async (req, res) => {
     try {
+        console.log("Entered main coupon page");
         const coupons = await Coupen.find({ is_delete: false }).exec();
         res.render('admin/adminCoupen', { coupons });
     } catch (error) {
@@ -13,6 +14,7 @@ exports.render_coupen_page = async (req, res) => {
 };
 exports.getCreate_coupon = async (req, res) => {
     try {
+        console.log("Entered add coupen render page");
         const coupons = await Coupen.find({ is_delete: false }).exec();
         res.render('admin/adminAddcoupen', { coupons });
     } catch (error) {
