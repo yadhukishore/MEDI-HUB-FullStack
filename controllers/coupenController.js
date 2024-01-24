@@ -16,7 +16,7 @@ exports.getCreate_coupon = async (req, res) => {
     try {
         console.log("Entered add coupen render page");
         const coupons = await Coupen.find({ is_delete: false }).exec();
-        res.render('admin/adminAddcoupen', { coupons });
+        res.render('admin/AddCoupen', { coupons });
     } catch (error) {
         console.error(error);
         res.status(500).render('error', { statusCode: 500, message: 'createCoupon Server Error' });
