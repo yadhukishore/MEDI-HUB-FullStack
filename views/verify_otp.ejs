@@ -102,39 +102,51 @@
     <form action="/resend_otp" method="POST">
         <span style="color: wheat;"> if otp not received?</span>
         <input type="hidden" name="email" value="<%= email %>">
-        <button type="submit">Resend OTP</button>
+        <button id="resendBtn" type="submit">Resend OTP</button>
     </form>
 
     <script>
-        // Function to start the countdown timer
-        function startTimer(duration, display) {
-            let timer = duration, minutes, seconds;
-            const intervalId = setInterval(function () {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
+  // Function to start the countdown timer
+function startTimer(duration, display) {
+    let timer = duration, minutes, seconds;
+    const intervalId = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
 
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
 
-                display.textContent = "Within " + minutes + ":" + seconds;
+        display.textContent = "Within " + minutes + ":" + seconds;
 
-                if (--timer < 0) {
-                    // Stop the timer interval
-                    clearInterval(intervalId);
-                    // Display a message when the timer completes
-                    display.textContent = "Click the Resend OTP !";
-                }
-            }, 1000);
+        // Store the remaining time in local storage
+        localStorage.setItem('remainingTime', timer);
+
+        if (--timer < 0) {
+            // Stop the timer interval
+            clearInterval(intervalId);
+            display.textContent = "Click the Resend OTP !";
         }
+    }, 1000);
+}
 
+let intervalId;
         //  (5 minutes) in seconds
         const duration = 5 * 60;
 
-        // Display the timer element
         const display = document.getElementById("timer");
 
-        // Start the timer
-        startTimer(duration, display);
+let remainingTime = localStorage.getItem('remainingTime');
+
+if (remainingTime) {
+    startTimer(remainingTime, display);
+} else {
+    startTimer(duration, display);
+}
+// Event listener for the "Resend OTP" button
+document.querySelector('#resendBtn').addEventListener('click', function() {
+    clearInterval(intervalId);
+    startTimer(duration, display);
+});
     </script>
 </body>
 

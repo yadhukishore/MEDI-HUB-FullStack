@@ -216,12 +216,12 @@ input[type="submit"]:active
       <% } %>
     
       <div class="inputBox">
-        <input type="text"  name="email"> <i>Email</i>
-      </div>
-    
-      <div class="inputBox">
-        <input type="password"  name="password"> <i>Password</i>
-      </div>
+        <input type="email" name="email" required> <i>Email</i>
+       </div>
+       
+       <div class="inputBox">
+        <input type="password" name="password" required> <i>Password</i>
+       </div>
     
       <div class="links">
         <a href="/forgot_password">Forgot Password</a>
@@ -238,6 +238,19 @@ input[type="submit"]:active
    </div> 
  
   </section> <!-- partial --> 
+  <script>
+    document.querySelector('.form').addEventListener('submit', function(event) {
+ var emailInput = document.querySelector('input[name="email"]');
+ var passwordInput = document.querySelector('input[name="password"]');
+
+ // Simple validation
+ if (!emailInput.value || !passwordInput.value) {
+    alert('All fields are required!!!!');
+    event.preventDefault();
+ }
+});
+
+  </script>
 
  </body>
 
