@@ -37,7 +37,7 @@
                 <% categories.forEach(category => { %>
                     <li class="nav-item">
                         <div class="form-check">
-                            <input class="form-check-input category-checkbox" type="checkbox" value="<%= category.categoryName %>" id="<%= category.categoryName %>Checkbox" name="categories">
+                            <input class="form-check-input category-checkbox" type="checkbox" value="<%= category.categoryName %>" id="<%= category.categoryName %>Checkbox" name="categories" <%= searchQuery && category.categoryName.includes(searchQuery) ? 'checked' : '' %>>
                             <label class="form-check-label" for="<%= category %>Checkbox">
                                 <p><%= category.categoryName %></p>
                             </label>
@@ -54,14 +54,14 @@
             <hr>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a style="color: green;" class="nav-link" href="?sort=lowToHigh">
+                    <a style="color: green;" class="nav-link" href="?search=<%= searchQuery %>&sort=lowToHigh">
                         Price: Low to High
-                    </a>
+                       </a>
                 </li>
                 <li class="nav-item">
-                    <a style="color: darkgreen;" class="nav-link" href="?sort=highToLow">
+                    <a style="color: darkgreen;" class="nav-link" href="?search=<%= searchQuery %>&sort=highToLow">
                         Price: High to Low
-                    </a>
+                       </a>
                 </li>
                 <!-- Add more sorting options as needed -->
             </ul>

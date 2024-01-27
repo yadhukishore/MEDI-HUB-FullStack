@@ -53,7 +53,7 @@ exports.getHome = async (req, res) => {
     res.render('index', { user, products, banners, page, totalPages, messages: req.flash() });
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).send('Internal Server Error');
+   res.status(500).render('error', { statusCode: 500, message: 'Internal server error' });
   }
 };
 
@@ -199,6 +199,7 @@ exports.getAllMedicines = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.pageSize) || 9; 
   const skip = (page - 1) * pageSize;
+  res.locals.isAllMedicinesPage = true;
   try {
     const searchQuery = req.query.search || '';
     let user = null;
@@ -228,40 +229,41 @@ exports.getAllMedicines = async (req, res) => {
       ? [{ $match: { categoryName: { $in: filterCategories } } }]
       : [];
 
-    const products = await Product.aggregate([
-      { $match: { deleted: false } },
-      {
-        $lookup: {
-          from: 'categorynames',
-          localField: 'category',
-          foreignField: '_id',
-          as: 'categoryDetails',
+      const products = await Product.aggregate([
+        { $match: { deleted: false } },
+        {
+           $lookup: {
+             from: 'categorynames',
+             localField: 'category',
+             foreignField: '_id',
+             as: 'categoryDetails',
+           },
         },
-      },
-      { $unwind: '$categoryDetails' },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          images: 1,
-          price: 1,
-          stock: 1,
-          categoryName: '$categoryDetails.categoryName',
+        { $unwind: '$categoryDetails' },
+        {
+           $project: {
+             _id: 1,
+             name: 1,
+             images: 1,
+             price: 1,
+             stock: 1,
+             categoryName: '$categoryDetails.categoryName',
+           },
         },
-      },
-      ...filterPipeline,
-      {
-        $match: {
-          $or: [
-            { name: { $regex: searchQuery, $options: 'i' } },
-            { categoryName: { $regex: searchQuery, $options: 'i' } },
-          ],
+        {
+           $match: {
+             $or: [
+               { name: { $regex: searchQuery, $options: 'i' } },
+               { categoryName: { $regex: searchQuery, $options: 'i' } },
+             ],
+           },
         },
-      },
-      { $sort: { price: sortOrder === 'lowToHigh' ? 1 : -1 } },
-      { $skip: skip },
-      { $limit: pageSize },
-    ]);
+        ...filterPipeline,
+        { $sort: { price: sortOrder === 'lowToHigh' ? 1 : -1 } },
+        { $skip: skip },
+        { $limit: pageSize },
+       ]);
+       
     
 
     res.render('medicines', {

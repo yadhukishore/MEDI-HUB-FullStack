@@ -9,13 +9,22 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <!-- Centered Search Form with Icon -->
-    <div id="searchBB" class="mx-auto">
-        <form action="/" method="GET" class="form-inline my-2 my-lg-0 ml-auto" style="width: 600px;">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search items..." aria-label="Search" name="search" style="width: 80%;">
-            <button class="btn btn-success my-2 my-sm-0" type="submit">
-                <i class="material-icons">search</i>
-            </button>
-        </form>
+    <div id="searchBB" class="mx-auto"> 
+        <% if (!locals.isAllMedicinesPage) { %>
+            <form action="/" method="GET" class="form-inline my-2 my-lg-0 ml-auto" style="width: 600px;">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search items..." aria-label="Search" name="search" style="width: 80%;">
+                <button class="btn btn-success my-2 my-sm-0" type="submit">
+                    <i class="material-icons">search</i>
+                </button>
+            </form>
+        <% } else { %>
+            <form action="/allMedicines" method="GET" class="form-inline my-2 my-lg-0 ml-auto" style="width: 600px;">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search medicines..." aria-label="Search" name="search" style="width: 80%;">
+                <button class="btn btn-success my-2 my-sm-0" type="submit">
+                    <i class="material-icons">search</i>
+                </button>
+            </form>
+        <% } %>
     </div>
     <a style="color: lightgreen;" class="nav-link " href="/allMedicines">⚚ Medicines </a>
     <!-- Cart icon on the right -->
