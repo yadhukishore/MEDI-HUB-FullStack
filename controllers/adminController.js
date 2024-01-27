@@ -156,6 +156,9 @@ exports.postAdminAddProduct = [
       ) {
         throw new Error("Please fill out all required fields.");
       }
+      if (productImages.length < 2) {
+        throw new Error("Product must have at least 2 images");
+      }
 
       const nonNegPrice = parseFloat(productPrice);
       if (isNaN(nonNegPrice) || nonNegPrice < 0) {
@@ -233,70 +236,80 @@ exports.getAdminEdit = [
 exports.postAdminEdit = [
   adminAuthMiddleware,
   async (req, res) => {
-    let productId;
-    try {
-      productId = req.params.id;
-      console.log("Request body:", req.body);
-      console.log("Request files:", req.files);
-
-      const { name, description, price, productCategory, stock } = req.body;
-
-      if (!name || !description || !price || !productCategory || stock < 0) {
-        res.redirect(
-          `/admin/edit_product/${productId}?error=Please fill out all required fields and enter a valid quantity.`
-        );
-        return;
+     let productId;
+     try {
+       productId = req.params.id;
+       console.log("Request body:", req.body);
+       console.log("Request files:", req.files);
+ 
+       const { name, description, price, productCategory, stock } = req.body;
+ 
+       if (!name || !description || !price || !productCategory || stock < 0) {
+         res.redirect(
+           `/admin/edit_product/${productId}?error=Please fill out all required fields and enter a valid quantity.`
+         );
+         return;
+       }
+ 
+       const nonNegPrice = parseFloat(price);
+       if (isNaN(nonNegPrice) || nonNegPrice < 0) {
+         throw new Error("Product price must be a non-negative number.");
+       }
+ 
+       const parsedStock = parseInt(stock);
+       if (isNaN(parsedStock) || parsedStock < 1) {
+         throw new Error(
+           "You need to add at least one quantity of your product!"
+         );
+       }
+ 
+       const category = await categoryName.findOne({
+         categoryName: productCategory,
+       });
+ 
+       if (!category) {
+         console.error("Category not found for:", productCategory);
+         throw new Error("Category not found");
+       }
+ 
+       
+       
+       
+ 
+       const updateData = {
+         name,
+         description,
+         price: nonNegPrice,
+         category: category._id,
+         stock: parseInt(parsedStock),
+       };
+ 
+       if (req.files && req.files.length > 0) {
+         const newImages = req.files.map((file) => file.filename);
+         updateData.images = newImages;
+       }
+ 
+       await Product.findByIdAndUpdate(productId, updateData);
+ 
+       console.log("Update image saved");
+       const existingProduct = await Product.findById(productId);
+       // Check if the product has at least 2 images
+       if (!existingProduct.images || existingProduct.images.length < 2) {
+        throw new Error("Product must have at least 2 images");
       }
-
-      const nonNegPrice = parseFloat(price);
-      if (isNaN(nonNegPrice) || nonNegPrice < 0) {
-        throw new Error("Product price must be a non-negative number.");
-      }
-
-      const parsedStock = parseInt(stock);
-      if (isNaN(parsedStock) || parsedStock < 1) {
-        throw new Error(
-          "You need to add at least one quantity of your product!"
-        );
-      }
-
-      const category = await categoryName.findOne({
-        categoryName: productCategory,
-      });
-
-      if (!category) {
-        console.error("Category not found for:", productCategory);
-        throw new Error("Category not found");
-      }
-
-      const updateData = {
-        name,
-        description,
-        price: nonNegPrice,
-        category: category._id,
-        stock: parseInt(parsedStock),
-      };
-
-      if (req.files && req.files.length > 0) {
-        const newImages = req.files.map((file) => file.filename);
-        updateData.images = newImages;
-      }
-
-      await Product.findByIdAndUpdate(productId, updateData);
-
-      console.log("Update image saved");
-
-      res.redirect("/admin");
-    } catch (error) {
-      console.error("Error updating product:", error.message);
-      res.redirect(
-        `/admin/edit_product/${productId}?error=${encodeURIComponent(
-          error.message
-        )}`
-      );
-    }
+ 
+       res.redirect("/admin");
+     } catch (error) {
+       console.error("Error updating product:", error.message);
+       res.redirect(
+         `/admin/edit_product/${productId}?error=${encodeURIComponent(
+           error.message
+         )}`
+       );
+     }
   },
-];
+ ];
+ 
 
 exports.deleteInEditProduct = [
   adminAuthMiddleware,
