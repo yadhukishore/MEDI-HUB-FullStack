@@ -19,7 +19,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const store = new MongoStore({
-  uri:process.env.MONGO_ATLAS_URL,
+  uri:process.env.MONGO_URL,
   collection: 'sessions'
 });
 

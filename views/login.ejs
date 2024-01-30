@@ -237,20 +237,36 @@ input[type="submit"]:active
 
    </div> 
  
-  </section> <!-- partial --> 
+  </section> 
   <script>
-    document.querySelector('.form').addEventListener('submit', function(event) {
- var emailInput = document.querySelector('input[name="email"]');
- var passwordInput = document.querySelector('input[name="password"]');
 
- // Simple validation
+var emailInput = document.querySelector('input[name="email"]');
+var passwordInput = document.querySelector('input[name="password"]');
+
+emailInput.addEventListener('input', validateInput);
+passwordInput.addEventListener('input', validateInput);
+
+function validateInput(event) {
+ // Check if the input field is empty
+ if (!event.target.value) {
+    // Display an error message
+    event.target.nextElementSibling.textContent = 'This field is required';
+    event.target.nextElementSibling.style.color = 'orange';
+ } else {
+    // Remove the error message
+    event.target.nextElementSibling.textContent = 'Type a registerd email-id';
+ }
+}
+
+document.querySelector('.form').addEventListener('submit', function(event) {
+ // Prevent form submission if the input fields are empty
  if (!emailInput.value || !passwordInput.value) {
-    alert('All fields are required!!!!');
     event.preventDefault();
  }
 });
 
   </script>
+  
 
  </body>
 
