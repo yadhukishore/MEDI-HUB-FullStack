@@ -356,7 +356,7 @@ exports.getMyOrders =
         return res.status(404).json({ message: "Order not found" });
       }
   
-      if (order.paymentMethod === "razorpay" && order.status === "Confirmed") {
+      if (order.paymentMethod === "razorpay" && (order.status === "Confirmed"||order.status === "Shipped")) {
         const user = await User.findById(order.user);
         console.log("order was paid online and is confirmed, so we can update wallet!");
   
