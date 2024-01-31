@@ -7,7 +7,7 @@ mongoose.connect(process.env.MONGO_ATLAS_URL).then(() => {
 }).catch(err => {
   console.error('Error connecting to MongoDB:', err);
   process.exit(1);
-});
+})            ;
 
 }
 
