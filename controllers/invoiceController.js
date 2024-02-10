@@ -27,7 +27,7 @@ exports.getInvoiceData = async (req, res) => {
             throw new Error('User address not found');
         }
 
-       // Find the default address if set, otherwise use the first address
+      
 const userAddress = user.addresses.find(address => address.isDefault) || user.addresses[0];
 
         console.log("userAddress;>",userAddress);
@@ -36,26 +36,20 @@ const userAddress = user.addresses.find(address => address.isDefault) || user.ad
         }
      
 
-        // Set a default tax rate or calculate it based on your business logic
-        const taxRate = 18; // Change this to your actual tax rate
+        
+        const taxRate = 18; 
 
-        // Prepare data for the invoice
+      
         const invoiceData = {
-           // If not using the free version, set your API key
-    // "apiKey": "123abc", // Get apiKey through: https://app.budgetinvoice.com/register
-    
-    // Customize enables you to provide your own templates
-    // Please review the documentation for instructions and examples
+           
+   
     "customize": {
         //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html 
     },
     "images": {
-        // The logo on top of your invoice
         "logo": "https://www.medihub.ug/static/media/toplogo.dc9f2c6c.png",
-        // The invoice background
         "background": "",
     },
-    // Your own data
     "sender": {
         "company": "MEDI HUB",
         "address": "CHALAKUDY,MH-Road",
@@ -66,7 +60,7 @@ const userAddress = user.addresses.find(address => address.isDefault) || user.ad
         //"custom2": "custom value 2",
         //"custom3": "custom value 3"
     },
-    // Your recipient
+    // recipient
     "client": {
         "company": user.username,
         "address": userAddress.fullAddress || 'N/A',
@@ -93,9 +87,7 @@ const userAddress = user.addresses.find(address => address.isDefault) || user.ad
         "tax-rate": 0,
         "price": product.price,
      })),
-    // The message you would like to display on the bottom of your invoice
     "bottom-notice": "Thankyou for Purchasing!",
-    // Settings to customize your invoice
     "settings": {
         "currency": "INR", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
         // "locale": "nl-NL", // Defaults to en-US, used for number formatting (See documentation 'Locales and Currency')        
@@ -108,7 +100,7 @@ const userAddress = user.addresses.find(address => address.isDefault) || user.ad
         // "width": "500px", // allowed units: mm, cm, in, px
         // "orientation": "landscape", // portrait or landscape, defaults to portrait
     },
-    // Translate your invoice to your preferred language
+    // Translate invoice to your preferred language
     "translate": {
         // "invoice": "FACTUUR",  // Default to 'INVOICE'
         "number": "Invoice Id", // Defaults to 'Number'

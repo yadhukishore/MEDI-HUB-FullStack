@@ -94,7 +94,7 @@ const getTotalOrders = async () => {
 };
 
 
-exports.getAdminDash =[
+const getAdminDash =[
     adminAuthMiddleware,
     async(req, res) => {
     try {
@@ -118,7 +118,7 @@ exports.getAdminDash =[
         handleError(error, res);    }
 }];
 
-exports.getSalesData = [
+const getSalesData = [
     adminAuthMiddleware,
     async(req, res) => {
     try {
@@ -131,7 +131,7 @@ exports.getSalesData = [
         }
 }];
 
-exports.renderPieChartPage = [
+const renderPieChartPage = [
     adminAuthMiddleware,
     async (req, res) => {
     try {
@@ -154,7 +154,7 @@ exports.renderPieChartPage = [
 }];
 
 
-exports.renderBarChart =[
+const renderBarChart =[
     adminAuthMiddleware,
     async(req, res) => {
     try {
@@ -181,4 +181,11 @@ exports.renderBarChart =[
         handleError(err, res);
         }
  }];
+
+ module.exports = {
+    getAdminDash,
+    getSalesData,
+    renderPieChartPage,
+    renderBarChart
+};
  
